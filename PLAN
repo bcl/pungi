@@ -1,0 +1,46 @@
+FIST
+Fedora Install Spin Tool (Name could change at any moment)
+
+This project is aimed at making a public / free tool to spin installation
+trees/isos of Fedora.  It will be written in python (for many obvious
+reasons).  Code style I hope will be of a simple "master" process that can
+call any number of subprocesses depending on a configuration set.
+
+Thoughtspace:
+We'll need to do five basic tasks:
+  1) Gather packages from repos into a directory tree
+  2) Run anaconda tools (buildinstall) on said directory tree
+  3) Split tree into CD iso size chunks
+  4) Create isos of the chunks
+  5) Sanity check the tree
+
+Gathering Packages
+  Using yumdownloader in combination with a comps file makes sense here.  We
+  can define what we want at the top level and let yum depsolve the rest.
+  The tricky bits here are figuring out multilib stuff and the uglyness that
+  is noarch packages with ExcludeArch/ExclusiveArch crack.
+
+Running Anaconda Tools
+  These should be ran on the release it is releasing.  This means using mock
+  in some way, either make mock a req of the tool and the tool calls mock
+  or allowing the tool to run in userspace but suggest the tool get ran in
+  a mock call.  Some cooperation will need to happen with the anaconda folks
+  to make sure we're moving in the same direction they are wrt the tools we
+  would use.
+
+Split Tree Into CD Size Chunks
+  This will be a fun task.  Really, I mean it.  Anaconda folks have made some
+  noise about making buildinstall take a flag to make CDs and do all the
+  splitting itself.  That would be handy, but it may not happen by the time
+  we need to do this.  Perhaps work on this part last, focus on the
+  installable tree stuff.
+
+Create Isos of the Chunks
+  This is a pretty straightforward call to mkisofs.  There are some fun things
+  to consider when making isos for ppc(64) and possibly other arches that may
+  come to play.  Code here will need to be somewhat modular to allow for
+  different mkisofs calls per arch.
+
+Sanity Check the Tree
+  This could/should be an ever growing set of post-tree build sanity checks.
+  Hopefully it'll cut down on brown paperbag trees sneaking out.
