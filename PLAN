@@ -15,10 +15,14 @@ We'll need to do five basic tasks:
   5) Sanity check the tree
 
 Gathering Packages
-  Using yumdownloader in combination with a comps file makes sense here.  We
-  can define what we want at the top level and let yum depsolve the rest.
-  The tricky bits here are figuring out multilib stuff and the uglyness that
-  is noarch packages with ExcludeArch/ExclusiveArch crack.
+  Using yumdownloader / reposync like code in combination with a comps file 
+  makes sense here.  We can define what we want at the top level and let yum 
+  depsolve the rest.  The tricky bits here are figuring out multilib stuff and
+  the uglyness that is noarch packages with ExcludeArch/ExclusiveArch crack.
+  We could skip over this by assuming that repos will exist that are pre-
+  populated with multilib/noarch safe packages and we just pull whats there.
+  There is some code in the Extras push scripts.  See also yum/comps.py for 
+  dealing with comps.
 
 Running Anaconda Tools
   These should be ran on the release it is releasing.  This means using mock
@@ -44,3 +48,15 @@ Create Isos of the Chunks
 Sanity Check the Tree
   This could/should be an ever growing set of post-tree build sanity checks.
   Hopefully it'll cut down on brown paperbag trees sneaking out.
+
+Organization
+  Each task set will be its own module.  Work on each module can be done
+  independantly and hopefully once functional it should be easy to tie them
+  all together (one ring to bring them all, and in the darkness bind them)
+
+Making it all happen
+  There really is space for two tools, or something inbetween.  There is the
+  task of creating a repo of packages multilibbed up.  Think rawhide.  The
+  second tool takes packages from said repos and makes the install and CD set.
+  Working on the second tool first makes sense, as it can be used today with
+  existing Core and Extras repos.  Later, tool #1 can grow from #2.
