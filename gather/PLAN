@@ -1,0 +1,21 @@
+This is the "gather" module.  This module is used to gather packages and their
+dependancies from repositories and lay them out in a logistical manner.  A
+comps file will determine what top level packages to pull in.
+We're probably going to steal some code from yumdownloader and reposync, and
+use yum.comps to parse the comps file.
+
+ROADMAP
+
+a) Use yum.comps to parse our comps file to generate a list of packages to
+   depsolve and download.
+b) Wire up something to actually download the package list and write it out
+   somewhere.
+
+CONSIDERATIONS
+
+Probably should allow continuing if a package isn't found in a particular arch.
+Probably should error if a package isn't found in any arch.
+
+QUESTIONS
+
+Do we createrepo here, once we've gathered our packages?
