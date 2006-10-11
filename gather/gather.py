@@ -16,6 +16,60 @@
 import sys
 import yum
 
+class Gather(yum.YumBase):
+    def __init__(self, opts):
+        yum.YumBase.__init__(self)
+        self.logger = logging.getLogger("yum.verbose.fist")
+        self.opts = opts
+
+    def getPackageObjects(self)
+
+    def findDeps(self, po):
+        """Return the dependencies for a given package, as well
+           possible solutions for those dependencies.
+           
+           Returns the deps as a dict  of:
+            dict[reqs] = [list of satisfying pkgs]"""
+
+
+        reqs = po.returnPrco('requires');
+        reqs.sort()
+        pkgresults = {}
+
+        for req in reqs:
+            (r,f,v) = req
+            if r.startswith('rpmlib('):
+                continue
+
+            pkgresults[req] = list(self.whatProvides(r, f, v))
+
+        return pkgresults
+
+    def downloadPackages(self, polist):
+        """Cycle through the list of package objects and
+           download them from their respective repos."""
+
+
+        for pkg in polist:
+            repo = self.repos.getRepo(pkg.repoid)
+            remote = pkg.returnSimple('relativepath')
+            local = os.path.basename(remote)
+            local = os.path.join(opts.destdir, local)
+            if (os.path.exists(local) and
+                str(os.path.getsize(local)) == pkg.returnSimple('packagesize')):
+
+                if not opts.quiet:
+                    self.logger.info("%s already exists and appears to be complete" % local)
+                continue
+
+            # Disable cache otherwise things won't download
+            repo.cache = 0
+            if not opts.quiet:
+                self.logger.info('Downloading %s' % os.path.basename(remote))
+            pkg.localpath = local # Hack: to set the localpath to what we want.
+            repo.getPackage(pkg) 
+
+
 def create_yumobj(yumconf):
 # Create a yum object to act upon.  This may move to a higher
 # level file and get passed to this module.
