@@ -15,7 +15,6 @@
 
 import sys
 import yum
-from optparse import OptionParser
 
 def create_yumobj(yumconf):
 # Create a yum object to act upon
@@ -38,6 +37,7 @@ def main():
         sys.exit(1)
 
 if __name__ == '__main__':
+    from optparse import OptionParser
     def get_arguments():
     # hack job for now, I'm sure this could be better for our uses
         usage = "usage: %s [options]" % sys.argv[0]
