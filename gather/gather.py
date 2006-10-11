@@ -17,7 +17,8 @@ import sys
 import yum
 
 def create_yumobj(yumconf):
-# Create a yum object to act upon
+# Create a yum object to act upon.  This may move to a higher
+# level file and get passed to this module.
     myYum = yum.yumBase()
     myYum.doConfigSetup(fn=yumconf)
     myYum.doRepoSetup()
@@ -25,6 +26,9 @@ def create_yumobj(yumconf):
     return myYum
 
 def download_packages(yumobj, pkglist):
+# for now a simple function to download packages.
+# Needed are ways to define where to put the packages,
+# cleaning up multiple returns from searching
     pkgobjs = []
     for pkg in pkglist:
         pkgobjs.extend(yumobj.pkgSack.searchNevra(name=pkg))
