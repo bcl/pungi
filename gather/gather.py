@@ -21,7 +21,15 @@ def create_yumobj(yumconf):
     myYum = yum.yumBase()
     myYum.doConfigSetup(fn=yumconf)
     myYum.doRepoSetup()
+    myYum.doSackSetup()
     return myYum
+
+def download_packages(yumobj, pkglist):
+    pkgobjs = []
+    for pkg in pkglist:
+        pkgobjs.extend(yumobj.pkgSack.searchNevra(name=pkg))
+    for pkgobj in pkgobjs:
+        pkgobj.repo.getPackage(pkgobj)
 
 def main():
 # This is used for testing the module
