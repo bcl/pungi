@@ -17,32 +17,6 @@ import sys
 import yum
 from optparse import OptionParser
 
-
-def get_arguments():
-# hack job for now, I'm sure this could be better for our uses
-    usage = "usage: %s [options]" % sys.argv[0]
-    parser = OptionParser(usage=usage)
-    parser.add_option("--destdir", default=".", dest="destdir",
-      help='destination directory (defaults to current directory)')
-    parser.add_option("--comps", default="comps.xml", dest="comps",
-      help='comps file to use')
-    parser.add_option("--yumconf", default="yum.conf", dest="yumconf",
-      help='yum config file to use')
-
-
-    (opts, args) = parser.parse_args()
-    #if len(opts) < 1:
-    #    parser.print_help()
-    #    sys.exit(0)
-    return (opts, args)
-
-def get_packagelist(myComps):
-# Get the list of packages from the comps file
-    pkglist = []
-    for group in myComps.groups:
-        pkglist += group.packages
-    return pkglist
-
 def create_yumobj(yumconf):
 # Create a yum object to act upon
     myYum = yum.yumBase()
@@ -51,12 +25,26 @@ def create_yumobj(yumconf):
     return myYum
 
 def main():
-    (opts, args) = get_arguments()
+# This is used for testing the module
+    usage = "usage: %s [options]" % sys.argv[0]
+    parser = OptionParser(usage=usage)
+    parser.add_option("--destdir", default=".", dest="destdir",
+      help='destination directory (defaults to current directory)')
+    parser.add_option("--comps", default="comps.xml", dest="comps",
+      help='comps file to use')
+    parser.add_option("--yumconf", default="yum.conf", dest="yumconf",
+      help='yum config file to use')
+    (opts, args) = parser.parse_args()
+
+
     try:
         compsobj = yum.comps.Comps()
         compsobj.add(opts.comps)
 
-        print get_packagelist(compsobj)
+        pkglist = []
+        for group in compsobj.groups:
+            pkglist += group.packages
+        print pkglist
 
     except IOError:
         print >> sys.stderr, "gather.py: No such file:\'%s\'" % opts.comps
