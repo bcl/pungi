@@ -18,7 +18,7 @@ import yum
 import os
 
 class Gather(yum.YumBase):
-    def __init__(self, opts):
+    def __init__(self, opts, pkglist):
         # Create a yum object to use
         yum.YumBase.__init__(self)
         self.doConfigSetup(fn=opts.yumconf)
@@ -26,6 +26,8 @@ class Gather(yum.YumBase):
         self.doSackSetup()
         self.logger = yum.logging.getLogger("yum.verbose.fist")
         self.opts = opts
+        self.pkglist = pkglist
+        self.polist = []
 
     def findDeps(self, po):
         """Return the dependencies for a given package, as well
@@ -50,7 +52,7 @@ class Gather(yum.YumBase):
 
         return pkgresults
 
-    def getPackageObjects(self, pkglist):
+    def getPackageObjects(self):
         """Cycle through the list of packages, get package object
            matches, and resolve deps.
 
@@ -60,7 +62,7 @@ class Gather(yum.YumBase):
         unprocessed_pkgs = [] # list of packages yet to depsolve
         final_pkgobjs = [] # The final list of package objects
 
-        for pkg in pkglist: # cycle through our package list and get repo matches
+        for pkg in self.pkglist: # cycle through our package list and get repo matches
             unprocessed_pkgs.extend(self.pkgSack.searchNevra(name=pkg)) 
 
         if len(unprocessed_pkgs) == 0:
@@ -77,20 +79,20 @@ class Gather(yum.YumBase):
                     if not dep in unprocessed_pkgs and not dep in final_pkgobjs:
                         unprocessed_pkgs.append(dep)
 
-        return final_pkgobjs
+        self.polist = final_pkgobjs
 
-    def downloadPackages(self, polist):
+    def downloadPackages(self):
         """Cycle through the list of package objects and
            download them from their respective repos."""
 
 
         if not self.opts.quiet:
             downloads = []
-            for pkg in polist:
+            for pkg in self.polist:
                 downloads.append(pkg.name)
             self.logger.info("Download list: %s" % downloads)
 
-        for pkg in polist:
+        for pkg in self.polist:
             repo = self.repos.getRepo(pkg.repoid)
             remote = pkg.returnSimple('relativepath')
             local = os.path.basename(remote)
@@ -117,9 +119,9 @@ def main():
     pkglist = get_packagelist(opts.comps)
     print pkglist
 
-    mygather = Gather(opts=opts)
-    polist = mygather.getPackageObjects(pkglist)
-    mygather.downloadPackages(polist)
+    mygather = Gather(opts, pkglist)
+    mygather.getPackageObjects()
+    mygather.downloadPackages()
 
 
 if __name__ == '__main__':
