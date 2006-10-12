@@ -15,92 +15,112 @@
 
 import sys
 import yum
+import os
 
 class Gather(yum.YumBase):
     def __init__(self, opts):
+        # Create a yum object to use
         yum.YumBase.__init__(self)
-        self.logger = logging.getLogger("yum.verbose.fist")
+        self.doConfigSetup(fn=opts.yumconf)
+        self.doRepoSetup()
+        self.doSackSetup()
+        self.logger = yum.logging.getLogger("yum.verbose.fist")
         self.opts = opts
-
-    def getPackageObjects(self)
 
     def findDeps(self, po):
         """Return the dependencies for a given package, as well
            possible solutions for those dependencies.
            
-           Returns the deps as a dict  of:
-            dict[reqs] = [list of satisfying pkgs]"""
+           Returns the deps as a list"""
 
+
+        if not self.opts.quiet:
+            self.logger.info('Checking deps of %s' % po.name)
 
         reqs = po.returnPrco('requires');
         reqs.sort()
-        pkgresults = {}
+        pkgresults = []
 
         for req in reqs:
             (r,f,v) = req
             if r.startswith('rpmlib('):
                 continue
 
-            pkgresults[req] = list(self.whatProvides(r, f, v))
+            pkgresults.extend(list(self.whatProvides(r, f, v)))
 
         return pkgresults
+
+    def getPackageObjects(self, pkglist):
+        """Cycle through the list of packages, get package object
+           matches, and resolve deps.
+
+           Returns a list of package objects"""
+
+
+        unprocessed_pkgs = [] # list of packages yet to depsolve
+        final_pkgobjs = [] # The final list of package objects
+
+        for pkg in pkglist: # cycle through our package list and get repo matches
+            unprocessed_pkgs.extend(self.pkgSack.searchNevra(name=pkg)) 
+
+        if len(unprocessed_pkgs) == 0:
+            raise yum.Errors.MiscError, 'No packages found to download.'
+
+
+        while len(unprocessed_pkgs) > 0: # Our fun loop
+            for pkg in unprocessed_pkgs:
+                final_pkgobjs.append(pkg) # Add the pkg to our final list
+                deplist = self.findDeps(pkg) # Get the deps of our package
+                unprocessed_pkgs.remove(pkg) # Clear the package out of our todo list.
+
+                for dep in deplist: # Cycle through deps, if we don't already have it, add it.
+                    if not dep in unprocessed_pkgs and not dep in final_pkgobjs:
+                        unprocessed_pkgs.append(dep)
+
+        return final_pkgobjs
 
     def downloadPackages(self, polist):
         """Cycle through the list of package objects and
            download them from their respective repos."""
 
 
+        if not self.opts.quiet:
+            downloads = []
+            for pkg in polist:
+                downloads.append(pkg.name)
+            self.logger.info("Download list: %s" % downloads)
+
         for pkg in polist:
             repo = self.repos.getRepo(pkg.repoid)
             remote = pkg.returnSimple('relativepath')
             local = os.path.basename(remote)
-            local = os.path.join(opts.destdir, local)
+            local = os.path.join(self.opts.destdir, local)
             if (os.path.exists(local) and
                 str(os.path.getsize(local)) == pkg.returnSimple('packagesize')):
 
-                if not opts.quiet:
+                if not self.opts.quiet:
                     self.logger.info("%s already exists and appears to be complete" % local)
                 continue
 
             # Disable cache otherwise things won't download
             repo.cache = 0
-            if not opts.quiet:
+            if not self.opts.quiet:
                 self.logger.info('Downloading %s' % os.path.basename(remote))
             pkg.localpath = local # Hack: to set the localpath to what we want.
             repo.getPackage(pkg) 
 
 
-def create_yumobj(yumconf):
-# Create a yum object to act upon.  This may move to a higher
-# level file and get passed to this module.
-    myYum = yum.yumBase()
-    myYum.doConfigSetup(fn=yumconf)
-    myYum.doRepoSetup()
-    myYum.doSackSetup()
-    return myYum
-
-def download_packages(yumobj, pkglist):
-# for now a simple function to download packages.
-# Needed are ways to define where to put the packages,
-# cleaning up multiple returns from searching
-    pkgobjs = []
-    for pkg in pkglist:
-        pkgobjs.extend(yumobj.pkgSack.searchNevra(name=pkg))
-    for pkgobj in pkgobjs:
-        pkgobj.repo.getPackage(pkgobj)
-
 def main():
 # This is used for testing the module
     (opts, args) = get_arguments()
-    try:
-        compsobj = yum.comps.Comps()
-        compsobj.add(opts.comps)
 
-        print get_packagelist(compsobj)
+    pkglist = get_packagelist(opts.comps)
+    print pkglist
 
-    except IOError:
-        print >> sys.stderr, "gather.py: No such file:\'%s\'" % opts.comps
-        sys.exit(1)
+    mygather = Gather(opts=opts)
+    polist = mygather.getPackageObjects(pkglist)
+    mygather.downloadPackages(polist)
+
 
 if __name__ == '__main__':
     from optparse import OptionParser
@@ -114,6 +134,9 @@ if __name__ == '__main__':
           help='comps file to use')
         parser.add_option("--yumconf", default="yum.conf", dest="yumconf",
           help='yum config file to use')
+        parser.add_option("-q", "--quiet", default=False, action="store_true",
+          help="Output as little as possible")
+
 
 
         (opts, args) = parser.parse_args()
@@ -124,8 +147,17 @@ if __name__ == '__main__':
 
     def get_packagelist(myComps):
     # Get the list of packages from the comps file
+        try:
+            compsobj = yum.comps.Comps()
+            compsobj.add(myComps)
+
+        except IOError:
+            print >> sys.stderr, "gather.py: No such file:\'%s\'" % opts.comps
+            sys.exit(1)
+
         pkglist = []
-        for group in myComps.groups:
+        for group in compsobj.groups:
             pkglist += group.packages
         return pkglist
+
     main()
