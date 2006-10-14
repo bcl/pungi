@@ -39,7 +39,7 @@ class Gather(yum.YumBase):
         if not self.opts.quiet:
             self.logger.info('Checking deps of %s' % po.name)
 
-        reqs = po.returnPrco('requires');
+        reqs = po.requires;
         reqs.sort()
         pkgresults = []
 
