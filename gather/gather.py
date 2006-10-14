@@ -91,16 +91,21 @@ class Gather(yum.YumBase):
                 downloads.append(pkg.name)
             self.logger.info("Download list: %s" % downloads)
 
+        pkgdir = os.path.join(self.opts.destdir, 'tree') # Package location within destdir, name subject to change/config
+        if not os.path.exists(pkgdir):
+            os.makedirs(pkgdir)
+
         for pkg in self.polist:
             repo = self.repos.getRepo(pkg.repoid)
             remote = pkg.returnSimple('relativepath')
             local = os.path.basename(remote)
-            local = os.path.join(self.opts.destdir, local)
+            local = os.path.join(self.opts.cachedir, local)
             if (os.path.exists(local) and
                 str(os.path.getsize(local)) == pkg.returnSimple('packagesize')):
 
                 if not self.opts.quiet:
                     self.logger.info("%s already exists and appears to be complete" % local)
+                os.link(local, os.path.join(pkgdir, os.path.basename(remote)))
                 continue
 
             # Disable cache otherwise things won't download
@@ -109,6 +114,7 @@ class Gather(yum.YumBase):
                 self.logger.info('Downloading %s' % os.path.basename(remote))
             pkg.localpath = local # Hack: to set the localpath to what we want.
             repo.getPackage(pkg) 
+            os.link(local, os.path.join(pkgdir, os.path.basename(remote)))
 
 
 def main():
@@ -120,7 +126,7 @@ def main():
 
     if not os.path.exists(opts.destdir):
         try:
-            os.mkdirs(opts.destdir)
+            os.makedirs(opts.destdir)
         except OSError, e:
             print >> sys.stderr, "Error: Cannot destination cache dir %s" % opts.destdir
             sys.exit(1)
@@ -149,7 +155,6 @@ if __name__ == '__main__':
           help='destination directory (defaults to current directory)')
         parser.add_option("--cachedir", default="./cache", dest="cachedir",
           help='cache directory (defaults to cache subdir of current directory)')
-        parser.add_option("--comps", default="comps.xml", dest="comps",
         parser.add_option("--comps", default="comps.xml", dest="comps",
           help='comps file to use')
         parser.add_option("--yumconf", default="yum.conf", dest="yumconf",
