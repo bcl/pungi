@@ -13,7 +13,6 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
-import sys
 import yum
 import os
 
@@ -119,6 +118,20 @@ def main():
     pkglist = get_packagelist(opts.comps)
     print pkglist
 
+    if not os.path.exists(opts.destdir):
+        try:
+            os.mkdirs(opts.destdir)
+        except OSError, e:
+            print >> sys.stderr, "Error: Cannot destination cache dir %s" % opts.destdir
+            sys.exit(1)
+
+    if not os.path.exists(opts.cachedir):
+        try:
+            os.mkdirs(opts.cachedir)
+        except OSError, e:
+            print >> sys.stderr, "Error: Cannot create cache dir %s" % opts.destdir
+            sys.exit(1)
+
     mygather = Gather(opts, pkglist)
     mygather.getPackageObjects()
     mygather.downloadPackages()
@@ -126,12 +139,17 @@ def main():
 
 if __name__ == '__main__':
     from optparse import OptionParser
+    import sys
+
     def get_arguments():
     # hack job for now, I'm sure this could be better for our uses
         usage = "usage: %s [options]" % sys.argv[0]
         parser = OptionParser(usage=usage)
         parser.add_option("--destdir", default=".", dest="destdir",
           help='destination directory (defaults to current directory)')
+        parser.add_option("--cachedir", default="./cache", dest="cachedir",
+          help='cache directory (defaults to cache subdir of current directory)')
+        parser.add_option("--comps", default="comps.xml", dest="comps",
         parser.add_option("--comps", default="comps.xml", dest="comps",
           help='comps file to use')
         parser.add_option("--yumconf", default="yum.conf", dest="yumconf",
