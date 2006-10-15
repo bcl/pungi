@@ -22,7 +22,16 @@ class Gather(yum.YumBase):
         yum.YumBase.__init__(self)
         self.doConfigSetup(fn=opts.yumconf)
         self.doRepoSetup()
-        self.doSackSetup()
+        # setup archlist
+        self.archlist = []
+        if opts.arch == 'i386':
+            self.archlist = ['athlon', 'i686', 'i586', 'i486', 'i386', 'noarch']
+        if opts.arch == 'x86_64':
+            self.archlist = ['x86_64', 'athlon', 'i686', 'i586', 'i486', 'i386', 'noarch']
+        if opts.arch == 'ppc':
+            self.archlist = ['ppc64', 'ppc', 'noarch']
+        print self.archlist #debug
+        self.doSackSetup(archlist=self.archlist)
         self.logger = yum.logging.getLogger("yum.verbose.fist")
         self.opts = opts
         self.pkglist = pkglist
@@ -36,7 +45,7 @@ class Gather(yum.YumBase):
 
 
         if not self.opts.quiet:
-            self.logger.info('Checking deps of %s' % po.name)
+            self.logger.info('Checking deps of %s.%s' % (po.name, po.arch))
 
         reqs = po.requires;
         reqs.sort()
@@ -62,7 +71,8 @@ class Gather(yum.YumBase):
         final_pkgobjs = [] # The final list of package objects
 
         for pkg in self.pkglist: # cycle through our package list and get repo matches
-            unprocessed_pkgs.extend(self.pkgSack.searchNevra(name=pkg)) 
+            for arch in self.archlist:
+                unprocessed_pkgs.extend(self.pkgSack.searchNevra(name=pkg, arch=arch)) 
 
         if len(unprocessed_pkgs) == 0:
             raise yum.Errors.MiscError, 'No packages found to download.'
@@ -159,6 +169,8 @@ if __name__ == '__main__':
           help='comps file to use')
         parser.add_option("--yumconf", default="yum.conf", dest="yumconf",
           help='yum config file to use')
+        parser.add_option("--arch", default="i386", dest="arch",
+          help='Base arch to use')
         parser.add_option("-q", "--quiet", default=False, action="store_true",
           help="Output as little as possible")
 
