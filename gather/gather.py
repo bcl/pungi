@@ -71,8 +71,11 @@ class Gather(yum.YumBase):
         final_pkgobjs = [] # The final list of package objects
 
         for pkg in self.pkglist: # cycle through our package list and get repo matches
-            for arch in self.archlist:
-                unprocessed_pkgs.extend(self.pkgSack.searchNevra(name=pkg, arch=arch)) 
+            unprocessed_pkgs.extend(self.pkgSack.searchNevra(name=pkg)) 
+
+        if not self.opts.quiet:
+            for pkg in unprocessed_pkgs:
+                self.logger.info('Found %s.%s' % (pkg.name, pkg.arch))
 
         if len(unprocessed_pkgs) == 0:
             raise yum.Errors.MiscError, 'No packages found to download.'
@@ -80,7 +83,8 @@ class Gather(yum.YumBase):
 
         while len(unprocessed_pkgs) > 0: # Our fun loop
             for pkg in unprocessed_pkgs:
-                final_pkgobjs.append(pkg) # Add the pkg to our final list
+                if not pkg in unprocessed_pkgs and not pkg in final_pkgobjs:
+                    final_pkgobjs.append(pkg) # Add the pkg to our final list
                 deplist = self.findDeps(pkg) # Get the deps of our package
                 unprocessed_pkgs.remove(pkg) # Clear the package out of our todo list.
 
@@ -98,7 +102,7 @@ class Gather(yum.YumBase):
         if not self.opts.quiet:
             downloads = []
             for pkg in self.polist:
-                downloads.append(pkg.name)
+                downloads.append(pkg.name + pkg.arch)
             self.logger.info("Download list: %s" % downloads)
 
         pkgdir = os.path.join(self.opts.destdir, 'tree') # Package location within destdir, name subject to change/config
