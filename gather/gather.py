@@ -97,7 +97,7 @@ class Gather(yum.YumBase):
                 downloads.append('%s.%s' % (pkg.name, pkg.arch))
             self.logger.info("Download list: %s" % downloads)
 
-        pkgdir = os.path.join(self.opts.destdir, 'tree') # Package location within destdir, name subject to change/config
+        pkgdir = os.path.join(self.opts.destdir, self.opts.arch, 'tree') # Package location within destdir, name subject to change/config
         if not os.path.exists(pkgdir):
             os.makedirs(pkgdir)
 
