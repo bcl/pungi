@@ -58,32 +58,34 @@ class Gather(yum.YumBase):
            Returns a list of package objects"""
 
 
-        unprocessed_pkgs = [] # list of packages yet to depsolve
-        final_pkgobjs = [] # The final list of package objects
+        unprocessed_pkgs = {} # list of packages yet to depsolve ## Use dicts for speed
+        final_pkgobjs = {} # The final list of package objects
 
         for pkg in self.pkglist: # cycle through our package list and get repo matches
-            unprocessed_pkgs.extend(self.pkgSack.searchNevra(name=pkg)) 
+            matches = self.pkgSack.searchNevra(name=pkg)
+            for match in matches:
+                unprocessed_pkgs[match] = None
 
         if not self.opts.quiet:
-            for pkg in unprocessed_pkgs:
+            for pkg in unprocessed_pkgs.keys():
                 self.logger.info('Found %s.%s' % (pkg.name, pkg.arch))
 
         if len(unprocessed_pkgs) == 0:
             raise yum.Errors.MiscError, 'No packages found to download.'
 
         while len(unprocessed_pkgs) > 0: # Our fun loop
-            for pkg in unprocessed_pkgs:
-                if not pkg in final_pkgobjs:
-                    final_pkgobjs.append(pkg) # Add the pkg to our final list
+            for pkg in unprocessed_pkgs.keys():
+                if not final_pkgobjs.has_key(pkg):
+                    final_pkgobjs[pkg] = None # Add the pkg to our final list
                 deplist = self.getPackageDeps(pkg) # Get the deps of our package
 
                 for dep in deplist: # Cycle through deps, if we don't already have it, add it.
-                    if not dep in unprocessed_pkgs and not dep in final_pkgobjs:
-                        unprocessed_pkgs.append(dep)
+                    if not unprocessed_pkgs.has_key(dep) and not final_pkgobjs.has_key(dep):
+                        unprocessed_pkgs[dep] = None
 
-                unprocessed_pkgs.remove(pkg) # Clear the package out of our todo list.
+                del unprocessed_pkgs[pkg] # Clear the package out of our todo list.
 
-        self.polist = final_pkgobjs
+        self.polist = final_pkgobjs.keys()
 
     def downloadPackages(self):
         """Cycle through the list of package objects and
