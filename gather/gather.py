@@ -29,7 +29,7 @@ class Gather(yum.YumBase):
         self.pkglist = pkglist
         self.polist = []
 
-    def findDeps(self, po):
+    def getPackageDeps(self, po):
         """Return the dependencies for a given package, as well
            possible solutions for those dependencies.
            
@@ -40,7 +40,6 @@ class Gather(yum.YumBase):
             self.logger.info('Checking deps of %s.%s' % (po.name, po.arch))
 
         reqs = po.requires;
-        reqs.sort()
         pkgresults = []
 
         for req in reqs:
@@ -48,7 +47,7 @@ class Gather(yum.YumBase):
             if r.startswith('rpmlib('):
                 continue
 
-            pkgresults.extend(list(self.whatProvides(r, f, v)))
+            pkgresults.extend(self.whatProvides(r, f, v))
 
         return pkgresults
 
@@ -76,7 +75,7 @@ class Gather(yum.YumBase):
             for pkg in unprocessed_pkgs:
                 if not pkg in final_pkgobjs:
                     final_pkgobjs.append(pkg) # Add the pkg to our final list
-                deplist = self.findDeps(pkg) # Get the deps of our package
+                deplist = self.getPackageDeps(pkg) # Get the deps of our package
 
                 for dep in deplist: # Cycle through deps, if we don't already have it, add it.
                     if not dep in unprocessed_pkgs and not dep in final_pkgobjs:
@@ -95,6 +94,7 @@ class Gather(yum.YumBase):
             downloads = []
             for pkg in self.polist:
                 downloads.append('%s.%s' % (pkg.name, pkg.arch))
+                downloads.sort()
             self.logger.info("Download list: %s" % downloads)
 
         pkgdir = os.path.join(self.opts.destdir, self.opts.arch, 'tree') # Package location within destdir, name subject to change/config
