@@ -40,16 +40,19 @@ class Gather(yum.YumBase):
             self.logger.info('Checking deps of %s.%s' % (po.name, po.arch))
 
         reqs = po.requires;
-        pkgresults = []
+        pkgresults = {}
 
         for req in reqs:
             (r,f,v) = req
             if r.startswith('rpmlib('):
                 continue
 
-            pkgresults.extend(self.whatProvides(r, f, v))
+            provides = self.whatProvides(r, f, v)
+            for provide in provides:
+                if not pkgresults.has_key(provide):
+                    pkgresults[provide] = None
 
-        return pkgresults
+        return pkgresults.keys()
 
     def getPackageObjects(self):
         """Cycle through the list of packages, get package object
