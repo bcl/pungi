@@ -22,16 +22,8 @@ class Gather(yum.YumBase):
         yum.YumBase.__init__(self)
         self.doConfigSetup(fn=opts.yumconf)
         self.doRepoSetup()
-        # setup archlist
-        self.archlist = []
-        if opts.arch == 'i386':
-            self.archlist = ['athlon', 'i686', 'i586', 'i486', 'i386', 'noarch']
-        if opts.arch == 'x86_64':
-            self.archlist = ['x86_64', 'athlon', 'i686', 'i586', 'i486', 'i386', 'noarch']
-        if opts.arch == 'ppc':
-            self.archlist = ['ppc64', 'ppc', 'noarch']
-        print self.archlist #debug
-        self.doSackSetup(archlist=self.archlist)
+        arches = yum.rpmUtils.arch.getArchList(opts.arch)
+        self.doSackSetup(arches)
         self.logger = yum.logging.getLogger("yum.verbose.fist")
         self.opts = opts
         self.pkglist = pkglist
@@ -80,17 +72,17 @@ class Gather(yum.YumBase):
         if len(unprocessed_pkgs) == 0:
             raise yum.Errors.MiscError, 'No packages found to download.'
 
-
         while len(unprocessed_pkgs) > 0: # Our fun loop
             for pkg in unprocessed_pkgs:
-                if not pkg in unprocessed_pkgs and not pkg in final_pkgobjs:
+                if not pkg in final_pkgobjs:
                     final_pkgobjs.append(pkg) # Add the pkg to our final list
                 deplist = self.findDeps(pkg) # Get the deps of our package
-                unprocessed_pkgs.remove(pkg) # Clear the package out of our todo list.
 
                 for dep in deplist: # Cycle through deps, if we don't already have it, add it.
                     if not dep in unprocessed_pkgs and not dep in final_pkgobjs:
                         unprocessed_pkgs.append(dep)
+
+                unprocessed_pkgs.remove(pkg) # Clear the package out of our todo list.
 
         self.polist = final_pkgobjs
 
@@ -102,7 +94,7 @@ class Gather(yum.YumBase):
         if not self.opts.quiet:
             downloads = []
             for pkg in self.polist:
-                downloads.append(pkg.name + pkg.arch)
+                downloads.append('%s.%s' % (pkg.name, pkg.arch))
             self.logger.info("Download list: %s" % downloads)
 
         pkgdir = os.path.join(self.opts.destdir, 'tree') # Package location within destdir, name subject to change/config
@@ -136,13 +128,12 @@ def main():
     (opts, args) = get_arguments()
 
     pkglist = get_packagelist(opts.comps)
-    print pkglist
 
     if not os.path.exists(opts.destdir):
         try:
             os.makedirs(opts.destdir)
         except OSError, e:
-            print >> sys.stderr, "Error: Cannot destination cache dir %s" % opts.destdir
+            print >> sys.stderr, "Error: Cannot destination dir %s" % opts.destdir
             sys.exit(1)
 
     if not os.path.exists(opts.cachedir):
