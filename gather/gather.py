@@ -21,6 +21,7 @@ class Gather(yum.YumBase):
         # Create a yum object to use
         yum.YumBase.__init__(self)
         self.doConfigSetup(fn=opts.yumconf)
+        self.cleanMetadata() # clean metadata that might be in the cache from previous runs
         self.doRepoSetup()
         arches = yum.rpmUtils.arch.getArchList(opts.arch)
         self.doSackSetup(arches)
