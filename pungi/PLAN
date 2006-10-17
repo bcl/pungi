@@ -1,0 +1,16 @@
+This is the "pungi" module.  This module is used to run anaconda tools on
+downloaded packages.  Options for anaconda tools will come from the
+main interface.
+
+ROADMAP
+
+a) Create repodata for the package sets, using comps
+b) Run buildinstall 
+c) Run pkgorder
+d) Run splittree
+
+CONSIDERATIONS
+
+QUESTIONS
+
+do we make isos here or somewhere else?
