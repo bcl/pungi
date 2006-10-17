@@ -25,8 +25,9 @@ class Gather(yum.YumBase):
         self.cleanSqlite() # clean metadata that might be in the cache from previous runs
         self.doRepoSetup()
         if opts.arch == 'i386':
-            opts.arch = 'i686' # ensures we get the right archlist
-        arches = yum.rpmUtils.arch.getArchList(opts.arch)
+            arches = yum.rpmUtils.arch.getArchList('i686')
+        else:
+            arches = yum.rpmUtils.arch.getArchList(opts.arch)
         self.doSackSetup(arches)
         self.logger = yum.logging.getLogger("yum.verbose.fist")
         self.opts = opts
