@@ -29,7 +29,7 @@ class Gather(yum.YumBase):
         else:
             arches = yum.rpmUtils.arch.getArchList(opts.arch)
         self.doSackSetup(arches)
-        self.logger = yum.logging.getLogger("yum.verbose.fist")
+        self.logger = yum.logging.getLogger("yum.verbose.pungi")
         self.opts = opts
         self.pkglist = pkglist
         self.polist = []
