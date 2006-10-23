@@ -1,0 +1,27 @@
+[main]
+cachedir=/tmp/fist
+#keepcache=0
+#debuglevel=2
+logfile=/var/log/yum.log
+pkgpolicy=newest
+distroverpkg=redhat-release
+tolerant=1
+exactarch=1
+obsoletes=1
+gpgcheck=1
+reposdir=./
+#plugins=1
+metadata_expire=1800
+#exclude=\*.i?86
+
+# PUT YOUR REPOS HERE OR IN separate files named file.repo
+# in /etc/yum.repos.d
+[development]
+name=Fedora Core - Development
+baseurl=http://download.fedora.devel.redhat.com/pub/fedora/linux/core/development/x86_64/os/
+        http://download.fedora.redhat.com/pub/fedora/linux/core/development/x86_64/os/
+#baseurl=http://download.fedora.devel.redhat.com/pub/fedora/linux/core/development/$basearch/os/
+#mirrorlist=http://mirrors.fedoraproject.org/mirrorlist?repo=rawhide&arch=$basearch
+enabled=1
+gpgcheck=0
+

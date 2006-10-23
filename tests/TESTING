@@ -1,0 +1,7 @@
+This dir holds files useful for testing functionality.
+
+comps.xml - A fairly minimal comps that includes enough to create an
+            installable tree and a bootable system.
+
+yum.conf.[i386,x86_64] - Yum configs that point to arch specific location.
+                         (needed as $basearch is resolved from the host OS)

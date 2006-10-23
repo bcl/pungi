@@ -4,13 +4,26 @@ main interface.
 
 ROADMAP
 
-a) Create repodata for the package sets, using comps
-b) Run buildinstall 
-c) Run pkgorder
-d) Run splittree
+a) Run buildinstall 
+  Pretty straight forward.  Needs to be ran on arch specific chroots so
+  mock may be involved, if this entire process isn't.  THere is some talk
+  of making stage2 type stuff a package itself, so that we don't have to
+  create it at compose time.  This will cut down the necessary packages
+  for building a tree and time it would take.
+
+b) Run pkgorder
+  Again, pretty straight forward
+
+c) Run splittree
+  Gets more tricky here, have to know disk sizes before hand.  Should noop if
+  isos are not requested.
+
+d) Create Isos
+  There are some arch specific calls here, but doesn't have to be ran ON the
+  different arches.  Should be able to opt out of this task.
 
 CONSIDERATIONS
 
-QUESTIONS
+How much of the tree layout do we hardcode, and how much do we allow to be
+configurable?
 
-do we make isos here or somewhere else?

@@ -15,35 +15,16 @@ We'll need to do five basic tasks:
   5) Sanity check the tree
 
 Gathering Packages
-  Using yumdownloader / reposync like code in combination with a comps file 
-  makes sense here.  We can define what we want at the top level and let yum 
-  depsolve the rest.  The tricky bits here are figuring out multilib stuff and
-  the uglyness that is noarch packages with ExcludeArch/ExclusiveArch crack.
-  We could skip over this by assuming that repos will exist that are pre-
-  populated with multilib/noarch safe packages and we just pull whats there.
-  There is some code in the Extras push scripts.  See also yum/comps.py for 
-  dealing with comps.
+  See gather/PLAN
 
 Running Anaconda Tools
-  These should be ran on the release it is releasing.  This means using mock
-  in some way, either make mock a req of the tool and the tool calls mock
-  or allowing the tool to run in userspace but suggest the tool get ran in
-  a mock call.  Some cooperation will need to happen with the anaconda folks
-  to make sure we're moving in the same direction they are wrt the tools we
-  would use.
+  See pungi/PLAN
 
 Split Tree Into CD Size Chunks
-  This will be a fun task.  Really, I mean it.  Anaconda folks have made some
-  noise about making buildinstall take a flag to make CDs and do all the
-  splitting itself.  That would be handy, but it may not happen by the time
-  we need to do this.  Perhaps work on this part last, focus on the
-  installable tree stuff.
+  See pungi/PLAN
 
 Create Isos of the Chunks
-  This is a pretty straightforward call to mkisofs.  There are some fun things
-  to consider when making isos for ppc(64) and possibly other arches that may
-  come to play.  Code here will need to be somewhat modular to allow for
-  different mkisofs calls per arch.
+  See pungi/PLAN
 
 Sanity Check the Tree
   This could/should be an ever growing set of post-tree build sanity checks.
@@ -53,6 +34,12 @@ Organization
   Each task set will be its own module.  Work on each module can be done
   independantly and hopefully once functional it should be easy to tie them
   all together (one ring to bring them all, and in the darkness bind them)
+
+  gather/ is the module for repoclosing and downloading a set of packages.
+  pungi/ is the module for running anaconda tools against a set of packages
+         and creating isos
+  tests/ This directory holds some files that are useful for testing
+         functionality of the code.
 
 Making it all happen
   There really is space for two tools, or something inbetween.  There is the
