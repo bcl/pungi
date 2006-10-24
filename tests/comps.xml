@@ -22,8 +22,8 @@
       <packagereq type="optional">selinux-policy-targeted</packagereq>
       <packagereq type="optional">xen</packagereq>
       <packagereq type="optional">xorg-x11-drivers</packagereq>
-      <packagereq type="default">xorg-x11-fonts-base</packagereq>
-      <packagereq type="default">xorg-x11-fonts-ISO8859-1-75dpi</packagereq>
+      <packagereq type="optional">xorg-x11-fonts-base</packagereq>
+      <packagereq type="optional">xorg-x11-fonts-ISO8859-1-75dpi</packagereq>
       <packagereq type="mandatory">yum</packagereq>
     </packagelist>
   </group>
