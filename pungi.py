@@ -42,8 +42,8 @@ def main():
 # This is used for testing the module
     (opts, args) = get_arguments()
 
-    if not os.path.exists(opts.topdir):
-        print >> sys.stderr, "Error: Cannot read top dir %s" % opts.topdir
+    if not os.path.exists(opts.destdir):
+        print >> sys.stderr, "Error: Cannot read top dir %s" % opts.destdir
         sys.exit(1)
 
     myPungi = Pungi(opts)
@@ -61,7 +61,7 @@ if __name__ == '__main__':
     # hack job for now, I'm sure this could be better for our uses
         usage = "usage: %s [options]" % sys.argv[0]
         parser = OptionParser(usage=usage)
-        parser.add_option("--topdir", default=".", dest="topdir",
+        parser.add_option("--destdir", default=".", dest="destdir",
           help='Directory that contains the package set')
         parser.add_option("--comps", default="comps.xml", dest="comps",
           help='comps file to use')
