@@ -14,6 +14,7 @@
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 import os
+import shutil
 
 class Pungi:
     def __init__(self, opts):
@@ -21,7 +22,7 @@ class Pungi:
         self.prodpath = 'Fedora' # Probably should be defined elsewhere
         self.basedir = os.path.join(self.opts.destdir, self.opts.arch, self.prodpath, 'base') # Probably should be defined elsewhere
         os.mkdir(self.basedir)
-        os.link(self.opts.comps, os.path.join(self.basedir, 'comps.xml'))
+        os.copy(self.opts.comps, os.path.join(self.basedir, 'comps.xml'))
 
 #    def doCreateSplitrepo(self):
 #        for disc in seq 
