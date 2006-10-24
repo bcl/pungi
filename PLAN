@@ -47,3 +47,18 @@ Making it all happen
   second tool takes packages from said repos and makes the install and CD set.
   Working on the second tool first makes sense, as it can be used today with
   existing Core and Extras repos.  Later, tool #1 can grow from #2.
+
+Contributing
+  Currently development discussion happens at fedora-buildsys-list@redhat.com.
+  The source is held via mercurial:
+  anon - http://linux.duke.edu/projects/pungi
+  auth - ssh://login.linux.duke.edu//home/groups/pungi/hg/pungi
+
+  To run pungi, currently you need root level access.  This is because it has
+  to create loopback devices for disk images.
+  
+    sudo ./__init__.py --comps tests/comps.xml \
+         --yumconf tests/yum.conf.x86_64 --destdir /srv/pungi \
+         --cachedir /srv/pungi/cache --arch x86_64
+
+  Of course, fill in some of your own values.

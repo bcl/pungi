@@ -19,7 +19,7 @@ class Pungi:
     def __init__(self, opts):
         self.opts = opts
         self.prodpath = 'Fedora' # Probably should be defined elsewhere
-        self.basedir = os.path.join(self.opts.topdir, self.opts.arch, self.prodpath, 'base') # Probably should be defined elsewhere
+        self.basedir = os.path.join(self.opts.destdir, self.opts.arch, self.prodpath, 'base') # Probably should be defined elsewhere
         os.mkdir(self.basedir)
         os.link(self.opts.comps, os.path.join(self.basedir, 'comps.xml'))
 
