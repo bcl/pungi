@@ -15,16 +15,16 @@ We'll need to do five basic tasks:
   5) Sanity check the tree
 
 Gathering Packages
-  See gather/PLAN
+  See PLAN.gather
 
 Running Anaconda Tools
-  See pungi/PLAN
+  See PLAN.pungi
 
 Split Tree Into CD Size Chunks
-  See pungi/PLAN
+  See PLAN.pungi
 
 Create Isos of the Chunks
-  See pungi/PLAN
+  See PLAN.pungi
 
 Sanity Check the Tree
   This could/should be an ever growing set of post-tree build sanity checks.
@@ -35,9 +35,9 @@ Organization
   independantly and hopefully once functional it should be easy to tie them
   all together (one ring to bring them all, and in the darkness bind them)
 
-  gather/ is the module for repoclosing and downloading a set of packages.
-  pungi/ is the module for running anaconda tools against a set of packages
-         and creating isos
+  gather.py is the module for repoclosing and downloading a set of packages.
+  pungi.py  is the module for running anaconda tools against a set of packages
+            and creating isos
   tests/ This directory holds some files that are useful for testing
          functionality of the code.
 
