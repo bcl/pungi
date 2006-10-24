@@ -148,7 +148,7 @@ def main():
 
     if not os.path.exists(opts.cachedir):
         try:
-            os.mkdirs(opts.cachedir)
+            os.makedirs(opts.cachedir)
         except OSError, e:
             print >> sys.stderr, "Error: Cannot create cache dir %s" % opts.destdir
             sys.exit(1)
