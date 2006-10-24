@@ -20,7 +20,8 @@ class Pungi:
     def __init__(self, opts):
         self.opts = opts
         self.prodpath = 'Fedora' # Probably should be defined elsewhere
-        self.basedir = os.path.join(self.opts.destdir, self.opts.arch, self.prodpath, 'base') # Probably should be defined elsewhere
+        self.topdir = os.path.join(self.opts.destdir, self.opts.arch)
+        self.basedir = os.path.join(self.topdir, self.prodpath, 'base') # Probably should be defined elsewhere
         os.mkdir(self.basedir)
         shutil.copy(self.opts.comps, os.path.join(self.basedir, 'comps.xml'))
 
@@ -29,11 +30,11 @@ class Pungi:
 #        os.system('/usr/bin/createrepo -g %s --baseurl=media://%s --split %s' % (self.opts.comps, self.prodpath, 'Fedora-%s' % self.opts.version, os.path.join)
 
     def doBuildinstall(self):
-        args = '--product "Fedora" --version %s --release "%s" --prodpath %s %s' % (self.opts.version, 'Fedora %s' % self.opts.version, self.prodpath, self.opts.topdir)
+        args = '--product "Fedora" --version %s --release "%s" --prodpath %s %s' % (self.opts.version, 'Fedora %s' % self.opts.version, self.prodpath, self.topdir)
         os.system('/usr/lib/anaconda-runtime/buildinstall %s' % args)
 
     def doPackageorder(self):
-        os.system('/usr/lib/anaconda-runtime/pkgorder %s %s %s' % (self.opts.topdir, self.opts.arch, self.prodpath))
+        os.system('/usr/lib/anaconda-runtime/pkgorder %s %s %s' % (self.topdir, self.opts.arch, self.prodpath))
 
 #    def doSplittree(self):
 
