@@ -23,9 +23,6 @@ class Pungi:
         os.mkdir(self.basedir)
         os.link(self.opts.comps, os.path.join(self.basedir, 'comps.xml'))
 
-    def doCreaterepo(self):
-        os.system('/usr/bin/createrepo -g %s %s' % (self.opts.comps, self.prodpath))
-
 #    def doCreateSplitrepo(self):
 #        for disc in seq 
 #        os.system('/usr/bin/createrepo -g %s --baseurl=media://%s --split %s' % (self.opts.comps, self.prodpath, 'Fedora-%s' % self.opts.version, os.path.join)
@@ -48,7 +45,6 @@ def main():
         sys.exit(1)
 
     myPungi = Pungi(opts)
-    myPungi.doCreaterepo()
     myPungi.doBuildinstall()
     myPungi.doPackageorder()
     #myPungi.doSplittree()
