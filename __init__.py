@@ -27,14 +27,14 @@ def main():
         try:
             os.makedirs(opts.destdir)
         except OSError, e:
-            print >> sys.stderr, "Error: Cannot destination dir %s" % opts.destdir
+            print >> sys.stderr, "Error: Cannot create destination dir %s" % opts.destdir
             sys.exit(1)
 
     if not os.path.exists(opts.cachedir):
         try:
             os.makedirs(opts.cachedir)
         except OSError, e:
-            print >> sys.stderr, "Error: Cannot create cache dir %s" % opts.destdir
+            print >> sys.stderr, "Error: Cannot create cache dir %s" % opts.cachedir
             sys.exit(1)
 
     mygather = gather.Gather(opts, pkglist)
