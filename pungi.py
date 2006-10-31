@@ -33,9 +33,12 @@ class Pungi:
         os.system('/usr/lib/anaconda-runtime/buildinstall %s' % args)
 
     def doPackageorder(self):
-        os.system('/usr/lib/anaconda-runtime/pkgorder %s %s %s' % (self.topdir, self.opts.arch, self.prodpath))
+        os.system('/usr/lib/anaconda-runtime/pkgorder %s %s %s > %s' % (self.topdir, self.opts.arch, self.prodpath, os.path.join(self.basedir, 'pkgorder')))
 
-#    def doSplittree(self):
+    def doSplittree(self):
+        args = '--release-string="%s" --arch=%s --total-discs=%s --bin-discs=%s --src-discs=0 --pkgorderfile=%s --distdir=%s --srcdir=%s --productpath=%s' % ('Fedora %s' % self.opts.version, self.opts.arch, self.opts.discs, self.opts.discs, os.path.join(self.basedir, 'pkgorder'), self.topdir, os.path.join(self.opts.destdir, 'source', 'SRPMS'), self.prodpath)
+        print args # DEBUG
+        os.system('/usr/lib/anaconda-runtime/splittree.py %s' % args)
 
 def main():
 # This is used for testing the module
@@ -48,7 +51,7 @@ def main():
     myPungi = Pungi(opts)
     myPungi.doBuildinstall()
     myPungi.doPackageorder()
-    #myPungi.doSplittree()
+    myPungi.doSplittree()
     #myPungi.doCreateSplitrepo()
 
 
@@ -68,8 +71,8 @@ if __name__ == '__main__':
           help='Base arch to use')
         parser.add_option("--version", default="test", dest="version",
           help='Version of the spin')
-        parser.add_option("--disks", default="5", dest="discs",
-          help='Number of disks to spin')
+        parser.add_option("--discs", default="5", dest="discs",
+          help='Number of discs to spin')
         parser.add_option("-q", "--quiet", default=False, action="store_true",
           help="Output as little as possible")
 

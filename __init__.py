@@ -44,6 +44,7 @@ def main():
     mypungi = pungi.Pungi(opts)
     mypungi.doBuildinstall()
     mypungi.doPackageorder()
+    mypungi.doSplittree()
 
 
 if __name__ == '__main__':
@@ -66,8 +67,8 @@ if __name__ == '__main__':
           help='Base arch to use')
         parser.add_option("--version", default="test", dest="version",
           help='Version of the spin')
-        parser.add_option("--disks", default="5", dest="discs",
-          help='Number of disks to spin')
+        parser.add_option("--discs", default="5", dest="discs",
+          help='Number of discs to spin')
         parser.add_option("-q", "--quiet", default=False, action="store_true",
           help="Output as little as possible")
 
