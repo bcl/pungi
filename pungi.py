@@ -24,10 +24,6 @@ class Pungi:
         os.mkdir(self.basedir)
         shutil.copy(self.opts.comps, os.path.join(self.basedir, 'comps.xml'))
 
-#    def doCreateSplitrepo(self):
-#        for disc in seq 
-#        os.system('/usr/bin/createrepo -g %s --baseurl=media://%s --split %s' % (self.opts.comps, self.prodpath, 'Fedora-%s' % self.opts.version, os.path.join)
-
     def doBuildinstall(self):
         args = '--product "Fedora" --version %s --release "%s" --prodpath %s %s' % (self.opts.version, 
                'Fedora %s' % self.opts.version, self.prodpath, self.topdir)
@@ -45,6 +41,11 @@ class Pungi:
         #os.system('/usr/lib/anaconda-runtime/splittree.py %s' % args)
         os.system('./tests/splittree.py %s' % args) # use a patched splittree until patches go upstream
 
+    def doCreateSplitrepo(self):
+        args = '-g %s --baseurl=media://%s --outputdir=%s-disc1 --basedir=%s-disc1 --split %s-disc?' % 
+                (self.opts.comps, self.prodpath, self.topdir, self.topdir, self.topdir) 
+        os.system('/usr/bin/createrepo %s' % args)
+
 def main():
 # This is used for testing the module
     (opts, args) = get_arguments()
@@ -57,7 +58,7 @@ def main():
     myPungi.doBuildinstall()
     myPungi.doPackageorder()
     myPungi.doSplittree()
-    #myPungi.doCreateSplitrepo()
+    myPungi.doCreateSplitrepo()
 
 
 if __name__ == '__main__':
