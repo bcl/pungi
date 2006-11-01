@@ -29,16 +29,21 @@ class Pungi:
 #        os.system('/usr/bin/createrepo -g %s --baseurl=media://%s --split %s' % (self.opts.comps, self.prodpath, 'Fedora-%s' % self.opts.version, os.path.join)
 
     def doBuildinstall(self):
-        args = '--product "Fedora" --version %s --release "%s" --prodpath %s %s' % (self.opts.version, 'Fedora %s' % self.opts.version, self.prodpath, self.topdir)
+        args = '--product "Fedora" --version %s --release "%s" --prodpath %s %s' % (self.opts.version, 
+               'Fedora %s' % self.opts.version, self.prodpath, self.topdir)
         os.system('/usr/lib/anaconda-runtime/buildinstall %s' % args)
 
     def doPackageorder(self):
-        os.system('/usr/lib/anaconda-runtime/pkgorder %s %s %s > %s' % (self.topdir, self.opts.arch, self.prodpath, os.path.join(self.basedir, 'pkgorder')))
+        os.system('/usr/lib/anaconda-runtime/pkgorder %s %s %s > %s' % (self.topdir, self.opts.arch, 
+                  self.prodpath, os.path.join(self.basedir, 'pkgorder')))
 
     def doSplittree(self):
-        args = '--release-string="%s" --arch=%s --total-discs=%s --bin-discs=%s --src-discs=0 --pkgorderfile=%s --distdir=%s --srcdir=%s --productpath=%s' % ('Fedora %s' % self.opts.version, self.opts.arch, self.opts.discs, self.opts.discs, os.path.join(self.basedir, 'pkgorder'), self.topdir, os.path.join(self.opts.destdir, 'source', 'SRPMS'), self.prodpath)
-        print args # DEBUG
-        os.system('/usr/lib/anaconda-runtime/splittree.py %s' % args)
+        args = '--release-string="%s" --arch=%s --total-discs=%s --bin-discs=%s --src-discs=0 --pkgorderfile=%s \
+                --distdir=%s --srcdir=%s --productpath=%s' % ('Fedora %s' % self.opts.version, self.opts.arch, 
+                self.opts.discs, self.opts.discs, os.path.join(self.basedir, 'pkgorder'), self.topdir, 
+                os.path.join(self.opts.destdir, 'source', 'SRPMS'), self.prodpath)
+        #os.system('/usr/lib/anaconda-runtime/splittree.py %s' % args)
+        os.system('./tests/splittree.py %s' % args) # use a patched splittree until patches go upstream
 
 def main():
 # This is used for testing the module
