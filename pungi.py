@@ -42,8 +42,10 @@ class Pungi:
         os.system('./tests/splittree.py %s' % args) # use a patched splittree until patches go upstream
 
     def doCreateSplitrepo(self):
+        discinfo = open('%s-disc1/.discinfo' % self.topdir, 'r').read()
+        mediaid = discinfo[0].rstrip('\n')
         args = '-g %s --baseurl=media://%s --outputdir=%s-disc1 --basedir=%s-disc1 --split %s-disc?' % 
-                (self.opts.comps, self.prodpath, self.topdir, self.topdir, self.topdir) 
+                (self.opts.comps, mediaid, self.topdir, self.topdir, self.topdir) 
         os.system('/usr/bin/createrepo %s' % args)
 
 def main():
