@@ -1,0 +1,7 @@
+* Wed Nov  1 2006 Jesse Keating <jkeating@redhat.com>
+- First changelog entry
+- pungi.py
+    Code up splittree, use our own for now with patches
+    Code up createSplitRepodata
+- Now able to create installable tree and create split CD dirs suitable for 
+  mkisofs
