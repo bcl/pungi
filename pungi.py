@@ -13,6 +13,10 @@
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 import os
+import sys
+#sys.path.append('/usr/lib/anaconda-runtime')
+sys.path.append('./tests') # use our patched splittree for now
+import splittree
 import shutil
 
 class Pungi:
@@ -34,17 +38,26 @@ class Pungi:
                   self.prodpath, os.path.join(self.basedir, 'pkgorder')))
 
     def doSplittree(self):
-        args = '--release-string="%s" --arch=%s --total-discs=%s --bin-discs=%s --src-discs=0 --pkgorderfile=%s \
-                --distdir=%s --srcdir=%s --productpath=%s' % ('Fedora %s' % self.opts.version, self.opts.arch, 
-                self.opts.discs, self.opts.discs, os.path.join(self.basedir, 'pkgorder'), self.topdir, 
-                os.path.join(self.opts.destdir, 'source', 'SRPMS'), self.prodpath)
-        #os.system('/usr/lib/anaconda-runtime/splittree.py %s' % args)
-        os.system('./tests/splittree.py %s' % args) # use a patched splittree until patches go upstream
+        timber = splittree.Timber()
+        timber.arch = self.opts.arch
+        timber.total_discs = self.opts.discs
+        timber.bin_discs = self.opts.discs
+        timber.src_discs = 0
+        timber.release_str = 'Fedora %s' % self.opts.version
+        timber.package_order_file = os.path.join(self.basedir, 'pkgorder')
+        timber.dist_dir = self.topdir
+        timber.src_dir = os.path.join(self.opts.destdir, 'source', 'SRPMS')
+        timber.product_path = self.prodpath
+        #timber.reserve_size =  
+
+        output = timber.main()
+        for line in output:
+            print line
 
     def doCreateSplitrepo(self):
         discinfo = open('%s-disc1/.discinfo' % self.topdir, 'r').read()
         mediaid = discinfo[0].rstrip('\n')
-        args = '-g %s --baseurl=media://%s --outputdir=%s-disc1 --basedir=%s-disc1 --split %s-disc?' % 
+        args = '-g %s --baseurl=media://%s --outputdir=%s-disc1 --basedir=%s-disc1 --split %s-disc?' % \
                 (self.opts.comps, mediaid, self.topdir, self.topdir, self.topdir) 
         os.system('/usr/bin/createrepo %s' % args)
 
