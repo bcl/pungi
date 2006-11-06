@@ -67,7 +67,7 @@ if __name__ == '__main__':
           help='Base arch to use')
         parser.add_option("--version", default="test", dest="version",
           help='Version of the spin')
-        parser.add_option("--discs", default="5", dest="discs",
+        parser.add_option("--discs", default=5, type="int", dest="discs",
           help='Number of discs to spin')
         parser.add_option("-q", "--quiet", default=False, action="store_true",
           help="Output as little as possible")
