@@ -1,0 +1,6 @@
+Create isos out of disc dirs
+Create DVD iso
+Make pungi use the Fedora layout, composedir/topdir/os/<arch>/Fedora, composedir/topdir/<arch>/iso/, composedir/topdir/<arch>/debug/
+Put working items in composedir/work
+Create a logging system, log to composedir/logs/
+Figure out distutils and how to install the thing
