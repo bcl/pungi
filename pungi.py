@@ -63,6 +63,28 @@ class Pungi:
                 (os.path.join(self.topdir, 'repodata', 'comps.xml'), mediaid, self.topdir, self.topdir, self.topdir) 
         os.system('/usr/bin/createrepo %s' % args)
 
+    def doCreateIsos(self):
+        mkisofsargs = '-v -U -J -R -T -V' # common mkisofs flags
+        bootargs = ''
+        isodir = os.path.join(self.opts.destdir, self.opts.version, self.opts.arch, 'iso')
+        os.makedirs(isodir)
+        for disc in range(1, self.opts.discs + 1): # cycle through the CD isos
+            volname = '"%s %s %s Disc %s"' % ('Fedora', self.opts.version, self.opts.arch, disc) # hacky :/
+            isoname = 'Fedora-%s-%s-disc%s.iso' % (self.opts.version, self.opts.arch, disc)
+            if disc == 1: # if this is the first disc, we want to set boot flags
+                if self.opts.arch == 'i386' or self.opts.arch == 'x86_64':
+                    bootargs = '-b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table'
+                elif self.opts.arch == 'ppc':
+                    # Boy, it would be nice if somebody who understood ppc helped out here...
+                    bootargs = ''
+            os.system('mkisofs %s %s %s -o %s/%s %s' % (mkisofsargs,
+                                                        volname,
+                                                        bootargs,
+                                                        isodir,
+                                                        isoname,
+                                                        os.path.join('%s-disc%s' % (self.topdir, disc))))
+            os.system('cd %s; sha1sum %s >> SHA1SUM' % (isodir, isoname))
+
 def main():
 # This is used for testing the module
     (opts, args) = get_arguments()
@@ -76,6 +98,7 @@ def main():
     myPungi.doPackageorder()
     myPungi.doSplittree()
     myPungi.doCreateSplitrepo()
+    myPungi.doCreateIsos()
 
 
 if __name__ == '__main__':

@@ -46,6 +46,7 @@ def main():
     mypungi.doPackageorder()
     mypungi.doSplittree()
     mypungi.doCreateSplitrepo()
+    mypungi.doCreateIsos()
 
 
 if __name__ == '__main__':
