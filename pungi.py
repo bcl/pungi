@@ -23,19 +23,21 @@ class Pungi:
     def __init__(self, opts):
         self.opts = opts
         self.prodpath = 'Fedora' # Probably should be defined elsewhere
-        self.topdir = os.path.join(self.opts.destdir, self.opts.arch)
-        self.basedir = os.path.join(self.topdir, self.prodpath, 'base') # Probably should be defined elsewhere
-        os.mkdir(self.basedir)
-        shutil.copy(self.opts.comps, os.path.join(self.basedir, 'comps.xml'))
+        self.topdir = os.path.join(self.opts.destdir, self.opts.version, self.opts.arch, 'os')
 
     def doBuildinstall(self):
+        # buildinstall looks for a comps file in base/ for now, copy it into place
+        os.makedirs(os.path.join(self.topdir, self.prodpath, 'base'))
+        shutil.copy(self.opts.comps, os.path.join(self.topdir, self.prodpath, 'base', 'comps.xml'))
         args = '--product "Fedora" --version %s --release "%s" --prodpath %s %s' % (self.opts.version, 
                'Fedora %s' % self.opts.version, self.prodpath, self.topdir)
         os.system('/usr/lib/anaconda-runtime/buildinstall %s' % args)
 
     def doPackageorder(self):
-        os.system('/usr/lib/anaconda-runtime/pkgorder %s %s %s > %s' % (self.topdir, self.opts.arch, 
-                  self.prodpath, os.path.join(self.basedir, 'pkgorder')))
+        os.system('/usr/lib/anaconda-runtime/pkgorder %s %s %s > %s' % (self.topdir, 
+                                                                        self.opts.arch, 
+                                                                        self.prodpath, 
+                                                                        os.path.join(self.opts.destdir, 'pkgorder-%s' % self.opts.arch)))
 
     def doSplittree(self):
         timber = splittree.Timber()
@@ -44,9 +46,9 @@ class Pungi:
         timber.bin_discs = self.opts.discs
         timber.src_discs = 0
         timber.release_str = 'Fedora %s' % self.opts.version
-        timber.package_order_file = os.path.join(self.basedir, 'pkgorder')
+        timber.package_order_file = os.path.join(self.opts.destdir, 'pkgorder-%s' % self.opts.arch)
         timber.dist_dir = self.topdir
-        timber.src_dir = os.path.join(self.opts.destdir, 'source', 'SRPMS')
+        timber.src_dir = os.path.join(self.opts.destdir, self.opts.version, 'source', 'SRPMS')
         timber.product_path = self.prodpath
         #timber.reserve_size =  
 
@@ -65,8 +67,8 @@ def main():
 # This is used for testing the module
     (opts, args) = get_arguments()
 
-    if not os.path.exists(opts.destdir):
-        print >> sys.stderr, "Error: Cannot read top dir %s" % opts.destdir
+    if not os.path.exists(os.path.join(opts.destdir, opts.version, 'os')):
+        print >> sys.stderr, "Error: Cannot read top dir %s" % os.path.join(opts.destdir, opts.version, 'os')
         sys.exit(1)
 
     myPungi = Pungi(opts)

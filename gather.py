@@ -106,7 +106,7 @@ class Gather(yum.YumBase):
                 downloads.sort()
             self.logger.info("Download list: %s" % downloads)
 
-        pkgdir = os.path.join(self.opts.destdir, self.opts.arch, 'Fedora') # Package location within destdir, name subject to change/config
+        pkgdir = os.path.join(self.opts.destdir, self.opts.version, self.opts.arch, 'os', 'Fedora') # Package location within destdir, name subject to change/config
         if not os.path.exists(pkgdir):
             os.makedirs(pkgdir)
 
