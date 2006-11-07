@@ -57,10 +57,10 @@ class Pungi:
             print line
 
     def doCreateSplitrepo(self):
-        discinfo = open('%s-disc1/.discinfo' % self.topdir, 'r').read()
+        discinfo = open('%s-disc1/.discinfo' % self.topdir, 'r').readlines()
         mediaid = discinfo[0].rstrip('\n')
         args = '-g %s --baseurl=media://%s --outputdir=%s-disc1 --basedir=%s-disc1 --split %s-disc?' % \
-                (self.opts.comps, mediaid, self.topdir, self.topdir, self.topdir) 
+                (os.path.join(self.topdir, 'repodata', 'comps.xml'), mediaid, self.topdir, self.topdir, self.topdir) 
         os.system('/usr/bin/createrepo %s' % args)
 
 def main():
