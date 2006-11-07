@@ -1,6 +1,9 @@
 * Mon Nov  6 2006 Jesse Keating <jkeating@redhat.com>
 - pungi.py
     use splittree.py as a module rather than a script
+    use same layout as current fedora trees
+- gather.py
+    use same layout as current fedora trees
 
 * Wed Nov  1 2006 Jesse Keating <jkeating@redhat.com>
 - First changelog entry
