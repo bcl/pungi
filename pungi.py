@@ -77,6 +77,9 @@ class Pungi:
                 elif self.opts.arch == 'ppc':
                     # Boy, it would be nice if somebody who understood ppc helped out here...
                     bootargs = ''
+            else:
+                bootargs = '' # clear out any existing bootargs
+
             os.system('mkisofs %s %s %s -o %s/%s %s' % (mkisofsargs,
                                                         volname,
                                                         bootargs,
@@ -84,6 +87,31 @@ class Pungi:
                                                         isoname,
                                                         os.path.join('%s-disc%s' % (self.topdir, disc))))
             os.system('cd %s; sha1sum %s >> SHA1SUM' % (isodir, isoname))
+
+        if self.opts.discs > 1: # We've asked for more than one disc, make a DVD image
+            # move the main repodata out of the way to use the split repodata
+            shutil.move(os.path.join(self.topdir, 'repodata'), os.path.join(self.opts.destdir, 'repodata-%s' % self.opts.arch))
+            os.symlink('%s-disc1/repodata' % self.topdir, os.path.join(self.topdir, 'repodata'))
+
+            volname = '"%s %s %s DVD"' % ('Fedora', self.opts.version, self.opts.arch)
+            isoname = 'Fedora-%s-%s-DVD.iso' % (self.opts.version, self.opts.arch)
+            if self.opts.arch == 'i386' or self.opts.arch == 'x86_64':
+                bootargs = '-b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table'
+            elif self.opts.arch == 'ppc':
+                # Boy, it would be nice if somebody who understood ppc helped out here...
+                bootargs = ''
+            
+            os.system('mkisofs %s %s %s -o %s/%s %s' % (mkisofsargs,
+                                                        volname,
+                                                        bootargs,
+                                                        isodir,
+                                                        isoname,
+                                                        os.path.join('%s-disc1' % self.topdir)))
+            os.system('cd %s; sha1sum %s >> SHA1SUM' % (isodir, isoname))
+
+            os.unlink(os.path.join(self.topdir, 'repodata')) # remove our temp symlink and move the orig repodata back
+            shutil.move(os.path.join(self.opts.destdir, 'repodata-%s' % self.opts.arch), os.path.join(self.topdir, 'repodata'))
+
 
 def main():
 # This is used for testing the module
