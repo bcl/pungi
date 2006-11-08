@@ -6,4 +6,5 @@ include PLAN.*
 include README
 include TESTING
 include ToDo
+include pungi.spec
 include config/*
