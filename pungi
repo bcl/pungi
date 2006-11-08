@@ -13,8 +13,8 @@
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 import os
-import gather
-import pungi
+import pypungi.gather
+import pypungi.pungi
 import yum
 
 def main():
@@ -37,11 +37,11 @@ def main():
             print >> sys.stderr, "Error: Cannot create cache dir %s" % opts.cachedir
             sys.exit(1)
 
-    mygather = gather.Gather(opts, pkglist)
+    mygather = pypungi.gather.Gather(opts, pkglist)
     mygather.getPackageObjects()
     mygather.downloadPackages()
 
-    mypungi = pungi.Pungi(opts)
+    mypungi = pypungi.pungi.Pungi(opts)
     mypungi.doBuildinstall()
     mypungi.doPackageorder()
     mypungi.doSplittree()

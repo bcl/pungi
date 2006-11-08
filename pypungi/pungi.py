@@ -14,8 +14,7 @@
 
 import os
 import sys
-#sys.path.append('/usr/lib/anaconda-runtime')
-sys.path.append('./tests') # use our patched splittree for now
+#sys.path.append('/usr/lib/anaconda-runtime') # use our patched splittree for now
 import splittree
 import shutil
 
