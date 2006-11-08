@@ -35,11 +35,13 @@ Organization
   independantly and hopefully once functional it should be easy to tie them
   all together (one ring to bring them all, and in the darkness bind them)
 
+  pypungi/  is the python package that holds our modules
   gather.py is the module for repoclosing and downloading a set of packages.
   pungi.py  is the module for running anaconda tools against a set of packages
             and creating isos
-  tests/ This directory holds some files that are useful for testing
-         functionality of the code.
+  config/   This directory holds config files that are useful for testing
+            functionality of the code.
+  pungi     is the python script that makes use of the above
 
 Making it all happen
   There really is space for two tools, or something inbetween.  There is the
@@ -54,11 +56,17 @@ Contributing
   anon - http://linux.duke.edu/projects/pungi
   auth - ssh://login.linux.duke.edu//home/groups/pungi/hg/pungi
 
+Testing
+  First you must have anaconda-runtime plus its deps installed.
+
   To run pungi, currently you need root level access.  This is because it has
   to create loopback devices for disk images.
+
+    sudo python setup.py install
   
-    sudo ./__init__.py --comps tests/comps.xml \
-         --yumconf tests/yum.conf.x86_64 --destdir /srv/pungi \
-         --cachedir /srv/pungi/cache --arch x86_64
+    sudo pungi --comps /etc/pungi/comps.xml \
+         --yumconf /etc/pungi/yum.conf.x86_64 --destdir /srv/pungi \
+         --cachedir /srv/pungi/cache --arch x86_64 --release 6.89 \
+         --discs 1
 
   Of course, fill in some of your own values.
