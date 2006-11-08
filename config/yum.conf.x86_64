@@ -18,10 +18,8 @@ metadata_expire=1800
 # in /etc/yum.repos.d
 [development]
 name=Fedora Core - Development
-baseurl=http://download.fedora.devel.redhat.com/pub/fedora/linux/core/development/x86_64/os/
-#        http://download.fedora.redhat.com/pub/fedora/linux/core/development/x86_64/os/
-#baseurl=http://download.fedora.devel.redhat.com/pub/fedora/linux/core/development/$basearch/os/
-#mirrorlist=http://mirrors.fedoraproject.org/mirrorlist?repo=rawhide&arch=$basearch
+#baseurl=http://download.fedora.redhat.com/pub/fedora/linux/core/development/x86_64/os/
+mirrorlist=http://mirrors.fedoraproject.org/mirrorlist?repo=rawhide&arch=x86_64
 enabled=1
 gpgcheck=0
 
