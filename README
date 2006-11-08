@@ -69,4 +69,11 @@ Testing
          --cachedir /srv/pungi/cache --arch x86_64 --release 6.89 \
          --discs 1
 
+  Or to test it from just the hg clone:
+
+    sudo ./pungi --comps config/comps.xml \
+         --yumconf config/yum.conf.x86_64 --destdir /srv/pungi \
+         --cachedir /srv/pungi/cache --arch x86_64 --release 6.89 \
+         --discs 1
+
   Of course, fill in some of your own values.
