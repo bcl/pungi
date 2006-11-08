@@ -63,6 +63,7 @@ class Pungi:
         os.system('/usr/bin/createrepo %s' % args)
 
     def doCreateIsos(self):
+        discinfofile = os.path.join(self.topdir, '.discinfo') # we use this a fair amount
         mkisofsargs = '-v -U -J -R -T -V' # common mkisofs flags
         bootargs = ''
         isodir = os.path.join(self.opts.destdir, self.opts.version, self.opts.arch, 'iso')
@@ -88,6 +89,13 @@ class Pungi:
             os.system('cd %s; sha1sum %s >> SHA1SUM' % (isodir, isoname))
 
         if self.opts.discs > 1: # We've asked for more than one disc, make a DVD image
+            # backup the main .discinfo to use a split one.  This is an ugly hack :/
+            content = open(discinfofile, 'r').readlines()
+            shutil.move(discinfofile, os.path.join(self.opts.destdir, '.discinfo-%s' % self.opts.arch))
+            content[content.index('ALL\n')] = ','.join([str(x) for x in range(1, self.opts.discs + 1)]) + '\n'
+            open(discinfofile, 'w').writelines(content)
+            
+
             # move the main repodata out of the way to use the split repodata
             shutil.move(os.path.join(self.topdir, 'repodata'), os.path.join(self.opts.destdir, 'repodata-%s' % self.opts.arch))
             os.symlink('%s-disc1/repodata' % self.topdir, os.path.join(self.topdir, 'repodata'))
@@ -107,6 +115,8 @@ class Pungi:
                                                         isoname,
                                                         os.path.join('%s-disc1' % self.topdir)))
             os.system('cd %s; sha1sum %s >> SHA1SUM' % (isodir, isoname))
+
+            shutil.move(os.path.join(self.opts.destdir, '.discinfo-%s' % self.opts.arch), discinfofile)
 
             os.unlink(os.path.join(self.topdir, 'repodata')) # remove our temp symlink and move the orig repodata back
             shutil.move(os.path.join(self.opts.destdir, 'repodata-%s' % self.opts.arch), os.path.join(self.topdir, 'repodata'))
