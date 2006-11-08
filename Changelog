@@ -1,3 +1,12 @@
+* Tue Nov  7 2006 Jesse Keating <jkeating@redhat.com>
+- pungi.py
+    Turn on split repo creation
+    Add iso creation code
+    Add DVD creation code
+- __init.py__
+    Turn on split repo creation
+    Turn on iso creation
+
 * Mon Nov  6 2006 Jesse Keating <jkeating@redhat.com>
 - pungi.py
     use splittree.py as a module rather than a script
