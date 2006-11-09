@@ -40,7 +40,7 @@ rm -rf $RPM_BUILD_ROOT
 %doc Authors Changelog COPYING GPL PLAN.gather PLAN.pungi README ToDo
 %config(noreplace) %{_sysconfdir}/pungi/*
 # For noarch packages: sitelib
-%{python_sitelib}/pungi/*
+%{python_sitelib}/pypungi/*
 %{_bindir}/pungi
 
 
