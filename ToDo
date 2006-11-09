@@ -1,3 +1,6 @@
+Drop release notes files in the tree
 Make pungi use the Fedora layout, composedir/topdir/os/<arch>/Fedora, composedir/topdir/<arch>/iso/, composedir/topdir/<arch>/debug/
+  Get debuginfo packages?
+  Get srpm packages?
 Put working items in composedir/work
 Create a logging system, log to composedir/logs/
