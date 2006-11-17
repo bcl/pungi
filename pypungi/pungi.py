@@ -19,35 +19,36 @@ import splittree
 import shutil
 
 class Pungi:
-    def __init__(self, opts):
-        self.opts = opts
+    def __init__(self, config):
+        self.config = config
         self.prodpath = 'Fedora' # Probably should be defined elsewhere
-        self.topdir = os.path.join(self.opts.destdir, self.opts.version, self.opts.arch, 'os')
+        self.topdir = os.path.join(self.config.get('default', 'destdir'), 
+                                   self.config.get('default', 'version'), 
+                                   self.config.get('default', 'arch'), 
+                                   'os')
 
     def doBuildinstall(self):
         # buildinstall looks for a comps file in base/ for now, copy it into place
         os.makedirs(os.path.join(self.topdir, self.prodpath, 'base'))
-        shutil.copy(self.opts.comps, os.path.join(self.topdir, self.prodpath, 'base', 'comps.xml'))
-        args = '--product "Fedora" --version %s --release "%s" --prodpath %s %s' % (self.opts.version, 
-               'Fedora %s' % self.opts.version, self.prodpath, self.topdir)
+        shutil.copy(self.config.get('default', 'comps'), os.path.join(self.topdir, self.prodpath, 'base', 'comps.xml'))
+        args = '--product "Fedora" --version %s --release "%s" --prodpath %s %s' % (self.config.get('default', 'version'), 
+               'Fedora %s' % self.config.get('default', 'version'), self.prodpath, self.topdir)
         os.system('/usr/lib/anaconda-runtime/buildinstall %s' % args)
 
     def doPackageorder(self):
-        os.system('/usr/lib/anaconda-runtime/pkgorder %s %s %s > %s' % (self.topdir, 
-                                                                        self.opts.arch, 
-                                                                        self.prodpath, 
-                                                                        os.path.join(self.opts.destdir, 'pkgorder-%s' % self.opts.arch)))
+        os.system('/usr/lib/anaconda-runtime/pkgorder %s %s %s > %s' % (self.topdir, self.config.get('default', 'arch'), 
+            self.prodpath, os.path.join(self.config.get('default', 'destdir'), 'pkgorder-%s' % self.config.get('default', 'arch'))))
 
     def doSplittree(self):
         timber = splittree.Timber()
-        timber.arch = self.opts.arch
-        timber.total_discs = self.opts.discs
-        timber.bin_discs = self.opts.discs
+        timber.arch = self.config.get('default', 'arch')
+        timber.total_discs = self.config.getint('default', 'discs')
+        timber.bin_discs = self.config.getint('default', 'discs')
         timber.src_discs = 0
-        timber.release_str = 'Fedora %s' % self.opts.version
-        timber.package_order_file = os.path.join(self.opts.destdir, 'pkgorder-%s' % self.opts.arch)
+        timber.release_str = 'Fedora %s' % self.config.get('default', 'version')
+        timber.package_order_file = os.path.join(self.config.get('default', 'destdir'), 'pkgorder-%s' % self.config.get('default', 'arch'))
         timber.dist_dir = self.topdir
-        timber.src_dir = os.path.join(self.opts.destdir, self.opts.version, 'source', 'SRPMS')
+        timber.src_dir = os.path.join(self.config.get('default', 'destdir'), self.config.get('default', 'version'), 'source', 'SRPMS')
         timber.product_path = self.prodpath
         #timber.reserve_size =  
 
@@ -66,15 +67,18 @@ class Pungi:
         discinfofile = os.path.join(self.topdir, '.discinfo') # we use this a fair amount
         mkisofsargs = '-v -U -J -R -T -V' # common mkisofs flags
         bootargs = ''
-        isodir = os.path.join(self.opts.destdir, self.opts.version, self.opts.arch, 'iso')
+        isodir = os.path.join(self.config.get('default', 'destdir'), self.config.get('default', 'version'), 
+            self.config.get('default', 'arch'), 'iso')
         os.makedirs(isodir)
-        for disc in range(1, self.opts.discs + 1): # cycle through the CD isos
-            volname = '"%s %s %s Disc %s"' % ('Fedora', self.opts.version, self.opts.arch, disc) # hacky :/
-            isoname = 'Fedora-%s-%s-disc%s.iso' % (self.opts.version, self.opts.arch, disc)
+        for disc in range(1, self.config.getint('default', 'discs') + 1): # cycle through the CD isos
+            volname = '"%s %s %s Disc %s"' % ('Fedora', self.config.get('default', 'version'), 
+                self.config.get('default', 'arch'), disc) # hacky :/
+            isoname = 'Fedora-%s-%s-disc%s.iso' % (self.config.get('default', 'version'), 
+                self.config.get('default', 'arch'), disc)
             if disc == 1: # if this is the first disc, we want to set boot flags
-                if self.opts.arch == 'i386' or self.opts.arch == 'x86_64':
+                if self.config.get('default', 'arch') == 'i386' or self.config.get('default', 'arch') == 'x86_64':
                     bootargs = '-b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table'
-                elif self.opts.arch == 'ppc':
+                elif self.config.get('default', 'arch') == 'ppc':
                     # Boy, it would be nice if somebody who understood ppc helped out here...
                     bootargs = ''
             else:
@@ -88,23 +92,25 @@ class Pungi:
                                                         os.path.join('%s-disc%s' % (self.topdir, disc))))
             os.system('cd %s; sha1sum %s >> SHA1SUM' % (isodir, isoname))
 
-        if self.opts.discs > 1: # We've asked for more than one disc, make a DVD image
+        if self.config.getint('default', 'discs') > 1: # We've asked for more than one disc, make a DVD image
             # backup the main .discinfo to use a split one.  This is an ugly hack :/
             content = open(discinfofile, 'r').readlines()
-            shutil.move(discinfofile, os.path.join(self.opts.destdir, '.discinfo-%s' % self.opts.arch))
-            content[content.index('ALL\n')] = ','.join([str(x) for x in range(1, self.opts.discs + 1)]) + '\n'
+            shutil.move(discinfofile, os.path.join(self.config.get('default', 'destdir'), 
+                '.discinfo-%s' % self.config.get('default', 'arch')))
+            content[content.index('ALL\n')] = ','.join([str(x) for x in range(1, self.config.getint('default', 'discs') + 1)]) + '\n'
             open(discinfofile, 'w').writelines(content)
             
 
             # move the main repodata out of the way to use the split repodata
-            shutil.move(os.path.join(self.topdir, 'repodata'), os.path.join(self.opts.destdir, 'repodata-%s' % self.opts.arch))
+            shutil.move(os.path.join(self.topdir, 'repodata'), os.path.join(self.config.get('default', 'destdir'), 
+                'repodata-%s' % self.config.get('default', 'arch')))
             os.symlink('%s-disc1/repodata' % self.topdir, os.path.join(self.topdir, 'repodata'))
 
-            volname = '"%s %s %s DVD"' % ('Fedora', self.opts.version, self.opts.arch)
-            isoname = 'Fedora-%s-%s-DVD.iso' % (self.opts.version, self.opts.arch)
-            if self.opts.arch == 'i386' or self.opts.arch == 'x86_64':
+            volname = '"%s %s %s DVD"' % ('Fedora', self.config.get('default', 'version'), self.config.get('default', 'arch'))
+            isoname = 'Fedora-%s-%s-DVD.iso' % (self.config.get('default', 'version'), self.config.get('default', 'arch'))
+            if self.config.get('default', 'arch') == 'i386' or self.config.get('default', 'arch') == 'x86_64':
                 bootargs = '-b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table'
-            elif self.opts.arch == 'ppc':
+            elif self.config.get('default', 'arch') == 'ppc':
                 # Boy, it would be nice if somebody who understood ppc helped out here...
                 bootargs = ''
             
@@ -116,10 +122,11 @@ class Pungi:
                                                         os.path.join('%s-disc1' % self.topdir)))
             os.system('cd %s; sha1sum %s >> SHA1SUM' % (isodir, isoname))
 
-            shutil.move(os.path.join(self.opts.destdir, '.discinfo-%s' % self.opts.arch), discinfofile)
+            shutil.move(os.path.join(self.config.get('default', 'destdir'), '.discinfo-%s' % self.config.get('default', 'arch')), discinfofile)
 
             os.unlink(os.path.join(self.topdir, 'repodata')) # remove our temp symlink and move the orig repodata back
-            shutil.move(os.path.join(self.opts.destdir, 'repodata-%s' % self.opts.arch), os.path.join(self.topdir, 'repodata'))
+            shutil.move(os.path.join(self.config.get('default', 'destdir'), 
+                'repodata-%s' % self.config.get('default', 'arch')), os.path.join(self.topdir, 'repodata'))
 
 
 def main():

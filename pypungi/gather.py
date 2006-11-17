@@ -17,20 +17,20 @@ import os
 import shutil
 
 class Gather(yum.YumBase):
-    def __init__(self, opts, pkglist):
+    def __init__(self, config, pkglist):
         # Create a yum object to use
         yum.YumBase.__init__(self)
-        self.doConfigSetup(fn=opts.yumconf)
+        self.doConfigSetup(fn=config.get('default', 'yumconf'))
         self.cleanMetadata() # clean metadata that might be in the cache from previous runs
         self.cleanSqlite() # clean metadata that might be in the cache from previous runs
         self.doRepoSetup()
-        if opts.arch == 'i386':
+        if config.get('default', 'arch') == 'i386':
             arches = yum.rpmUtils.arch.getArchList('i686')
         else:
-            arches = yum.rpmUtils.arch.getArchList(opts.arch)
+            arches = yum.rpmUtils.arch.getArchList(config.get('default', 'arch'))
         self.doSackSetup(arches)
         self.logger = yum.logging.getLogger("yum.verbose.pungi")
-        self.opts = opts
+        self.config = config
         self.pkglist = pkglist
         self.polist = []
 
@@ -41,7 +41,7 @@ class Gather(yum.YumBase):
            Returns the deps as a list"""
 
 
-        if not self.opts.quiet:
+        if not self.config.has_option('default', 'quiet'):
             self.logger.info('Checking deps of %s.%s' % (po.name, po.arch))
 
         reqs = po.requires;
@@ -74,7 +74,7 @@ class Gather(yum.YumBase):
             for match in matches:
                 unprocessed_pkgs[match] = None
 
-        if not self.opts.quiet:
+        if not self.config.has_option('default', 'quiet'):
             for pkg in unprocessed_pkgs.keys():
                 self.logger.info('Found %s.%s' % (pkg.name, pkg.arch))
 
@@ -100,14 +100,17 @@ class Gather(yum.YumBase):
            download them from their respective repos."""
 
 
-        if not self.opts.quiet:
+        if not self.config.has_option('default', 'quiet'):
             downloads = []
             for pkg in self.polist:
                 downloads.append('%s.%s' % (pkg.name, pkg.arch))
                 downloads.sort()
             self.logger.info("Download list: %s" % downloads)
 
-        pkgdir = os.path.join(self.opts.destdir, self.opts.version, self.opts.arch, 'os', 'Fedora') # Package location within destdir, name subject to change/config
+        # Package location within destdir, name subject to change/config
+        pkgdir = os.path.join(self.config.get('default', 'destdir'), self.config.get('default', 'version'), 
+                                             self.config.get('default', 'arch'), 'os', 'Fedora') 
+
         if not os.path.exists(pkgdir):
             os.makedirs(pkgdir)
 
@@ -115,18 +118,18 @@ class Gather(yum.YumBase):
             repo = self.repos.getRepo(pkg.repoid)
             remote = pkg.returnSimple('relativepath')
             local = os.path.basename(remote)
-            local = os.path.join(self.opts.cachedir, local)
+            local = os.path.join(self.config.get('default', 'cachedir'), local)
             if (os.path.exists(local) and
                 str(os.path.getsize(local)) == pkg.returnSimple('packagesize')):
 
-                if not self.opts.quiet:
+                if not self.config.has_option('default', 'quiet'):
                     self.logger.info("%s already exists and appears to be complete" % local)
                 os.link(local, os.path.join(pkgdir, os.path.basename(remote)))
                 continue
 
             # Disable cache otherwise things won't download
             repo.cache = 0
-            if not self.opts.quiet:
+            if not self.config.has_option('default', 'quiet'):
                 self.logger.info('Downloading %s' % os.path.basename(remote))
             pkg.localpath = local # Hack: to set the localpath to what we want.
 
