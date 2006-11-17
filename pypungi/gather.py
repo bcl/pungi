@@ -14,6 +14,7 @@
 
 import yum
 import os
+import shutil
 
 class Gather(yum.YumBase):
     def __init__(self, opts, pkglist):
@@ -128,7 +129,12 @@ class Gather(yum.YumBase):
             if not self.opts.quiet:
                 self.logger.info('Downloading %s' % os.path.basename(remote))
             pkg.localpath = local # Hack: to set the localpath to what we want.
-            repo.getPackage(pkg) 
+
+            # do a little dance for file:// repos...
+            path = repo.getPackage(pkg)
+            if not os.path.exists(local) or not os.path.samefile(path, local):
+                shutil.copy2(path, local)
+ 
             os.link(local, os.path.join(pkgdir, os.path.basename(remote)))
 
 
