@@ -20,10 +20,36 @@ import yum
 from ConfigParser import SafeConfigParser
 
 def main():
+    # Set some default variables, can be overrided in config file
+
+    osdir = "os"
+    sourcedir = "source"
+    debugdir = "debug"
+    isodir = "iso"
+    
     (opts, args) = get_arguments()
 
     config = SafeConfigParser()
     config.read(opts.config)
+
+    if not config.has_option('default', 'osdir'):
+        config.set('default', 'osdir', osdir)
+
+    if not config.has_option('default', 'sourcedir'):
+        config.set('default', 'sourcedir', sourcedir)
+
+    if not config.has_option('default', 'debugdir'):
+        config.set('default', 'debugdir', debugdir)
+
+    if not config.has_option('default', 'isodir'):
+        config.set('default', 'isodir', isodir)
+
+    # set some other defaults
+    if not config.has_option('default', 'product_path'):
+        config.set('default', 'product_path', config.get('default', 'product_name'))
+
+    if not config.has_option('default', 'iso_basename'):
+        config.set('default', 'iso_basename', config.get('default', 'product_name'))
 
     pkglist = get_packagelist(config.get('default', 'comps'))
 

@@ -29,15 +29,18 @@ class Pungi:
 
     def doBuildinstall(self):
         # buildinstall looks for a comps file in base/ for now, copy it into place
-        os.makedirs(os.path.join(self.topdir, self.prodpath, 'base'))
-        shutil.copy(self.config.get('default', 'comps'), os.path.join(self.topdir, self.prodpath, 'base', 'comps.xml'))
-        args = '--product "Fedora" --version %s --release "%s" --prodpath %s %s' % (self.config.get('default', 'version'), 
-               'Fedora %s' % self.config.get('default', 'version'), self.prodpath, self.topdir)
+        os.makedirs(os.path.join(self.topdir, self.config.get('default', 'product_path'), 'base'))
+        shutil.copy(self.config.get('default', 'comps'), os.path.join(self.topdir, 
+            self.config.get('default', 'product_path'), 'base', 'comps.xml'))
+        args = '--product "%s" --version %s --release "%s" --prodpath %s %s' % (self.config.get('default', 'product_name'),
+            self.config.get('default', 'version'), '%s %s' % (self.config.get('default', 'product_name'), 
+            self.config.get('default', 'version')), self.config.get('default', 'product_path'), self.topdir)
         os.system('/usr/lib/anaconda-runtime/buildinstall %s' % args)
 
     def doPackageorder(self):
         os.system('/usr/lib/anaconda-runtime/pkgorder %s %s %s > %s' % (self.topdir, self.config.get('default', 'arch'), 
-            self.prodpath, os.path.join(self.config.get('default', 'destdir'), 'pkgorder-%s' % self.config.get('default', 'arch'))))
+            self.config.get('default', 'product_path'), os.path.join(self.config.get('default', 'destdir'), 
+            'pkgorder-%s' % self.config.get('default', 'arch'))))
 
     def doSplittree(self):
         timber = splittree.Timber()
@@ -45,11 +48,11 @@ class Pungi:
         timber.total_discs = self.config.getint('default', 'discs')
         timber.bin_discs = self.config.getint('default', 'discs')
         timber.src_discs = 0
-        timber.release_str = 'Fedora %s' % self.config.get('default', 'version')
+        timber.release_str = '%s %s' % (self.config.get('default', 'product_name'), self.config.get('default', 'version'))
         timber.package_order_file = os.path.join(self.config.get('default', 'destdir'), 'pkgorder-%s' % self.config.get('default', 'arch'))
         timber.dist_dir = self.topdir
         timber.src_dir = os.path.join(self.config.get('default', 'destdir'), self.config.get('default', 'version'), 'source', 'SRPMS')
-        timber.product_path = self.prodpath
+        timber.product_path = self.config.get('default', 'product_path')
         #timber.reserve_size =  
 
         output = timber.main()
@@ -68,12 +71,12 @@ class Pungi:
         mkisofsargs = '-v -U -J -R -T -V' # common mkisofs flags
         bootargs = ''
         isodir = os.path.join(self.config.get('default', 'destdir'), self.config.get('default', 'version'), 
-            self.config.get('default', 'arch'), 'iso')
+            self.config.get('default', 'arch'), self.config.get('default', 'isodir'))
         os.makedirs(isodir)
         for disc in range(1, self.config.getint('default', 'discs') + 1): # cycle through the CD isos
-            volname = '"%s %s %s Disc %s"' % ('Fedora', self.config.get('default', 'version'), 
+            volname = '"%s %s %s Disc %s"' % (self.config.get('default', 'product_name'), self.config.get('default', 'version'), 
                 self.config.get('default', 'arch'), disc) # hacky :/
-            isoname = 'Fedora-%s-%s-disc%s.iso' % (self.config.get('default', 'version'), 
+            isoname = '%s-%s-%s-disc%s.iso' % (self.config.get('default', 'iso_basename'), self.config.get('default', 'version'), 
                 self.config.get('default', 'arch'), disc)
             if disc == 1: # if this is the first disc, we want to set boot flags
                 if self.config.get('default', 'arch') == 'i386' or self.config.get('default', 'arch') == 'x86_64':
@@ -106,8 +109,10 @@ class Pungi:
                 'repodata-%s' % self.config.get('default', 'arch')))
             os.symlink('%s-disc1/repodata' % self.topdir, os.path.join(self.topdir, 'repodata'))
 
-            volname = '"%s %s %s DVD"' % ('Fedora', self.config.get('default', 'version'), self.config.get('default', 'arch'))
-            isoname = 'Fedora-%s-%s-DVD.iso' % (self.config.get('default', 'version'), self.config.get('default', 'arch'))
+            volname = '"%s %s %s DVD"' % (self.config.get('default', 'product_name'), self.config.get('default', 'version'), 
+                self.config.get('default', 'arch'))
+            isoname = '%s-%s-%s-DVD.iso' % (self.config.get('default', 'iso_basename'), self.config.get('default', 'version'), 
+                self.config.get('default', 'arch'))
             if self.config.get('default', 'arch') == 'i386' or self.config.get('default', 'arch') == 'x86_64':
                 bootargs = '-b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table'
             elif self.config.get('default', 'arch') == 'ppc':

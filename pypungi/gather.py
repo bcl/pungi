@@ -109,7 +109,8 @@ class Gather(yum.YumBase):
 
         # Package location within destdir, name subject to change/config
         pkgdir = os.path.join(self.config.get('default', 'destdir'), self.config.get('default', 'version'), 
-                                             self.config.get('default', 'arch'), 'os', 'Fedora') 
+                                             self.config.get('default', 'arch'), self.config.get('default', 'osdir'),
+                                             self.config.get('default', 'product_path')) 
 
         if not os.path.exists(pkgdir):
             os.makedirs(pkgdir)
