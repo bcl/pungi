@@ -52,6 +52,7 @@ Making it all happen
 
 Contributing
   Currently development discussion happens at fedora-buildsys-list@redhat.com.
+  There is a TRAC page at http://hosted.fedoraproject.org/projects/pungi
   The source is held via mercurial:
   anon - http://linux.duke.edu/projects/pungi
   auth - ssh://login.linux.duke.edu//home/groups/pungi/hg/pungi
@@ -62,18 +63,15 @@ Testing
   To run pungi, currently you need root level access.  This is because it has
   to create loopback devices for disk images.
 
+    python setup.py build
     sudo python setup.py install
   
-    sudo pungi --comps /etc/pungi/comps.xml \
-         --yumconf /etc/pungi/yum.conf.x86_64 --destdir /srv/pungi \
-         --cachedir /srv/pungi/cache --arch x86_64 --version 6.89 \
-         --discs 1
+    sudo pungi -c /etc/pungi/pungi.conf
 
   Or to test it from just the hg clone:
 
-    sudo ./pungi --comps config/comps.xml \
-         --yumconf config/yum.conf.x86_64 --destdir /srv/pungi \
-         --cachedir /srv/pungi/cache --arch x86_64 --version 6.89 \
-         --discs 1
+    edit config/pungi.conf to point to checked out files
 
-  Of course, fill in some of your own values.
+    sudo ./pungi -c config/pungi.conf
+
+  Of course, edit /etc/pungi/* for your own values
