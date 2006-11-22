@@ -1,3 +1,6 @@
+* Fri Nov 17 2006 Jesse Keating <jkeating@redhat.com>
+- First pass at a config file, lots of changes
+
 * Wed Nov  8 2006 Jesse Keating <jkeating@redhat.com>
 - Shuffle things around for dist-utils
 - Add setup.py and such to do installs
