@@ -53,7 +53,7 @@ class Gather(yum.YumBase):
                 continue
 
             provides = self.whatProvides(r, f, v)
-            for provide in provides:
+            for provide in provides.returnNewestByNameArch():
                 if not pkgresults.has_key(provide):
                     pkgresults[provide] = None
 
@@ -71,7 +71,9 @@ class Gather(yum.YumBase):
 
         for pkg in self.pkglist: # cycle through our package list and get repo matches
             matches = self.pkgSack.searchNevra(name=pkg)
-            for match in matches:
+            mysack = yum.packageSack.ListPackageSack(matches)
+            
+            for match in mysack.returnNewestByNameArch():
                 unprocessed_pkgs[match] = None
 
         if not self.config.has_option('default', 'quiet'):
