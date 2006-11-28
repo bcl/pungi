@@ -124,7 +124,7 @@ class Pungi:
                                                         bootargs,
                                                         isodir,
                                                         isoname,
-                                                        os.path.join('%s-disc1' % self.topdir)))
+                                                        self.topdir))
             os.system('cd %s; sha1sum %s >> SHA1SUM' % (isodir, isoname))
 
             shutil.move(os.path.join(self.config.get('default', 'destdir'), '.discinfo-%s' % self.config.get('default', 'arch')), discinfofile)
