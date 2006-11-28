@@ -54,8 +54,8 @@ Contributing
   Currently development discussion happens at fedora-buildsys-list@redhat.com.
   There is a TRAC page at http://hosted.fedoraproject.org/projects/pungi
   The source is held via mercurial:
-  anon - http://linux.duke.edu/projects/pungi
-  auth - ssh://login.linux.duke.edu//home/groups/pungi/hg/pungi
+  anon - http://hg.fedoraproject.org/hg/hosted/pungi
+  auth - ssh://hg.fedoraproject.org//hg/hosted/pungi
 
 Testing
   First you must have anaconda-runtime plus its deps installed.
