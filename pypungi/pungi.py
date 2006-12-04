@@ -70,6 +70,9 @@ class Pungi:
         discinfofile = os.path.join(self.topdir, '.discinfo') # we use this a fair amount
         mkisofsargs = '-v -U -J -R -T -V' # common mkisofs flags
         bootargs = ''
+        x86bootargs = '-b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table'
+        ia64bootargs = '-b images/boot.img -no-emul-boot'
+        ppcbootargs = '' # Boy, it would be nice if somebody who understood ppc helped out here...
         isodir = os.path.join(self.config.get('default', 'destdir'), self.config.get('default', 'version'), 
             self.config.get('default', 'arch'), self.config.get('default', 'isodir'))
         os.makedirs(isodir)
@@ -80,10 +83,11 @@ class Pungi:
                 self.config.get('default', 'arch'), disc)
             if disc == 1: # if this is the first disc, we want to set boot flags
                 if self.config.get('default', 'arch') == 'i386' or self.config.get('default', 'arch') == 'x86_64':
-                    bootargs = '-b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table'
+                    bootargs = x86bootargs
+                elif self.config.get('default', 'arch') == 'ia64':
+                    bootargs = ia64bootargs
                 elif self.config.get('default', 'arch') == 'ppc':
-                    # Boy, it would be nice if somebody who understood ppc helped out here...
-                    bootargs = ''
+                    bootargs = ppcbootargs
             else:
                 bootargs = '' # clear out any existing bootargs
 
@@ -114,10 +118,11 @@ class Pungi:
             isoname = '%s-%s-%s-DVD.iso' % (self.config.get('default', 'iso_basename'), self.config.get('default', 'version'), 
                 self.config.get('default', 'arch'))
             if self.config.get('default', 'arch') == 'i386' or self.config.get('default', 'arch') == 'x86_64':
-                bootargs = '-b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table'
+                bootargs = x86bootargs
+            if self.config.get('default', 'arch') == 'ia64':
+                bootargs = ia64bootargs
             elif self.config.get('default', 'arch') == 'ppc':
-                # Boy, it would be nice if somebody who understood ppc helped out here...
-                bootargs = ''
+                bootargs = ppcbootargs
             
             os.system('mkisofs %s %s %s -o %s/%s %s' % (mkisofsargs,
                                                         volname,
