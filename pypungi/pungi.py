@@ -98,6 +98,7 @@ class Pungi:
                                                         isoname,
                                                         os.path.join('%s-disc%s' % (self.topdir, disc))))
             os.system('cd %s; sha1sum %s >> SHA1SUM' % (isodir, isoname))
+            os.system('/usr/lib/anaconda-runtime/implantisomd5 %s' % os.path.join(isodir, isoname))
 
         if self.config.getint('default', 'discs') > 1: # We've asked for more than one disc, make a DVD image
             # backup the main .discinfo to use a split one.  This is an ugly hack :/
@@ -131,6 +132,7 @@ class Pungi:
                                                         isoname,
                                                         self.topdir))
             os.system('cd %s; sha1sum %s >> SHA1SUM' % (isodir, isoname))
+            os.system('/usr/lib/anaconda-runtime/implantisomd5 %s' % os.path.join(isodir, isoname))
 
             shutil.move(os.path.join(self.config.get('default', 'destdir'), '.discinfo-%s' % self.config.get('default', 'arch')), discinfofile)
 
