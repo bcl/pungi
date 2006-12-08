@@ -23,3 +23,10 @@ mirrorlist=http://mirrors.fedoraproject.org/mirrorlist?repo=rawhide&arch=x86_64
 enabled=1
 gpgcheck=0
 
+[development-source]
+name=Fedora Core - Development Source
+#baseurl=http://download.fedora.redhat.com/pub/fedora/linux/core/development/x86_64/os/
+mirrorlist=http://mirrors.fedoraproject.org/mirrorlist?repo=rawhide-source&arch=x86_64
+enabled=1
+gpgcheck=0
+
