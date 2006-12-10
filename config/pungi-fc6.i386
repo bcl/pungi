@@ -1,0 +1,15 @@
+# Pungi config file
+#
+
+[default]
+product_name = Fedora Core
+product_path = Fedora
+iso_basename = FC
+comps = /etc/pungi/comps-fc6.xml
+yumconf = /etc/pungi/yum.conf.fc6.i386
+destdir = /srv/pungi
+cachedir = /srv/pungi/cache
+arch = i386
+version = 6
+discs = 5
+getsource = Yes
