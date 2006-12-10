@@ -1,3 +1,6 @@
+* Sat Dec  9 2006 Jesse Keating <jkeating@redhat.com>
+- Now able to do srpms, lots of changes
+
 * Fri Nov 17 2006 Jesse Keating <jkeating@redhat.com>
 - First pass at a config file, lots of changes
 
