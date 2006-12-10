@@ -1,13 +1,13 @@
 %{!?python_sitelib: %define python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")}
 
 Name:           pungi
-Version:        0.1.0
+Version:        0.1.1
 Release:        1%{?dist}
 Summary:        Distribution compose tool
 
 Group:          Development/Tools
 License:        GPL
-URL:            http://linux.duke.edu/projects/%{name}
+URL:            http://hosted.fedoraproject.org/projects/pungi
 Source0:        http://linux.duke.edu/projects/%{name}/release/%{name}-%{version}.tar.gz
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 Requires:       anaconda-runtime
@@ -37,7 +37,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(-,root,root,-)
-%doc Authors Changelog COPYING GPL PLAN.gather PLAN.pungi README ToDo
+%doc Authors Changelog COPYING GPL README ToDo
 %config(noreplace) %{_sysconfdir}/pungi
 # For noarch packages: sitelib
 %{python_sitelib}/pypungi
@@ -45,5 +45,12 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Sat Dec  9 2006 Jesse Keating <jkeating@redhat.com> - 0.1.1-1
+- Update to 0.1.1
+- Add ability to get srpms
+- Use a config file system
+- Clean up some docs
+- Add config files for composing FC6 respins
+
 * Wed Nov  8 2006 Jesse Keating <jkeating@redhat.com> - 0.1.0-1
 - Initial spec
