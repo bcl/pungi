@@ -106,7 +106,7 @@ class Gather(yum.YumBase):
 
  
         for po in self.polist:
-            srpm = po.returnSimple('sourcerpm').rsplit('-', 2)[0]
+            srpm = po.returnSimple('sourcerpm').strip('.src.rpm')
             if not srpm in self.srpmlist:
                 self.srpmlist.append(srpm)
 
@@ -178,10 +178,9 @@ class Gather(yum.YumBase):
         self.doSackSetup(archlist=['src'])
 
         for srpm in self.srpmlist:
+            (sname, sver, srel) = srpm.rstrip('-', 2)
             try:
-                matches = self.pkgSack.searchNevra(name=srpm)
-                mysack = yum.packageSack.ListPackageSack(matches)
-                srpmpo = mysack.returnNewestByNameArch()[0]
+                srpmpo = self.pkgSack.searchNevra(name=sname, ver=sver, rel=srel)[0]
                 if not srpmpo in srpmpolist:
                     srpmpolist.append(srpmpo)
             except IndexError:
