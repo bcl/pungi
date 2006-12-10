@@ -71,17 +71,31 @@ def main():
             print >> sys.stderr, "Error: Cannot create cache dir %s" % cachedir
             sys.exit(1)
 
-    mygather = pypungi.gather.Gather(config, pkglist)
-    mygather.getPackageObjects()
-    mygather.downloadPackages()
+    # Actually do work.
+    if not config.get('default', 'arch') == 'source':
+        mygather = pypungi.gather.Gather(config, pkglist)
+        mygather.getPackageObjects()
+        mygather.downloadPackages()
+        if config.getboolean('default', 'getsource'):
+            mygather.getSRPMList()
+            mygather.downloadSRPMs()
 
-    mypungi = pypungi.pungi.Pungi(config)
-    mypungi.doBuildinstall()
-    mypungi.doPackageorder()
-    mypungi.doSplittree()
-    mypungi.doCreateSplitrepo()
-    mypungi.doCreateIsos()
+        mypungi = pypungi.pungi.Pungi(config)
+        mypungi.doBuildinstall()
+        mypungi.doPackageorder()
+        mypungi.doSplittree()
+        mypungi.doCreateSplitrepo()
+        mypungi.doCreateIsos()
 
+    # Do things slightly different for src.
+    if config.get('default', 'arch') == 'source':
+        # we already have all the content gathered
+        mypungi = pypungi.pungi.Pungi(config)
+        mypungi.topdir = os.path.join(config.get('default', 'destdir'),
+                                      config.get('default', 'version'),
+                                      'source', 'SRPM')
+        mypungi.doSplitSRPMs()
+        mypungi.doCreateIsos()
 
 if __name__ == '__main__':
     from optparse import OptionParser

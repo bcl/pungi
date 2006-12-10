@@ -15,6 +15,7 @@
 import yum
 import os
 import shutil
+import sys
 
 class Gather(yum.YumBase):
     def __init__(self, config, pkglist):
@@ -33,6 +34,7 @@ class Gather(yum.YumBase):
         self.config = config
         self.pkglist = pkglist
         self.polist = []
+        self.srpmlist = []
 
     def getPackageDeps(self, po):
         """Return the dependencies for a given package, as well
@@ -97,6 +99,18 @@ class Gather(yum.YumBase):
 
         self.polist = final_pkgobjs.keys()
 
+    def getSRPMList(self):
+        """Cycle through the list of package objects and
+           find the sourcerpm for them.  Requires yum still
+           configured and a list of package objects"""
+
+ 
+        for po in self.polist:
+            srpm = po.returnSimple('sourcerpm').rsplit('-', 2)[0]
+            if not srpm in self.srpmlist:
+                self.srpmlist.append(srpm)
+
+
     def downloadPackages(self):
         """Cycle through the list of package objects and
            download them from their respective repos."""
@@ -144,6 +158,73 @@ class Gather(yum.YumBase):
             os.link(local, os.path.join(pkgdir, os.path.basename(remote)))
 
 
+    def downloadSRPMs(self):
+        """Cycle through the list of srpms and
+           find the package objects for them, Then download them."""
+
+
+        srpmpolist = []
+
+        # Work around for yum bug
+        for sack in self.pkgSack.sacks.values():
+            sack.excludes = {}
+
+        self.pkgSack.excludes = {}
+
+        # We need to reset the yum object
+        self.pkgSack = None
+
+        # Setup the sack with just src arch
+        self.doSackSetup(archlist=['src'])
+
+        for srpm in self.srpmlist:
+            try:
+                matches = self.pkgSack.searchNevra(name=srpm)
+                mysack = yum.packageSack.ListPackageSack(matches)
+                srpmpo = mysack.returnNewestByNameArch()[0]
+                if not srpmpo in srpmpolist:
+                    srpmpolist.append(srpmpo)
+            except IndexError:
+                print >> sys.stderr, "Error: Cannot find a source rpm for %s" % srpm
+                sys.exit(1)
+
+        # do the downloads
+        pkgdir = os.path.join(self.config.get('default', 'destdir'), self.config.get('default', 'version'),
+            'source', 'SRPMS')
+
+        if not os.path.exists(pkgdir):
+            os.makedirs(pkgdir)
+
+        for pkg in srpmpolist:
+            repo = self.repos.getRepo(pkg.repoid)
+            remote = pkg.returnSimple('relativepath')
+            local = os.path.basename(remote)
+            local = os.path.join(self.config.get('default', 'cachedir'), local)
+            if os.path.exists(local) and str(os.path.getsize(local)) == pkg.returnSimple('packagesize'):
+
+                if not self.config.has_option('default', 'quiet'):
+                    self.logger.info("%s already exists and appears to be complete" % local)
+                if os.path.exists(os.path.join(pkgdir, os.path.basename(remote))) and str(os.path.getsize(os.path.join(pkgdir, os.path.basename(remote)))) == pkg.returnSimple('packagesize'):
+                    if not self.config.has_option('default', 'quiet'):
+                        self.logger.info("%s already exists in tree and appears to be complete" % local)
+                else:
+                    os.link(local, os.path.join(pkgdir, os.path.basename(remote)))
+                continue
+
+            # Disable cache otherwise things won't download
+            repo.cache = 0
+            if not self.config.has_option('default', 'quiet'):
+                self.logger.info('Downloading %s' % os.path.basename(remote))
+            pkg.localpath = local # Hack: to set the localpath to what we want.
+
+            # do a little dance for file:// repos...
+            path = repo.getPackage(pkg)
+            if not os.path.exists(local) or not os.path.samefile(path, local):
+                shutil.copy2(path, local)
+
+            os.link(local, os.path.join(pkgdir, os.path.basename(remote)))
+
+ 
 def main():
 # This is used for testing the module
     (opts, args) = get_arguments()

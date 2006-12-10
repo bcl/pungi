@@ -59,6 +59,34 @@ class Pungi:
         for line in output:
             print line
 
+    def doSplitSRPMs(self):
+        timber = splittree.Timber()
+        timber.arch = self.config.get('default', 'arch')
+        #timber.total_discs = self.config.getint('default', 'discs')
+        #timber.bin_discs = self.config.getint('default', 'discs')
+        timber.src_discs = self.config.getint('default', 'discs')
+        #timber.release_str = '%s %s' % (self.config.get('default', 'product_name'), self.config.get('default', 'version'))
+        #timber.package_order_file = os.path.join(self.config.get('default', 'destdir'), 'pkgorder-%s' % self.config.get('default', 'arch'))
+        timber.dist_dir = os.path.join(self.config.get('default', 'destdir'), 
+                                       self.config.get('default', 'version'), 
+                                       'source', 'SRPM')
+        timber.src_dir = os.path.join(self.config.get('default', 'destdir'), self.config.get('default', 'version'), 'source', 'SRPMS')
+        #timber.product_path = self.config.get('default', 'product_path')
+        #timber.reserve_size =  
+        # Set this ourselves, for creating our dirs ourselves
+        timber.src_list = range(1, timber.src_discs + 1)
+
+        # this is stolen from splittree.py in anaconda-runtime.  Blame them if its ugly (:
+        for i in range(timber.src_list[0], timber.src_list[-1] + 1):
+                os.makedirs("%s-disc%d/SRPMS" % (timber.dist_dir, i))
+                timber.linkFiles(timber.dist_dir,
+                               "%s-disc%d" %(timber.dist_dir, i),
+                               timber.common_files)
+
+        timber.splitSRPMS()
+        for line in timber.logfile:
+            print line
+
     def doCreateSplitrepo(self):
         discinfo = open('%s-disc1/.discinfo' % self.topdir, 'r').readlines()
         mediaid = discinfo[0].rstrip('\n')
@@ -98,9 +126,12 @@ class Pungi:
                                                         isoname,
                                                         os.path.join('%s-disc%s' % (self.topdir, disc))))
             os.system('cd %s; sha1sum %s >> SHA1SUM' % (isodir, isoname))
-            os.system('/usr/lib/anaconda-runtime/implantisomd5 %s' % os.path.join(isodir, isoname))
+            # implant md5 for mediacheck on all but source arches
+            if not self.config.get('default', 'arch') == 'source':
+                os.system('/usr/lib/anaconda-runtime/implantisomd5 %s' % os.path.join(isodir, isoname))
 
-        if self.config.getint('default', 'discs') > 1: # We've asked for more than one disc, make a DVD image
+        # We've asked for more than one disc, and we're not srpms, so make a DVD image
+        if self.config.getint('default', 'discs') > 1 and not self.config.get('default', 'arch') == 'source':
             # backup the main .discinfo to use a split one.  This is an ugly hack :/
             content = open(discinfofile, 'r').readlines()
             shutil.move(discinfofile, os.path.join(self.config.get('default', 'destdir'), 
@@ -120,10 +151,12 @@ class Pungi:
                 self.config.get('default', 'arch'))
             if self.config.get('default', 'arch') == 'i386' or self.config.get('default', 'arch') == 'x86_64':
                 bootargs = x86bootargs
-            if self.config.get('default', 'arch') == 'ia64':
+            elif self.config.get('default', 'arch') == 'ia64':
                 bootargs = ia64bootargs
             elif self.config.get('default', 'arch') == 'ppc':
                 bootargs = ppcbootargs
+            else:
+                bootargs = '' # clear out any existing bootargs
             
             os.system('mkisofs %s %s %s -o %s/%s %s' % (mkisofsargs,
                                                         volname,
