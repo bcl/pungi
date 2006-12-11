@@ -18,7 +18,7 @@ metadata_expire=1800
 # in /etc/yum.repos.d
 [core]
 name=Fedora Core - 6
-#baseurl=http://download.fedora.redhat.com/pub/fedora/linux/core/development/x86_64/os/
+#baseurl=http://download.fedora.redhat.com/pub/fedora/linux/core/6/x86_64/os/
 mirrorlist=http://mirrors.fedoraproject.org/mirrorlist?repo=core-6&arch=x86_64
 enabled=1
 gpgcheck=0
