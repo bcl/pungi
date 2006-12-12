@@ -145,12 +145,13 @@ class Pungi:
         os.system('/usr/bin/createrepo %s' % args)
 
     def doCreateIsos(self):
+        anaruntime = '/usr/lib/anaconda-runtime/boot'
         discinfofile = os.path.join(self.topdir, '.discinfo') # we use this a fair amount
         mkisofsargs = '-v -U -J -R -T -V' # common mkisofs flags
         bootargs = ''
         x86bootargs = '-b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table'
         ia64bootargs = '-b images/boot.img -no-emul-boot'
-        ppcbootargs = '' # Boy, it would be nice if somebody who understood ppc helped out here...
+        ppcbootargs = '-part -hfs -r -l -sysid PPC -hfs-bless "./ppc/mac" -map %s -magic %s -no-desktop -allow-multidot -chrp-boot' % (os.path.join(anaruntime, 'mapping'), os.path.join(anaruntime, 'magic'))
         isodir = os.path.join(self.config.get('default', 'destdir'), self.config.get('default', 'version'), 
             self.config.get('default', 'arch'), self.config.get('default', 'isodir'))
         os.makedirs(isodir)

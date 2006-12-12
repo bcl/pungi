@@ -27,6 +27,8 @@ class Gather(yum.YumBase):
         self.doRepoSetup()
         if config.get('default', 'arch') == 'i386':
             arches = yum.rpmUtils.arch.getArchList('i686')
+        elif config.get('default', 'arch') == 'ppc':
+            arches = yum.rpmUtils.arch.getArchList('ppc64')
         else:
             arches = yum.rpmUtils.arch.getArchList(config.get('default', 'arch'))
         self.doSackSetup(arches)
