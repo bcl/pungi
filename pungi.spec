@@ -45,9 +45,10 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
-* Sat Dec  9 2006 Jesse Keating <jkeating@redhat.com> - 0.1.1-1
+* Mon Dec 11 2006 Jesse Keating <jkeating@redhat.com> - 0.1.1-1
 - Update to 0.1.1
 - Add ability to get srpms
+- Add ability to get relnote files
 - Use a config file system
 - Clean up some docs
 - Add config files for composing FC6 respins
