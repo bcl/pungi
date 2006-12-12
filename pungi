@@ -22,10 +22,14 @@ from ConfigParser import SafeConfigParser
 def main():
     # Set some default variables, can be overrided in config file
 
+    # Turn this into a dict someday, to iterate over when setting defaults
     osdir = "os"
     sourcedir = "source"
     debugdir = "debug"
     isodir = "iso"
+    relnotefilere = "eula.txt fedora.css GPL README-BURNING-ISOS-en_US.txt RELEASE-NOTES-en_US.html ^RPM-GPG"
+    relnotedirre = "images stylesheet-images"
+    relnotepkgs = "fedora-release fedora-release-notes"
     
     (opts, args) = get_arguments()
 
@@ -43,6 +47,15 @@ def main():
 
     if not config.has_option('default', 'isodir'):
         config.set('default', 'isodir', isodir)
+
+    if not config.has_option('default', 'relnotefilere'):
+        config.set('default', 'relnotefilere', relnotefilere)
+
+    if not config.has_option('default', 'relnotedirre'):
+        config.set('default', 'relnotedirre', relnotedirre)
+
+    if not config.has_option('default', 'relnotepkgs'):
+        config.set('default', 'relnotepkgs', relnotepkgs)
 
     # set some other defaults
     if not config.has_option('default', 'product_path'):
@@ -83,6 +96,7 @@ def main():
         mypungi = pypungi.pungi.Pungi(config)
         mypungi.doBuildinstall()
         mypungi.doPackageorder()
+        mypungi.doGetRelnotes()
         mypungi.doSplittree()
         mypungi.doCreateSplitrepo()
         mypungi.doCreateIsos()

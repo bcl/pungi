@@ -17,6 +17,7 @@ import sys
 #sys.path.append('/usr/lib/anaconda-runtime') # use our patched splittree for now
 import splittree
 import shutil
+import re
 
 class Pungi:
     def __init__(self, config):
@@ -26,6 +27,11 @@ class Pungi:
                                    self.config.get('default', 'version'), 
                                    self.config.get('default', 'arch'), 
                                    'os')
+        self.workdir = os.path.join(self.config.get('default', 'destdir'), 
+                                    'work',
+                                    self.config.get('default', 'arch'))
+        self.common_files = []
+
 
     def doBuildinstall(self):
         # buildinstall looks for a comps file in base/ for now, copy it into place
@@ -42,6 +48,49 @@ class Pungi:
             self.config.get('default', 'product_path'), os.path.join(self.config.get('default', 'destdir'), 
             'pkgorder-%s' % self.config.get('default', 'arch'))))
 
+    def doGetRelnotes(self):
+        docsdir = os.path.join(self.workdir, 'docs')
+        relnoterpms = self.config.get('default', 'relnotepkgs').split()
+
+        fileres = []
+        for pattern in self.config.get('default', 'relnotefilere').split():
+            fileres.append(re.compile(pattern))
+
+        dirres = []
+        for pattern in self.config.get('default', 'relnotedirre').split():
+            dirres.append(re.compile(pattern))
+
+        os.makedirs(docsdir)
+
+        # Expload the packages we list as relnote packages
+        pkgs = os.listdir(os.path.join(self.topdir, self.config.get('default', 'product_path')))
+
+        for pkg in pkgs:
+            pkgname = pkg.rsplit('-', 2)[0]
+            for relnoterpm in relnoterpms:
+                if pkgname == relnoterpm:
+                    output = os.system("pushd %s; rpm2cpio %s |cpio -imud; popd" % 
+                                       (docsdir, 
+                                        os.path.join(self.topdir, self.config.get('default', 'product_path'), pkg)))
+
+        # Walk the tree for our files
+        for dirpath, dirname, filelist in os.walk(docsdir):
+            for filename in filelist:
+                for regex in fileres:
+                    if regex.match(filename) and not os.path.exists(os.path.join(self.topdir, filename)):
+                        print "Copying release note file %s" % filename
+                        shutil.copy(os.path.join(dirpath, filename), os.path.join(self.topdir, filename))
+                        self.common_files.append(filename)
+
+        # Walk the tree for our dirs
+        for dirpath, dirname, filelist in os.walk(docsdir):
+            for dir in dirname:
+                for regex in dirres:
+                    if regex.match(dir) and not os.path.exists(os.path.join(self.topdir, dir)):
+                        print "Copying release note dir %s" % dir
+                        shutil.copytree(os.path.join(dirpath, dir), os.path.join(self.topdir, dir))
+        
+
     def doSplittree(self):
         timber = splittree.Timber()
         timber.arch = self.config.get('default', 'arch')
@@ -53,6 +102,7 @@ class Pungi:
         timber.dist_dir = self.topdir
         timber.src_dir = os.path.join(self.config.get('default', 'destdir'), self.config.get('default', 'version'), 'source', 'SRPMS')
         timber.product_path = self.config.get('default', 'product_path')
+        timber.common_files = self.common_files
         #timber.reserve_size =  
 
         output = timber.main()
