@@ -1,7 +1,7 @@
 %{!?python_sitelib: %define python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")}
 
 Name:           pungi
-Version:        0.1.1
+Version:        0.1.2
 Release:        1%{?dist}
 Summary:        Distribution compose tool
 
@@ -11,6 +11,7 @@ URL:            http://hosted.fedoraproject.org/projects/pungi
 Source0:        http://linux.duke.edu/projects/%{name}/release/%{name}-%{version}.tar.gz
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 Requires:       anaconda-runtime
+BuildRequires:  python-devel
 
 BuildArch:      noarch
 
@@ -45,6 +46,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Mon Dec 11 2006 Jesse Keating <jkeating@redhat.com> - 0.1.1-2
+- Need BR python-devel in rawhide
+
 * Mon Dec 11 2006 Jesse Keating <jkeating@redhat.com> - 0.1.1-1
 - Update to 0.1.1
 - Add ability to get srpms
