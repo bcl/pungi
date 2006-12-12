@@ -1,3 +1,6 @@
+* Mon Dec 11 2006 Jesse Keating <jkeating@redhat.com>
+- Now able to get release note files from release note packages.
+
 * Sat Dec  9 2006 Jesse Keating <jkeating@redhat.com>
 - Now able to do srpms, lots of changes
 
