@@ -2,11 +2,11 @@ from distutils.core import setup
 import glob
 
 setup(name='pungi',
-      version='0.1.0',
+      version='0.1.1',
       description='Distribution compose tool',
       author='Jesse Keating',
       author_email='jkeating@redhat.com',
-      url='http://linux.duke.edu/projects/pungi',
+      url='http://hosted.fedoraproject.org/projects/pungi',
       license='GPL',
       packages = ['pypungi'],
       scripts = ['pungi'],
