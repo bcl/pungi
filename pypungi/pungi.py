@@ -193,7 +193,7 @@ class Pungi:
             # move the main repodata out of the way to use the split repodata
             shutil.move(os.path.join(self.topdir, 'repodata'), os.path.join(self.config.get('default', 'destdir'), 
                 'repodata-%s' % self.config.get('default', 'arch')))
-            os.symlink('%s-disc1/repodata' % self.topdir, os.path.join(self.topdir, 'repodata'))
+            shutil.copytree('%s-disc1/repodata' % self.topdir, os.path.join(self.topdir, 'repodata'))
 
             volname = '"%s %s %s DVD"' % (self.config.get('default', 'product_name'), self.config.get('default', 'version'), 
                 self.config.get('default', 'arch'))
@@ -219,7 +219,7 @@ class Pungi:
 
             shutil.move(os.path.join(self.config.get('default', 'destdir'), '.discinfo-%s' % self.config.get('default', 'arch')), discinfofile)
 
-            os.unlink(os.path.join(self.topdir, 'repodata')) # remove our temp symlink and move the orig repodata back
+            shutil.rmtree(os.path.join(self.topdir, 'repodata')) # remove our copied repodata
             shutil.move(os.path.join(self.config.get('default', 'destdir'), 
                 'repodata-%s' % self.config.get('default', 'arch')), os.path.join(self.topdir, 'repodata'))
 
