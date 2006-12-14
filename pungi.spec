@@ -46,6 +46,11 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Wed Dec 13 2006 Jesse Keating <jkeating@redhat.com> - 0.1.2-1
+- Fix a bug in DVD repodata
+- Add correct ppc boot args
+- Set ppc arch correctly
+
 * Mon Dec 11 2006 Jesse Keating <jkeating@redhat.com> - 0.1.1-2
 - Need BR python-devel in rawhide
 
