@@ -1,3 +1,8 @@
+* Wed Dec 13 2006 Jesse Keating <jkeating@redhat.com>
+- Fix a bug in DVD repodata
+- Add correct ppc boot args
+- Set ppc arch correctly
+
 * Mon Dec 11 2006 Jesse Keating <jkeating@redhat.com>
 - Now able to get release note files from release note packages.
 - Add a config file for the source run
