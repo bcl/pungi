@@ -14,7 +14,7 @@
 
 import os
 import sys
-#sys.path.append('/usr/lib/anaconda-runtime') # use our patched splittree for now
+sys.path.append('/usr/lib/anaconda-runtime')
 import splittree
 import shutil
 import re
