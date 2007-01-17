@@ -223,3 +223,35 @@ class Pungi:
             shutil.rmtree(os.path.join(self.topdir, 'repodata')) # remove our copied repodata
             shutil.move(os.path.join(self.config.get('default', 'destdir'), 
                 'repodata-%s' % self.config.get('default', 'arch')), os.path.join(self.topdir, 'repodata'))
+
+        # Now make rescue images
+        os.system('/usr/lib/anaconda-runtime/mk-rescueimage.%s %s %s %s %s' % (
+            self.config.get('default', 'arch'),
+            self.topdir,
+            self.workdir,
+            self.config.get('default', 'iso_basename'),
+            self.config.get('default', 'product_path')))
+
+        # write the iso
+        volname = '"%s %s %s Rescue"' % (self.config.get('default', 'product_name'), self.config.get('default', 'version'), 
+                self.config.get('default', 'arch')) # hacky :/
+        isoname = '%s-%s-%s-rescuecd.iso' % (self.config.get('default', 'iso_basename'), self.config.get('default', 'version'), 
+            self.config.get('default', 'arch'))
+        if self.config.get('default', 'arch') == 'i386' or self.config.get('default', 'arch') == 'x86_64':
+            bootargs = x86bootargs
+        elif self.config.get('default', 'arch') == 'ia64':
+            bootargs = ia64bootargs
+        elif self.config.get('default', 'arch') == 'ppc':
+            bootargs = ppcbootargs
+        else:
+            bootargs = '' # clear out any existing bootargs
+
+        os.system('mkisofs %s %s %s -o %s/%s %s' % (mkisofsargs,
+                                                    volname,
+                                                    bootargs,
+                                                    isodir,
+                                                    isoname,
+                                                    os.path.join(self.workdir, "%s-rescueimage" % self.config.get('default', 'arch'))))
+
+        os.system('cd %s; sha1sum %s >> SHA1SUM' % (isodir, isoname))
+
