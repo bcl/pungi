@@ -23,10 +23,11 @@ class Pungi:
     def __init__(self, config):
         self.config = config
         self.prodpath = 'Fedora' # Probably should be defined elsewhere
-        self.topdir = os.path.join(self.config.get('default', 'destdir'), 
-                                   self.config.get('default', 'version'), 
-                                   self.config.get('default', 'arch'), 
-                                   'os')
+        self.archdir = os.path.join(self.config.get('default', 'destdir'),
+                                   self.config.get('default', 'version'),
+                                   self.config.get('default', 'arch'))
+
+        self.topdir = os.path.join(self.archdir, 'os')
         self.workdir = os.path.join(self.config.get('default', 'destdir'), 
                                     'work',
                                     self.config.get('default', 'arch'))
@@ -255,3 +256,9 @@ class Pungi:
 
         os.system('cd %s; sha1sum %s >> SHA1SUM' % (isodir, isoname))
 
+        # Do some clean up
+        dirs = os.listdir(self.archdir)
+
+        for dir in dirs:
+            if dir.startswith('os-disc'):
+                shutil.move(os.path.join(self.archdir, dir), os.path.join(self.workdir, dir))
