@@ -95,6 +95,7 @@ class Pungi:
     def doSplittree(self):
         timber = splittree.Timber()
         timber.arch = self.config.get('default', 'arch')
+        timber.target_size = 685.0 * 1024.0 * 1024 # make this a config option
         timber.total_discs = self.config.getint('default', 'discs')
         timber.bin_discs = self.config.getint('default', 'discs')
         timber.src_discs = 0
