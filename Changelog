@@ -1,3 +1,14 @@
+* Wed Jan 17 2007 Jesse Keating <jkeating@redhat.com>
+- Move splittree workdirs into work/ at the end of the run
+
+* Tue Jan 16 2007 Jesse Keating <jkeating@redhat.com>
+- Remove our splittree for rawhide
+- Remove old main() sections from pungi.py and gather.py
+- Remove our splittree for rawhide
+- Remove old main() sections from pungi.py and gather.py
+- Require yum 3.0.3 or newer
+- Add rescueCD support
+
 * Wed Dec 13 2006 Jesse Keating <jkeating@redhat.com>
 - Fix a bug in DVD repodata
 - Add correct ppc boot args
