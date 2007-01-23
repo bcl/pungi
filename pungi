@@ -64,7 +64,7 @@ def main():
     if not config.has_option('default', 'iso_basename'):
         config.set('default', 'iso_basename', config.get('default', 'product_name'))
 
-    pkglist = get_packagelist(config.get('default', 'comps'))
+    pkglist = get_packagelist(config.get('default', 'manifest'))
 
     destdir = config.get('default', 'destdir')
 
@@ -146,19 +146,17 @@ if __name__ == '__main__':
         #    sys.exit(0)
         return (opts, args)
 
-    def get_packagelist(myComps):
+    def get_packagelist(manifest):
     # Get the list of packages from the comps file
         try:
-            compsobj = yum.comps.Comps()
-            compsobj.add(myComps)
+            manifestfile = open(manifest, 'r')
 
         except IOError:
-            print >> sys.stderr, "pungi: No such file:\'%s\'" % opts.comps
+            print >> sys.stderr, "pungi: No such file:\'%s\'" % manifest
             sys.exit(1)
 
-        pkglist = []
-        for group in compsobj.groups:
-            pkglist += group.packages
+        pkglist = [l.strip() for l in manifestfile.readlines()]
+        manifestfile.close()
         return pkglist
 
     main()

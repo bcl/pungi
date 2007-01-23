@@ -21,10 +21,12 @@ class Gather(yum.YumBase):
     def __init__(self, config, pkglist):
         # Create a yum object to use
         yum.YumBase.__init__(self)
-        self.doConfigSetup(fn=config.get('default', 'yumconf'))
+        self.doConfigSetup(fn=config.get('default', 'yumconf'), debuglevel=6, errorlevel=6, root="/tmp")
         self.cleanMetadata() # clean metadata that might be in the cache from previous runs
         self.cleanSqlite() # clean metadata that might be in the cache from previous runs
         self.doRepoSetup()
+        self.doTsSetup()
+        self.doRpmDBSetup()
         if config.get('default', 'arch') == 'i386':
             arches = yum.rpmUtils.arch.getArchList('i686')
         elif config.get('default', 'arch') == 'ppc':
@@ -32,11 +34,32 @@ class Gather(yum.YumBase):
         else:
             arches = yum.rpmUtils.arch.getArchList(config.get('default', 'arch'))
         self.doSackSetup(arches)
+        self.doSackFilelistPopulate()
         self.logger = yum.logging.getLogger("yum.verbose.pungi")
         self.config = config
         self.pkglist = pkglist
         self.polist = []
         self.srpmlist = []
+
+    def _provideToPkg(self, req): #this is stolen from Anaconda
+            best = None
+            (r, f, v) = req
+
+            satisfiers = []
+            for po in self.whatProvides(r, f, v):
+                # if we already have something installed which does the provide
+                # then that's obviously the one we want to use.  this takes
+                # care of the case that we select, eg, kernel-smp and then
+                # have something which requires kernel
+                if self.tsInfo.getMembers(po.pkgtup):
+                    return po
+                if po not in satisfiers:
+                    satisfiers.append(po)
+
+            if satisfiers:
+                best = self.bestPackagesFromList(satisfiers)[0]
+                return best
+            return None
 
     def getPackageDeps(self, po):
         """Return the dependencies for a given package, as well
@@ -48,18 +71,25 @@ class Gather(yum.YumBase):
         if not self.config.has_option('default', 'quiet'):
             self.logger.info('Checking deps of %s.%s' % (po.name, po.arch))
 
-        reqs = po.requires;
+        reqs = po.requires
+        provs = po.provides
         pkgresults = {}
 
         for req in reqs:
             (r,f,v) = req
-            if r.startswith('rpmlib('):
+            if r.startswith('rpmlib(') or r.startswith('config('):
+                continue
+            if req in provs:
                 continue
 
-            provides = self.whatProvides(r, f, v)
-            for provide in provides.returnNewestByNameArch():
-                if not pkgresults.has_key(provide):
-                    pkgresults[provide] = None
+            dep = self._provideToPkg(req)
+            if dep is None:
+                self.logger.warning("Unresolvable dependency %s in %s" % (r, po.name))
+                continue
+
+            if not pkgresults.has_key(dep):
+                pkgresults[dep] = None
+                self.tsInfo.addInstall(dep)
 
         return pkgresults.keys()
 
@@ -79,6 +109,7 @@ class Gather(yum.YumBase):
             
             for match in mysack.returnNewestByNameArch():
                 unprocessed_pkgs[match] = None
+                self.tsInfo.addInstall(match)
 
         if not self.config.has_option('default', 'quiet'):
             for pkg in unprocessed_pkgs.keys():
