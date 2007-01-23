@@ -3,6 +3,7 @@
 - Add a minimal-manifest for test composes
 - Add current F7 comps file for test composes
 - Use some anaconda code to depsolve, gets better (and more common) results
+- Bump the iso size to what was used in FC6
 
 * Wed Jan 17 2007 Jesse Keating <jkeating@redhat.com>
 - Move splittree workdirs into work/ at the end of the run
