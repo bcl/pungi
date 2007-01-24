@@ -1,7 +1,7 @@
 %{!?python_sitelib: %define python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")}
 
 Name:           pungi
-Version:        0.1.2
+Version:        0.2.0
 Release:        1%{?dist}
 Summary:        Distribution compose tool
 
@@ -46,6 +46,18 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Wed Jan 24 2007 Jesse Keating <jkeating@redhat.com> - 0.2.0-1
+- Now use a manifest to determine what to pull in, not comps itself
+- Add a minimal-manifest for test composes
+- Add current F7 comps file for test composes
+- Use some anaconda code to depsolve, gets better (and more common) results
+- Bump the iso size to what was used in FC6
+- Move splittree workdirs into work/ at the end of the run
+- Remove our splittree for rawhide
+- Remove old main() sections from pungi.py and gather.py
+- Require yum 3.0.3 or newer
+- Add rescueCD support
+
 * Wed Dec 13 2006 Jesse Keating <jkeating@redhat.com> - 0.1.2-1
 - Fix a bug in DVD repodata
 - Add correct ppc boot args
