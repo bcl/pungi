@@ -42,7 +42,7 @@ class Gather(yum.YumBase):
         self.srpmlist = []
 
     def _provideToPkg(self, req): #this is stolen from Anaconda
-            best = None
+            bestlist = None
             (r, f, v) = req
 
             satisfiers = []
@@ -52,13 +52,13 @@ class Gather(yum.YumBase):
                 # care of the case that we select, eg, kernel-smp and then
                 # have something which requires kernel
                 if self.tsInfo.getMembers(po.pkgtup):
-                    return po
+                    return [po]
                 if po not in satisfiers:
                     satisfiers.append(po)
 
             if satisfiers:
-                best = self.bestPackagesFromList(satisfiers)[0]
-                return best
+                bestlist = self.bestPackagesFromList(satisfiers)
+                return bestlist
             return None
 
     def getPackageDeps(self, po):
@@ -82,14 +82,15 @@ class Gather(yum.YumBase):
             if req in provs:
                 continue
 
-            dep = self._provideToPkg(req)
-            if dep is None:
+            deps = self._provideToPkg(req)
+            if deps is None:
                 self.logger.warning("Unresolvable dependency %s in %s" % (r, po.name))
                 continue
 
-            if not pkgresults.has_key(dep):
-                pkgresults[dep] = None
-                self.tsInfo.addInstall(dep)
+            for dep in deps:
+                if not pkgresults.has_key(dep):
+                    pkgresults[dep] = None
+                    self.tsInfo.addInstall(dep)
 
         return pkgresults.keys()
 
