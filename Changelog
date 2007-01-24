@@ -11,8 +11,6 @@
 * Tue Jan 16 2007 Jesse Keating <jkeating@redhat.com>
 - Remove our splittree for rawhide
 - Remove old main() sections from pungi.py and gather.py
-- Remove our splittree for rawhide
-- Remove old main() sections from pungi.py and gather.py
 - Require yum 3.0.3 or newer
 - Add rescueCD support
 
