@@ -46,9 +46,10 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
-* Wed Jan 24 2007 Jesse Keating <jkeating@redhat.com> - 0.2.1-1
+* Thu Jan 25 2007 Jesse Keating <jkeating@redhat.com> - 0.2.1-1
 - Add a "flavor" option (such as Desktop)
 - Move packageorder file into workdir
+- Update the comps file from F7
 
 * Wed Jan 24 2007 Jesse Keating <jkeating@redhat.com> - 0.2.0-1
 - Now use a manifest to determine what to pull in, not comps itself
