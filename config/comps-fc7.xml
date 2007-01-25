@@ -4640,6 +4640,7 @@
     <uservisible>true</uservisible>
     <packagelist>
       <packagereq type="mandatory">control-center</packagereq>
+      <packagereq type="mandatory">esound</packagereq>
       <packagereq type="mandatory">gnome-applets</packagereq>
       <packagereq type="mandatory">gnome-panel</packagereq>
       <packagereq type="mandatory">gnome-session</packagereq>
