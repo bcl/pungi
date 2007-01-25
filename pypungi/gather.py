@@ -159,7 +159,9 @@ class Gather(yum.YumBase):
 
         # Package location within destdir, name subject to change/config
         pkgdir = os.path.join(self.config.get('default', 'destdir'), self.config.get('default', 'version'), 
-                                             self.config.get('default', 'arch'), self.config.get('default', 'osdir'),
+                                             self.config.get('default', 'flavor'), 
+                                             self.config.get('default', 'arch'), 
+                                             self.config.get('default', 'osdir'),
                                              self.config.get('default', 'product_path')) 
 
         if not os.path.exists(pkgdir):
@@ -223,7 +225,7 @@ class Gather(yum.YumBase):
 
         # do the downloads
         pkgdir = os.path.join(self.config.get('default', 'destdir'), self.config.get('default', 'version'),
-            'source', 'SRPMS')
+            self.config.get('default', 'flavor'), 'source', 'SRPMS')
 
         if not os.path.exists(pkgdir):
             os.makedirs(pkgdir)

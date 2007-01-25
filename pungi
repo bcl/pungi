@@ -23,6 +23,7 @@ def main():
     # Set some default variables, can be overrided in config file
 
     # Turn this into a dict someday, to iterate over when setting defaults
+    flavor = ""
     osdir = "os"
     sourcedir = "source"
     debugdir = "debug"
@@ -35,6 +36,9 @@ def main():
 
     config = SafeConfigParser()
     config.read(opts.config)
+
+    if not config.has_option('default', 'flavor'):
+        config.set('default', 'flavor', flavor)
 
     if not config.has_option('default', 'osdir'):
         config.set('default', 'osdir', osdir)

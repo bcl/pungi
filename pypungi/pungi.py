@@ -25,12 +25,18 @@ class Pungi:
         self.prodpath = 'Fedora' # Probably should be defined elsewhere
         self.archdir = os.path.join(self.config.get('default', 'destdir'),
                                    self.config.get('default', 'version'),
+                                   self.config.get('default', 'flavor'),
                                    self.config.get('default', 'arch'))
 
         self.topdir = os.path.join(self.archdir, 'os')
         self.workdir = os.path.join(self.config.get('default', 'destdir'), 
                                     'work',
+                                    self.config.get('default', 'flavor'),
                                     self.config.get('default', 'arch'))
+
+        if not os.path.exists(self.workdir):
+            os.makedirs(self.workdir)
+
         self.common_files = []
 
 
@@ -46,7 +52,7 @@ class Pungi:
 
     def doPackageorder(self):
         os.system('/usr/lib/anaconda-runtime/pkgorder %s %s %s > %s' % (self.topdir, self.config.get('default', 'arch'), 
-            self.config.get('default', 'product_path'), os.path.join(self.config.get('default', 'destdir'), 
+            self.config.get('default', 'product_path'), os.path.join(self.workdir, 
             'pkgorder-%s' % self.config.get('default', 'arch'))))
 
     def doGetRelnotes(self):
@@ -100,7 +106,7 @@ class Pungi:
         timber.bin_discs = self.config.getint('default', 'discs')
         timber.src_discs = 0
         timber.release_str = '%s %s' % (self.config.get('default', 'product_name'), self.config.get('default', 'version'))
-        timber.package_order_file = os.path.join(self.config.get('default', 'destdir'), 'pkgorder-%s' % self.config.get('default', 'arch'))
+        timber.package_order_file = os.path.join(self.workdir, 'pkgorder-%s' % self.config.get('default', 'arch'))
         timber.dist_dir = self.topdir
         timber.src_dir = os.path.join(self.config.get('default', 'destdir'), self.config.get('default', 'version'), 'source', 'SRPMS')
         timber.product_path = self.config.get('default', 'product_path')
@@ -119,10 +125,14 @@ class Pungi:
         timber.src_discs = self.config.getint('default', 'discs')
         #timber.release_str = '%s %s' % (self.config.get('default', 'product_name'), self.config.get('default', 'version'))
         #timber.package_order_file = os.path.join(self.config.get('default', 'destdir'), 'pkgorder-%s' % self.config.get('default', 'arch'))
-        timber.dist_dir = os.path.join(self.config.get('default', 'destdir'), 
-                                       self.config.get('default', 'version'), 
+        timber.dist_dir = os.path.join(self.config.get('default', 'destdir'),
+                                       self.config.get('default', 'version'),
+                                       self.config.get('default', 'flavor'),
                                        'source', 'SRPM')
-        timber.src_dir = os.path.join(self.config.get('default', 'destdir'), self.config.get('default', 'version'), 'source', 'SRPMS')
+        timber.src_dir = os.path.join(self.config.get('default', 'destdir'),
+                                      self.config.get('default', 'version'),
+                                      self.config.get('default', 'flavor'),
+                                      'source', 'SRPMS')
         #timber.product_path = self.config.get('default', 'product_path')
         #timber.reserve_size =  
         # Set this ourselves, for creating our dirs ourselves
@@ -155,7 +165,7 @@ class Pungi:
         ia64bootargs = '-b images/boot.img -no-emul-boot'
         ppcbootargs = '-part -hfs -r -l -sysid PPC -hfs-bless "./ppc/mac" -map %s -magic %s -no-desktop -allow-multidot -chrp-boot' % (os.path.join(anaruntime, 'mapping'), os.path.join(anaruntime, 'magic'))
         isodir = os.path.join(self.config.get('default', 'destdir'), self.config.get('default', 'version'), 
-            self.config.get('default', 'arch'), self.config.get('default', 'isodir'))
+            self.config.get('default', 'flavor'), self.config.get('default', 'arch'), self.config.get('default', 'isodir'))
         os.makedirs(isodir)
         for disc in range(1, self.config.getint('default', 'discs') + 1): # cycle through the CD isos
             volname = '"%s %s %s Disc %s"' % (self.config.get('default', 'product_name'), self.config.get('default', 'version'), 

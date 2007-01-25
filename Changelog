@@ -1,4 +1,6 @@
 * Tue Jan 23 2007 Jesse Keating <jkeating@redhat.com>
+- Add a "flavor" option (such as Desktop)
+- Move packageorder file into workdir
 - Now use a manifest to determine what to pull in, not comps itself
 - Add a minimal-manifest for test composes
 - Add current F7 comps file for test composes
