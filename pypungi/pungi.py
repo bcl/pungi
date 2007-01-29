@@ -163,7 +163,7 @@ class Pungi:
         bootargs = ''
         x86bootargs = '-b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table'
         ia64bootargs = '-b images/boot.img -no-emul-boot'
-        ppcbootargs = '-part -hfs -r -l -sysid PPC -hfs-bless "./ppc/mac" -map %s -magic %s -no-desktop -allow-multidot -chrp-boot' % (os.path.join(anaruntime, 'mapping'), os.path.join(anaruntime, 'magic'))
+        ppcbootargs = '-part -hfs -r -l -sysid PPC -map %s -magic %s -no-desktop -allow-multidot -chrp-boot -hfs-bless' % (os.path.join(anaruntime, 'mapping'), os.path.join(anaruntime, 'magic'))
         isodir = os.path.join(self.config.get('default', 'destdir'), self.config.get('default', 'version'), 
             self.config.get('default', 'flavor'), self.config.get('default', 'arch'), self.config.get('default', 'isodir'))
         os.makedirs(isodir)
@@ -178,7 +178,7 @@ class Pungi:
                 elif self.config.get('default', 'arch') == 'ia64':
                     bootargs = ia64bootargs
                 elif self.config.get('default', 'arch') == 'ppc':
-                    bootargs = ppcbootargs
+                    bootargs = "%s %s" % (ppcbootargs, os.path.join('%s-disc%s' % (self.topdir, disc), "ppc/mac"))
             else:
                 bootargs = '' # clear out any existing bootargs
 
@@ -217,7 +217,7 @@ class Pungi:
             elif self.config.get('default', 'arch') == 'ia64':
                 bootargs = ia64bootargs
             elif self.config.get('default', 'arch') == 'ppc':
-                bootargs = ppcbootargs
+                bootargs = "%s %s" % (ppcbootargs, os.path.join(self.topdir, "ppc/mac"))
             else:
                 bootargs = '' # clear out any existing bootargs
             
@@ -237,39 +237,40 @@ class Pungi:
                 'repodata-%s' % self.config.get('default', 'arch')), os.path.join(self.topdir, 'repodata'))
 
         # Now make rescue images
-        os.system('/usr/lib/anaconda-runtime/mk-rescueimage.%s %s %s %s %s' % (
-            self.config.get('default', 'arch'),
-            self.topdir,
-            self.workdir,
-            self.config.get('default', 'iso_basename'),
-            self.config.get('default', 'product_path')))
+        if not self.config.get('default', 'arch') == 'source':
+            os.system('/usr/lib/anaconda-runtime/mk-rescueimage.%s %s %s %s %s' % (
+                self.config.get('default', 'arch'),
+                self.topdir,
+                self.workdir,
+                self.config.get('default', 'iso_basename'),
+                self.config.get('default', 'product_path')))
 
-        # write the iso
-        volname = '"%s %s %s Rescue"' % (self.config.get('default', 'product_name'), self.config.get('default', 'version'), 
-                self.config.get('default', 'arch')) # hacky :/
-        isoname = '%s-%s-%s-rescuecd.iso' % (self.config.get('default', 'iso_basename'), self.config.get('default', 'version'), 
-            self.config.get('default', 'arch'))
-        if self.config.get('default', 'arch') == 'i386' or self.config.get('default', 'arch') == 'x86_64':
-            bootargs = x86bootargs
-        elif self.config.get('default', 'arch') == 'ia64':
-            bootargs = ia64bootargs
-        elif self.config.get('default', 'arch') == 'ppc':
-            bootargs = ppcbootargs
-        else:
-            bootargs = '' # clear out any existing bootargs
+            # write the iso
+            volname = '"%s %s %s Rescue"' % (self.config.get('default', 'product_name'), self.config.get('default', 'version'), 
+                    self.config.get('default', 'arch')) # hacky :/
+            isoname = '%s-%s-%s-rescuecd.iso' % (self.config.get('default', 'iso_basename'), self.config.get('default', 'version'), 
+                self.config.get('default', 'arch'))
+            if self.config.get('default', 'arch') == 'i386' or self.config.get('default', 'arch') == 'x86_64':
+                bootargs = x86bootargs
+            elif self.config.get('default', 'arch') == 'ia64':
+                bootargs = ia64bootargs
+            elif self.config.get('default', 'arch') == 'ppc':
+                bootargs = "%s %s" % (ppcbootargs, os.path.join(self.workdir, "%s-rescueimage" % self.config.get('default', 'arch'), "ppc/mac"))
+            else:
+                bootargs = '' # clear out any existing bootargs
 
-        os.system('mkisofs %s %s %s -o %s/%s %s' % (mkisofsargs,
-                                                    volname,
-                                                    bootargs,
-                                                    isodir,
-                                                    isoname,
-                                                    os.path.join(self.workdir, "%s-rescueimage" % self.config.get('default', 'arch'))))
+            os.system('mkisofs %s %s %s -o %s/%s %s' % (mkisofsargs,
+                                                        volname,
+                                                        bootargs,
+                                                        isodir,
+                                                        isoname,
+                                                        os.path.join(self.workdir, "%s-rescueimage" % self.config.get('default', 'arch'))))
 
-        os.system('cd %s; sha1sum %s >> SHA1SUM' % (isodir, isoname))
+            os.system('cd %s; sha1sum %s >> SHA1SUM' % (isodir, isoname))
 
         # Do some clean up
         dirs = os.listdir(self.archdir)
 
         for dir in dirs:
-            if dir.startswith('os-disc'):
+            if dir.startswith('os-disc') or dir.startswith('SRPM-disc'):
                 shutil.move(os.path.join(self.archdir, dir), os.path.join(self.workdir, dir))

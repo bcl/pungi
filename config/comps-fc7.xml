@@ -2634,80 +2634,8 @@
       <packagereq type="default">rp-pppoe</packagereq>
       <packagereq type="default">wvdial</packagereq>
       <packagereq type="optional">efax</packagereq>
-      <packagereq type="optional">statserial</packagereq>
-    </packagelist>
-  </group>
-  <group>
-    <id>dialup</id>
-    <name>Dialup Networking Support</name>
-    <name xml:lang="af">Inbelnetwerksteun</name>
-    <name xml:lang="am">የመረቡ ደጋፊ ጋር ደውል</name>
-    <name xml:lang="ar">دعم شبكات الاتصال الهاتفي</name>
-    <name xml:lang="as">ডাইল্ কৰা জালপ্ৰসাৰৰ সমৰ্থন</name>
-    <name xml:lang="be">Падтрымка камутуемых злучэньняў</name>
-    <name xml:lang="bg">Поддръжка на Dailup мрежи</name>
-    <name xml:lang="bn">টেলিফোনের মাধ্যমে নেটওয়ার্কিং-এর ব্যবস্থা</name>
-    <name xml:lang="bn_IN">ডায়াল-আপ নেটওয়ার্কিং ব্যবস্থা</name>
-    <name xml:lang="ca">Suport per a la connexió a la xarxa</name>
-    <name xml:lang="cs">Podpora vytáčeného připojení k síti</name>
-    <name xml:lang="cy">Cynhaliaeth Rhwydweithio Cyswllt Ffôn</name>
-    <name xml:lang="da">Understøttelse for opkaldt opkobling</name>
-    <name xml:lang="de">Einwahl-Netzwerk Unterstützung</name>
-    <name xml:lang="el">Υποστήριξη δικτύωσης μέσω τηλεφώνου</name>
-    <name xml:lang="en_GB">Dial-up Networking Support</name>
-    <name xml:lang="es">Soporte de red mediante discado</name>
-    <name xml:lang="et">Sissehelistamise võrgu toetus</name>
-    <name xml:lang="fa">پشتیبانی از کار با شبکه از طریق خط تلفن</name>
-    <name xml:lang="fi">Tuki puhelinverkkoyhteyksille</name>
-    <name xml:lang="fr">Support d'accès distant au réseau</name>
-    <name xml:lang="gu">ડાયલઅપ નેટવર્કનો આધાર</name>
-    <name xml:lang="hi">ड़ायलअप संजालन समर्थन</name>
-    <name xml:lang="hr">Podrška za telefoniranje</name>
-    <name xml:lang="hu">Telefonos hálózati támogatás</name>
-    <name xml:lang="hy">Հեռախոսային միացման հնարավորություն</name>
-    <name xml:lang="id">Dukungan Dialup Networking</name>
-    <name xml:lang="is">Upphringinetsstuðningur</name>
-    <name xml:lang="it">Supporto di networking dialup</name>
-    <name xml:lang="ja">ダイヤルアップネットワークサポート</name>
-    <name xml:lang="kn">ದೂರವಾಣಿ ಮೂಲಕ ಜಾಲವ್ಯವಸ್ಥೆಯ ಸಮರ್ಥನೆ</name>
-    <name xml:lang="ko">전화연결 네트워킹 지원</name>
-    <name xml:lang="lv">Iezvanpiekļuve datortīkliem</name>
-    <name xml:lang="mk">Поддршка за модемска (dial-up) мрежа</name>
-    <name xml:lang="ml">ഡൈലപ്പ് നെറ്റ്വറ്‍ക്കിംഗ് സപ്പോറ്‍ട്ട്</name>
-    <name xml:lang="mr">डायलअप संजालन समर्थन</name>
-    <name xml:lang="ms">Sokongan Rangkaian Dailup</name>
-    <name xml:lang="nb">Støtte for oppringt nettverk</name>
-    <name xml:lang="nl">Inbelnetwerk ondersteuning</name>
-    <name xml:lang="no">Støtte for oppringt nettverk</name>
-    <name xml:lang="nso">Thekgo ya Neteweke ya go Taela</name>
-    <name xml:lang="or">ଡାଏଲ-ଅପ ନେଟୱାର୍କ ସହାୟତା</name>
-    <name xml:lang="pa">ਡਾਇਲਅੱਪ ਨੈੱਟਵਰਕ ਸਹਿਯੋਗ</name>
-    <name xml:lang="pl">Obsługa sieci dial-up</name>
-    <name xml:lang="pt">Suporte a Ligações Telefónicas</name>
-    <name xml:lang="pt_BR">Suporte à Rede Dialup</name>
-    <name xml:lang="ro">Suport pentru acces la reţea prin telefon</name>
-    <name xml:lang="ru">Удалённый доступ к сети</name>
-    <name xml:lang="si">ඩයල්අප් ජාල පහසුකම</name>
-    <name xml:lang="sk">Podpora telefonického pripojenia</name>
-    <name xml:lang="sl">Podpora telefonske priključitve</name>
-    <name xml:lang="sr">Подршка за телефонско умрежавање</name>
-    <name xml:lang="sr@Latn">Podrška za telefonsko umrežavanje</name>
-    <name xml:lang="sv">Stöd för uppringd uppkoppling</name>
-    <name xml:lang="ta">டயல்அப் பிணைய துணை</name>
-    <name xml:lang="te">Dialup Networking మద్దతు</name>
-    <name xml:lang="th">ระบบสนับสนุนการเชื่อมต่ออินเทอร์เน็ตด้วยสายโทรศัพท์</name>
-    <name xml:lang="tr">Çevirmeli Ağ Desteği</name>
-    <name xml:lang="uk">Віддалений доступ до мережі</name>
-    <name xml:lang="ur">ڈاليپ نیٹ وارک ساتھ</name>
-    <name xml:lang="vi">Hỗ trợ mạng quay số</name>
-    <name xml:lang="zh_CN">拨号联网支持</name>
-    <name xml:lang="zh_TW">撥號網路支援</name>
-    <name xml:lang="zu">Ukuxhasa Kokuxhumanisa Kokufona</name>
-    <description/>
-    <default>true</default>
-    <uservisible>false</uservisible>
-    <packagelist>
       <packagereq type="optional">pptp</packagereq>
+      <packagereq type="optional">statserial</packagereq>
     </packagelist>
   </group>
   <group>
