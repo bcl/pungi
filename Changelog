@@ -2,6 +2,7 @@
 - Update the comps file again from F7
 - Fix the ppc boot flags
 - Clean up SRPM-disc junk
+- add bugurl config option for anaconda betanag
 
 * Thu Jan 25 2007 Jesse Keating <jkeating@redhat.com>
 - Update the comps file from F7

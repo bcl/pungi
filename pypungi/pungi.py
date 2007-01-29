@@ -45,9 +45,10 @@ class Pungi:
         os.makedirs(os.path.join(self.topdir, self.config.get('default', 'product_path'), 'base'))
         shutil.copy(self.config.get('default', 'comps'), os.path.join(self.topdir, 
             self.config.get('default', 'product_path'), 'base', 'comps.xml'))
-        args = '--product "%s" --version %s --release "%s" --prodpath %s %s' % (self.config.get('default', 'product_name'),
+        args = '--product "%s" --version %s --release "%s" --prodpath %s --bugurl "%s" %s' % (self.config.get('default', 'product_name'),
             self.config.get('default', 'version'), '%s %s' % (self.config.get('default', 'product_name'), 
-            self.config.get('default', 'version')), self.config.get('default', 'product_path'), self.topdir)
+            self.config.get('default', 'version')), self.config.get('default', 'product_path'), 
+            self.config.get('default', 'bugurl'), self.topdir)
         os.system('/usr/lib/anaconda-runtime/buildinstall %s' % args)
 
     def doPackageorder(self):
