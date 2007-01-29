@@ -111,6 +111,7 @@ def main():
         mypungi = pypungi.pungi.Pungi(config)
         mypungi.topdir = os.path.join(config.get('default', 'destdir'),
                                       config.get('default', 'version'),
+                                      config.get('default', 'flavor'),
                                       'source', 'SRPM')
         mypungi.doSplitSRPMs()
         mypungi.doCreateIsos()
