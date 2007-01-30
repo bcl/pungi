@@ -1,3 +1,6 @@
+* Tue Jan 30 2007 Jesse Keating <jkeating@redhat.com>
+- implantmd5 _then_ sha1sum.
+
 * Mon Jan 29 2007 Jesse Keating <jkeating@redhat.com>
 - Update the comps file again from F7
 - Fix the ppc boot flags

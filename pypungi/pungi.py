@@ -189,10 +189,11 @@ class Pungi:
                                                         isodir,
                                                         isoname,
                                                         os.path.join('%s-disc%s' % (self.topdir, disc))))
-            os.system('cd %s; sha1sum %s >> SHA1SUM' % (isodir, isoname))
             # implant md5 for mediacheck on all but source arches
             if not self.config.get('default', 'arch') == 'source':
                 os.system('/usr/lib/anaconda-runtime/implantisomd5 %s' % os.path.join(isodir, isoname))
+            # shove the sha1sum into a file
+            os.system('cd %s; sha1sum %s >> SHA1SUM' % (isodir, isoname))
 
         # We've asked for more than one disc, and we're not srpms, so make a DVD image
         if self.config.getint('default', 'discs') > 1 and not self.config.get('default', 'arch') == 'source':
