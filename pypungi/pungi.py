@@ -29,6 +29,8 @@ class Pungi:
                                    self.config.get('default', 'arch'))
 
         self.topdir = os.path.join(self.archdir, 'os')
+        self.isodir = os.path.join(self.archdir, self.config.get('default','isodir'))
+
         self.workdir = os.path.join(self.config.get('default', 'destdir'), 
                                     'work',
                                     self.config.get('default', 'flavor'),
@@ -168,9 +170,7 @@ class Pungi:
         x86bootargs = '-b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table'
         ia64bootargs = '-b images/boot.img -no-emul-boot'
         ppcbootargs = '-part -hfs -r -l -sysid PPC -map %s -magic %s -no-desktop -allow-multidot -chrp-boot -hfs-bless' % (os.path.join(anaruntime, 'mapping'), os.path.join(anaruntime, 'magic'))
-        isodir = os.path.join(self.config.get('default', 'destdir'), self.config.get('default', 'version'), 
-            self.config.get('default', 'flavor'), self.config.get('default', 'arch'), self.config.get('default', 'isodir'))
-        os.makedirs(isodir)
+        os.makedirs(self.isodir)
         for disc in range(1, self.config.getint('default', 'discs') + 1): # cycle through the CD isos
             volname = '"%s %s %s Disc %s"' % (self.config.get('default', 'product_name'), self.config.get('default', 'version'), 
                 self.config.get('default', 'arch'), disc) # hacky :/
@@ -189,14 +189,14 @@ class Pungi:
             os.system('mkisofs %s %s %s -o %s/%s %s' % (mkisofsargs,
                                                         volname,
                                                         bootargs,
-                                                        isodir,
+                                                        self.isodir,
                                                         isoname,
                                                         os.path.join('%s-disc%s' % (self.topdir, disc))))
             # implant md5 for mediacheck on all but source arches
             if not self.config.get('default', 'arch') == 'source':
-                os.system('/usr/lib/anaconda-runtime/implantisomd5 %s' % os.path.join(isodir, isoname))
+                os.system('/usr/lib/anaconda-runtime/implantisomd5 %s' % os.path.join(self.isodir, isoname))
             # shove the sha1sum into a file
-            os.system('cd %s; sha1sum %s >> SHA1SUM' % (isodir, isoname))
+            os.system('cd %s; sha1sum %s >> SHA1SUM' % (self.isodir, isoname))
 
         # We've asked for more than one disc, and we're not srpms, so make a DVD image
         if self.config.getint('default', 'discs') > 1 and not self.config.get('default', 'arch') == 'source':
@@ -229,11 +229,11 @@ class Pungi:
             os.system('mkisofs %s %s %s -o %s/%s %s' % (mkisofsargs,
                                                         volname,
                                                         bootargs,
-                                                        isodir,
+                                                        self.isodir,
                                                         isoname,
                                                         self.topdir))
-            os.system('cd %s; sha1sum %s >> SHA1SUM' % (isodir, isoname))
-            os.system('/usr/lib/anaconda-runtime/implantisomd5 %s' % os.path.join(isodir, isoname))
+            os.system('cd %s; sha1sum %s >> SHA1SUM' % (self.isodir, isoname))
+            os.system('/usr/lib/anaconda-runtime/implantisomd5 %s' % os.path.join(self.isodir, isoname))
 
             shutil.move(os.path.join(self.config.get('default', 'destdir'), '.discinfo-%s' % self.config.get('default', 'arch')), discinfofile)
 
@@ -267,11 +267,11 @@ class Pungi:
             os.system('mkisofs %s %s %s -o %s/%s %s' % (mkisofsargs,
                                                         volname,
                                                         bootargs,
-                                                        isodir,
+                                                        self.isodir,
                                                         isoname,
                                                         os.path.join(self.workdir, "%s-rescueimage" % self.config.get('default', 'arch'))))
 
-            os.system('cd %s; sha1sum %s >> SHA1SUM' % (isodir, isoname))
+            os.system('cd %s; sha1sum %s >> SHA1SUM' % (self.isodir, isoname))
 
         # Do some clean up
         dirs = os.listdir(self.archdir)

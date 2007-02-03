@@ -1,5 +1,6 @@
 * Sat Feb 03 2007 Jesse Keating <jkeating@redhat.com>
 - Be able to opt-out of a bugurl since buildinstall supports this
+- Make isodir an object of pungi (wwoods)
 
 * Tue Jan 30 2007 Jesse Keating <jkeating@redhat.com>
 - implantmd5 _then_ sha1sum.
