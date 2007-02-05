@@ -53,7 +53,7 @@ class Pungi:
         args = '--product "%s" --version %s --release "%s" --prodpath %s %s %s' % (self.config.get('default', 'product_name'),
             self.config.get('default', 'version'), '%s %s' % (self.config.get('default', 'product_name'), 
             self.config.get('default', 'version')), self.config.get('default', 'product_path'), 
-            bugurl, self.config.get('default', 'bugurl'), self.topdir)
+            bugurl, self.topdir)
         os.system('/usr/lib/anaconda-runtime/buildinstall %s' % args)
 
     def doPackageorder(self):
