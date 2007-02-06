@@ -1,7 +1,7 @@
 %{!?python_sitelib: %define python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")}
 
 Name:           pungi
-Version:        0.2.2
+Version:        0.2.3
 Release:        1%{?dist}
 Summary:        Distribution compose tool
 
@@ -46,6 +46,12 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Tue Feb 06 2007 Jesse Keating <jkeating@redhat.com> - 0.2.3-1
+- Be able to opt-out of a bugurl since buildinstall supports this
+- Make isodir an object of pungi (wwoods)
+- yum bestPackagesFromList takes an arch argument. Fixes ppc64 bug
+- Don't use 'returnSimple' anymore, deprecated in yum api
+
 * Mon Jan 29 2007 Jesse Keating <jkeating@redhat.com> - 0.2.2-1
 - Update the comps file again from F7
 - Fix the ppc boot flags
