@@ -29,10 +29,13 @@ class Gather(yum.YumBase):
         self.doRpmDBSetup()
         if config.get('default', 'arch') == 'i386':
             arches = yum.rpmUtils.arch.getArchList('i686')
+            self.compatarch = 'i686'
         elif config.get('default', 'arch') == 'ppc':
             arches = yum.rpmUtils.arch.getArchList('ppc64')
+            self.compatarch = 'ppc64'
         else:
             arches = yum.rpmUtils.arch.getArchList(config.get('default', 'arch'))
+            self.compatarch = config.get('default', 'arch')
         self.doSackSetup(arches)
         self.doSackFilelistPopulate()
         self.logger = yum.logging.getLogger("yum.verbose.pungi")
@@ -57,7 +60,7 @@ class Gather(yum.YumBase):
                     satisfiers.append(po)
 
             if satisfiers:
-                bestlist = self.bestPackagesFromList(satisfiers)
+                bestlist = self.bestPackagesFromList(satisfiers, arch=self.compatarch)
                 return bestlist
             return None
 
