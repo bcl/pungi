@@ -143,7 +143,7 @@ class Gather(yum.YumBase):
 
  
         for po in self.polist:
-            srpm = po.returnSimple('sourcerpm').split('.src.rpm')[0]
+            srpm = po.sourcerpm.split('.src.rpm')[0]
             if not srpm in self.srpmlist:
                 self.srpmlist.append(srpm)
 
@@ -172,11 +172,11 @@ class Gather(yum.YumBase):
 
         for pkg in self.polist:
             repo = self.repos.getRepo(pkg.repoid)
-            remote = pkg.returnSimple('relativepath')
+            remote = pkg.relativepath
             local = os.path.basename(remote)
             local = os.path.join(self.config.get('default', 'cachedir'), local)
             if (os.path.exists(local) and
-                str(os.path.getsize(local)) == pkg.returnSimple('packagesize')):
+                str(os.path.getsize(local)) == pkg.packagesize):
 
                 if not self.config.has_option('default', 'quiet'):
                     self.logger.info("%s already exists and appears to be complete" % local)
@@ -235,14 +235,14 @@ class Gather(yum.YumBase):
 
         for pkg in srpmpolist:
             repo = self.repos.getRepo(pkg.repoid)
-            remote = pkg.returnSimple('relativepath')
+            remote = pkg.relativepath
             local = os.path.basename(remote)
             local = os.path.join(self.config.get('default', 'cachedir'), local)
-            if os.path.exists(local) and str(os.path.getsize(local)) == pkg.returnSimple('packagesize'):
+            if os.path.exists(local) and str(os.path.getsize(local)) == pkg.packagesize:
 
                 if not self.config.has_option('default', 'quiet'):
                     self.logger.info("%s already exists and appears to be complete" % local)
-                if os.path.exists(os.path.join(pkgdir, os.path.basename(remote))) and str(os.path.getsize(os.path.join(pkgdir, os.path.basename(remote)))) == pkg.returnSimple('packagesize'):
+                if os.path.exists(os.path.join(pkgdir, os.path.basename(remote))) and str(os.path.getsize(os.path.join(pkgdir, os.path.basename(remote)))) == pkg.packagesize:
                     if not self.config.has_option('default', 'quiet'):
                         self.logger.info("%s already exists in tree and appears to be complete" % local)
                 else:
