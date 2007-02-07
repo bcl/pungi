@@ -43,6 +43,7 @@ class Gather(yum.YumBase):
         self.pkglist = pkglist
         self.polist = []
         self.srpmlist = []
+        self.resolved_deps = {} # list the deps we've already resolved, short circuit.
 
     def _provideToPkg(self, req): #this is stolen from Anaconda
             bestlist = None
@@ -79,6 +80,8 @@ class Gather(yum.YumBase):
         pkgresults = {}
 
         for req in reqs:
+            if self.resolved_deps.has_key(req):
+                continue
             (r,f,v) = req
             if r.startswith('rpmlib(') or r.startswith('config('):
                 continue
@@ -94,6 +97,8 @@ class Gather(yum.YumBase):
                 if not pkgresults.has_key(dep):
                     pkgresults[dep] = None
                     self.tsInfo.addInstall(dep)
+           
+            self.resolved_deps[req] = None
 
         return pkgresults.keys()
 
