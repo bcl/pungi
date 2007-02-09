@@ -1,6 +1,10 @@
+* Thu Feb 08 2007 Jesse Keating <jkeating@redhat.com>
+- Add support for globbing in manifest
+
 * Tue Feb 06 2007 Jesse Keating <jkeating@redhat.com>
 - yum bestPackagesFromList takes an arch argument. Fixes ppc64 bug
 - Don't use 'returnSimple' anymore, deprecated in yum api
+- Speed up depsolving a bit by tracking solved deps
 
 * Sat Feb 03 2007 Jesse Keating <jkeating@redhat.com>
 - Be able to opt-out of a bugurl since buildinstall supports this
