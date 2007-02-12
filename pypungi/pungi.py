@@ -49,8 +49,8 @@ class Pungi:
         f.write(line.strip()+"\n")
         f.close()
 
-    def relativize(self,dir,subfile):
-        '''Get the relative path for subfile underneath dir.'''
+    def mkrelative(self,dir,subfile):
+        '''Return the relative path for 'subfile' underneath 'dir'.'''
         if subfile.startswith(dir):
             return subfile.replace(dir+os.path.sep,'')
 
@@ -67,7 +67,7 @@ class Pungi:
             self.config.get('default', 'version')), self.config.get('default', 'product_path'), 
             bugurl, self.topdir)
         os.system('/usr/lib/anaconda-runtime/buildinstall %s' % args)
-        self.writeinfo('tree: %s' % relativize(self.destdir,self.topdir))
+        self.writeinfo('tree: %s' % self.mkrelative(self.destdir,self.topdir))
 
     def doPackageorder(self):
         os.system('/usr/lib/anaconda-runtime/pkgorder %s %s %s > %s' % (self.topdir, self.config.get('default', 'arch'), 
@@ -212,7 +212,7 @@ class Pungi:
             # shove the sha1sum into a file
             os.system('cd %s; sha1sum %s >> SHA1SUM' % (self.isodir, isoname))
             # keep track of the CD images we've written
-            isolist.append(relativize(self.destdir,isofile))
+            isolist.append(self.mkrelative(self.destdir,isofile))
         # Write out a line describing the CD set
         self.writeinfo('cdset=%s' % ' '.join(isolist))
 
@@ -260,7 +260,7 @@ class Pungi:
             shutil.move(os.path.join(self.config.get('default', 'destdir'), 
                 'repodata-%s' % self.config.get('default', 'arch')), os.path.join(self.topdir, 'repodata'))
             # keep track of the DVD images we've written 
-            isolist.append(relativize(self.destdir,isofile))
+            isolist.append(self.mkrelative(self.destdir,isofile))
 
         # Write out a line describing the DVD set
         self.writeinfo('dvdset=%s' % ' '.join(isolist))
