@@ -191,7 +191,8 @@ class Gather(yum.YumBase):
                 if not self.config.has_option('default', 'quiet'):
                     self.logger.info("%s already exists and appears to be complete" % local)
                 target=os.path.join(pkgdir, os.path.basename(remote))
-                os.remove(target) # avoid traceback after interrupted download
+                if os.path.exists(target):
+                    os.remove(target) # avoid traceback after interrupted download
                 os.link(local, target)
                 continue
 
