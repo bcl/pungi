@@ -23,7 +23,6 @@ class Pungi:
     def __init__(self, config):
         self.config = config
         self.prodpath = 'Fedora' # Probably should be defined elsewhere
-        self.archreldir = 
         self.archdir = os.path.join(self.config.get('default', 'destdir'),
                                    self.config.get('default', 'version'),
                                    self.config.get('default', 'flavor'),
