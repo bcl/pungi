@@ -70,6 +70,9 @@ def main():
 
     pkglist = get_packagelist(config.get('default', 'manifest'))
 
+    if not opts.destdir == "*CONFFILE*":
+        config.set('default', 'destdir', opts.destdir)
+
     destdir = config.get('default', 'destdir')
 
     if not os.path.exists(destdir):
@@ -121,11 +124,11 @@ def main():
                                       config.get('default', 'version'),
                                       config.get('default', 'flavor'),
                                       'source', 'SRPM')
-		if opts.do_all or opts.do_splittree:
-	        mypungi.doSplitSRPMs()
+        if opts.do_all or opts.do_splittree:
+            mypungi.doSplitSRPMs()
 
-		if opts.do_all or opts.do_createiso:
-	        mypungi.doCreateIsos()
+        if opts.do_all or opts.do_createiso:
+            mypungi.doCreateIsos()
 
 if __name__ == '__main__':
     from optparse import OptionParser
@@ -133,27 +136,31 @@ if __name__ == '__main__':
 
     def get_arguments():
     # hack job for now, I'm sure this could be better for our uses
-        usage = "usage: %s [options]" % sys.argv[0]
-        parser = OptionParser(usage=usage)
-       # parser.add_option("--destdir", default=".", dest="destdir",
-       #   help='destination directory (defaults to current directory)')
+        parser = OptionParser()
+        parser.add_option("--destdir", default="*CONFFILE*", dest="destdir",
+          help='destination directory (defaults to current directory)')
         parser.add_option("-c", "--conf", default='/etc/pungi/pungi.conf', dest="config",
           help='Config file to use')
-
-        parser.add_option("--all-stages", action="store_true", default=True, dest="do_all", help="Enable ALL stages")
-        parser.add_option("-B", action="store_true", default=False, dest="do_buildinstall", help="Flag to enable processing the BuildInstall stage")
-        parser.add_option("-G", action="store_true", default=False, dest="do_gather", help="Flag to enable processing the Gather stage")
-        parser.add_option("-P", action="store_true", default=False, dest="do_packageorder", help="Flag to enable processing the Package Order stage")
-        parser.add_option("-S", action="store_true", default=False, dest="do_splittree", help="Flag to enable processing the SplitTree stage")
-        parser.add_option("-I", action="store_true", default=False, dest="do_createiso", help="Flag to enable processing the CreateISO stage")
+        parser.add_option("--all-stages", action="store_true", default=True, dest="do_all",
+          help="Enable ALL stages")
+        parser.add_option("-B", action="store_true", default=False, dest="do_buildinstall",
+          help="Flag to enable processing the BuildInstall stage")
+        parser.add_option("-G", action="store_true", default=False, dest="do_gather",
+          help="Flag to enable processing the Gather stage")
+        parser.add_option("-P", action="store_true", default=False, dest="do_packageorder",
+          help="Flag to enable processing the Package Order stage")
+        parser.add_option("-S", action="store_true", default=False, dest="do_splittree",
+          help="Flag to enable processing the SplitTree stage")
+        parser.add_option("-I", action="store_true", default=False, dest="do_createiso",
+          help="Flag to enable processing the CreateISO stage")
 
 
         (opts, args) = parser.parse_args()
         if opts.do_gather or opts.do_buildinstall or opts.do_packageorder or opts.do_splittree or opts.do_createiso:
             opts.do_all = False
-        #if len(opts) < 1:
-        #    parser.print_help()
-        #    sys.exit(0)
+        if len(sys.argv) < 2:
+            parser.print_help()
+            sys.exit(0)
         return (opts, args)
 
     def get_packagelist(manifest):
