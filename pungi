@@ -90,20 +90,28 @@ def main():
 
     # Actually do work.
     if not config.get('default', 'arch') == 'source':
-        mygather = pypungi.gather.Gather(config, pkglist)
-        mygather.getPackageObjects()
-        mygather.downloadPackages()
-        if config.getboolean('default', 'getsource'):
-            mygather.getSRPMList()
-            mygather.downloadSRPMs()
+        if opts.do_all or opts.do_gather:
+            mygather = pypungi.gather.Gather(config, pkglist)
+            mygather.getPackageObjects()
+            mygather.downloadPackages()
+            if config.getboolean('default', 'getsource'):
+                mygather.getSRPMList()
+                mygather.downloadSRPMs()
 
         mypungi = pypungi.pungi.Pungi(config)
-        mypungi.doBuildinstall()
-        mypungi.doPackageorder()
-        mypungi.doGetRelnotes()
-        mypungi.doSplittree()
-        mypungi.doCreateSplitrepo()
-        mypungi.doCreateIsos()
+
+        if opts.do_all or opts.do_buildinstall:
+           mypungi.doBuildinstall()
+
+        if opts.do_all or opts.do_packageorder:
+           mypungi.doPackageorder()
+           mypungi.doGetRelnotes()
+
+        if opts.do_all or opts.do_splittree:
+             mypungi.doSplittree()
+        if opts.do_all or opts.do_createiso:
+           mypungi.doCreateSplitrepo()
+           mypungi.doCreateIsos(config.get('default', 'iso_dir'))
 
     # Do things slightly different for src.
     if config.get('default', 'arch') == 'source':
@@ -113,8 +121,11 @@ def main():
                                       config.get('default', 'version'),
                                       config.get('default', 'flavor'),
                                       'source', 'SRPM')
-        mypungi.doSplitSRPMs()
-        mypungi.doCreateIsos()
+		if opts.do_all or opts.do_splittree:
+	        mypungi.doSplitSRPMs()
+
+		if opts.do_all or opts.do_createiso:
+	        mypungi.doCreateIsos()
 
 if __name__ == '__main__':
     from optparse import OptionParser
@@ -126,26 +137,20 @@ if __name__ == '__main__':
         parser = OptionParser(usage=usage)
        # parser.add_option("--destdir", default=".", dest="destdir",
        #   help='destination directory (defaults to current directory)')
-       # parser.add_option("--cachedir", default="./cache", dest="cachedir",
-       #   help='cache directory (defaults to cache subdir of current directory)')
-       # parser.add_option("--comps", default="comps.xml", dest="comps",
-       #   help='comps file to use')
-       # parser.add_option("--yumconf", default="yum.conf", dest="yumconf",
-       #   help='yum config file to use')
-       # parser.add_option("--arch", default="i386", dest="arch",
-       #   help='Base arch to use')
-       # parser.add_option("--version", default="test", dest="version",
-       #   help='Version of the spin')
-       # parser.add_option("--discs", default=5, type="int", dest="discs",
-       #   help='Number of discs to spin')
-       # parser.add_option("-q", "--quiet", default=False, action="store_true",
-       #   help="Output as little as possible")
         parser.add_option("-c", "--conf", default='/etc/pungi/pungi.conf', dest="config",
           help='Config file to use')
 
+        parser.add_option("--all-stages", action="store_true", default=True, dest="do_all", help="Enable ALL stages")
+        parser.add_option("-B", action="store_true", default=False, dest="do_buildinstall", help="Flag to enable processing the BuildInstall stage")
+        parser.add_option("-G", action="store_true", default=False, dest="do_gather", help="Flag to enable processing the Gather stage")
+        parser.add_option("-P", action="store_true", default=False, dest="do_packageorder", help="Flag to enable processing the Package Order stage")
+        parser.add_option("-S", action="store_true", default=False, dest="do_splittree", help="Flag to enable processing the SplitTree stage")
+        parser.add_option("-I", action="store_true", default=False, dest="do_createiso", help="Flag to enable processing the CreateISO stage")
 
 
         (opts, args) = parser.parse_args()
+        if opts.do_gather or opts.do_buildinstall or opts.do_packageorder or opts.do_splittree or opts.do_createiso:
+            opts.do_all = False
         #if len(opts) < 1:
         #    parser.print_help()
         #    sys.exit(0)
