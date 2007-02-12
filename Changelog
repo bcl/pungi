@@ -1,3 +1,6 @@
+* Mon Feb 12 2007 Jesse Keating <jkeating@redhat.com>
+- Add new Make targets (Essien Ita Essien)
+
 * Thu Feb 08 2007 Jesse Keating <jkeating@redhat.com>
 - Add support for globbing in manifest
 
