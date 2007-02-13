@@ -114,7 +114,7 @@ def main():
              mypungi.doSplittree()
         if opts.do_all or opts.do_createiso:
            mypungi.doCreateSplitrepo()
-           mypungi.doCreateIsos()
+           mypungi.doCreateIsos(config.get('default', 'iso_dir'))
 
     # Do things slightly different for src.
     if config.get('default', 'arch') == 'source':

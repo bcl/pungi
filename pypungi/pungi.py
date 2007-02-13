@@ -40,7 +40,19 @@ class Pungi:
             os.makedirs(self.workdir)
 
         self.common_files = []
+        self.infofile = os.path.join(self.config.get('default','destdir'),
+                                     '.composeinfo')
 
+    def writeinfo(self,line):
+        '''Append a line to the infofile in self.infofile'''
+        f=open(self.infofile,"a+")
+        f.write(line.strip()+"\n")
+        f.close()
+
+    def relativize(self,dir,subfile):
+        '''Get the relative path for subfile underneath dir.'''
+        if subfile.startswith(dir):
+            return subfile.replace(dir+os.path.sep,'')
 
     def doBuildinstall(self):
         # buildinstall looks for a comps file in base/ for now, copy it into place
@@ -55,6 +67,7 @@ class Pungi:
             self.config.get('default', 'version')), self.config.get('default', 'product_path'), 
             bugurl, self.topdir)
         os.system('/usr/lib/anaconda-runtime/buildinstall %s' % args)
+        self.writeinfo('tree: %s' % relativize(self.destdir,self.topdir))
 
     def doPackageorder(self):
         os.system('/usr/lib/anaconda-runtime/pkgorder %s %s %s > %s' % (self.topdir, self.config.get('default', 'arch'), 
@@ -171,6 +184,7 @@ class Pungi:
         ia64bootargs = '-b images/boot.img -no-emul-boot'
         ppcbootargs = '-part -hfs -r -l -sysid PPC -map %s -magic %s -no-desktop -allow-multidot -chrp-boot -hfs-bless' % (os.path.join(anaruntime, 'mapping'), os.path.join(anaruntime, 'magic'))
         os.makedirs(self.isodir)
+        isolist=[]
         for disc in range(1, self.config.getint('default', 'discs') + 1): # cycle through the CD isos
             volname = '"%s %s %s Disc %s"' % (self.config.get('default', 'product_name'), self.config.get('default', 'version'), 
                 self.config.get('default', 'arch'), disc) # hacky :/
@@ -186,18 +200,23 @@ class Pungi:
             else:
                 bootargs = '' # clear out any existing bootargs
 
-            os.system('mkisofs %s %s %s -o %s/%s %s' % (mkisofsargs,
+            isofile=os.path.join(self.isodir, isoname)
+            os.system('mkisofs %s %s %s -o %s %s' % (mkisofsargs,
                                                         volname,
                                                         bootargs,
-                                                        self.isodir,
-                                                        isoname,
+                                                        isofile,
                                                         os.path.join('%s-disc%s' % (self.topdir, disc))))
             # implant md5 for mediacheck on all but source arches
             if not self.config.get('default', 'arch') == 'source':
-                os.system('/usr/lib/anaconda-runtime/implantisomd5 %s' % os.path.join(self.isodir, isoname))
+                os.system('/usr/lib/anaconda-runtime/implantisomd5 %s' % isofile)
             # shove the sha1sum into a file
             os.system('cd %s; sha1sum %s >> SHA1SUM' % (self.isodir, isoname))
+            # keep track of the CD images we've written
+            isolist.append(relativize(self.destdir,isofile))
+        # Write out a line describing the CD set
+        self.writeinfo('cdset=%s' % ' '.join(isolist))
 
+        isolist=[]
         # We've asked for more than one disc, and we're not srpms, so make a DVD image
         if self.config.getint('default', 'discs') > 1 and not self.config.get('default', 'arch') == 'source':
             # backup the main .discinfo to use a split one.  This is an ugly hack :/
@@ -226,20 +245,25 @@ class Pungi:
             else:
                 bootargs = '' # clear out any existing bootargs
             
+            isofile=os.path.join(self.isodir, isoname)
             os.system('mkisofs %s %s %s -o %s/%s %s' % (mkisofsargs,
                                                         volname,
                                                         bootargs,
-                                                        self.isodir,
-                                                        isoname,
+                                                        isofile,
                                                         self.topdir))
             os.system('cd %s; sha1sum %s >> SHA1SUM' % (self.isodir, isoname))
-            os.system('/usr/lib/anaconda-runtime/implantisomd5 %s' % os.path.join(self.isodir, isoname))
+            os.system('/usr/lib/anaconda-runtime/implantisomd5 %s' % isofile)
 
             shutil.move(os.path.join(self.config.get('default', 'destdir'), '.discinfo-%s' % self.config.get('default', 'arch')), discinfofile)
 
             shutil.rmtree(os.path.join(self.topdir, 'repodata')) # remove our copied repodata
             shutil.move(os.path.join(self.config.get('default', 'destdir'), 
                 'repodata-%s' % self.config.get('default', 'arch')), os.path.join(self.topdir, 'repodata'))
+            # keep track of the DVD images we've written 
+            isolist.append(relativize(self.destdir,isofile))
+
+        # Write out a line describing the DVD set
+        self.writeinfo('dvdset=%s' % ' '.join(isolist))
 
         # Now make rescue images
         if not self.config.get('default', 'arch') == 'source':
