@@ -2,6 +2,10 @@
 - Fix part of the patch from Essien
 - Add Contributors to the Authors file
 - Adjust the Makefile so that srpm doesn't cause a tag
+- Merged changes from Will Woods
+  - Write out some tree description files
+  - Don't traceback on existing files in download area (not sure this will stay)
+- Style fixed some stuff from Will
 
 * Mon Feb 12 2007 Jesse Keating <jkeating@redhat.com>
 - Add new Make targets (Essien Ita Essien)
