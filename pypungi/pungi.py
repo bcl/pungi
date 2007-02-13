@@ -23,7 +23,8 @@ class Pungi:
     def __init__(self, config):
         self.config = config
         self.prodpath = 'Fedora' # Probably should be defined elsewhere
-        self.archdir = os.path.join(self.config.get('default', 'destdir'),
+        self.destdir = self.config.get('default', 'destdir')
+        self.archdir = os.path.join(self.destdir,
                                    self.config.get('default', 'version'),
                                    self.config.get('default', 'flavor'),
                                    self.config.get('default', 'arch'))
@@ -49,10 +50,10 @@ class Pungi:
         f.write(line.strip()+"\n")
         f.close()
 
-    def relativize(self,dir,subfile):
-        '''Get the relative path for subfile underneath dir.'''
-        if subfile.startswith(dir):
-            return subfile.replace(dir+os.path.sep,'')
+    def mkrelative(self,subfile):
+        '''Return the relative path for 'subfile' underneath 'self.destdir'.'''
+        if subfile.startswith(self.destdir):
+            return subfile.replace(self.destdir+os.path.sep,'')
 
     def doBuildinstall(self):
         # buildinstall looks for a comps file in base/ for now, copy it into place
@@ -67,7 +68,7 @@ class Pungi:
             self.config.get('default', 'version')), self.config.get('default', 'product_path'), 
             bugurl, self.topdir)
         os.system('/usr/lib/anaconda-runtime/buildinstall %s' % args)
-        self.writeinfo('tree: %s' % relativize(self.destdir,self.topdir))
+        self.writeinfo('tree: %s' % self.mkrelative(self.topdir))
 
     def doPackageorder(self):
         os.system('/usr/lib/anaconda-runtime/pkgorder %s %s %s > %s' % (self.topdir, self.config.get('default', 'arch'), 
@@ -212,9 +213,9 @@ class Pungi:
             # shove the sha1sum into a file
             os.system('cd %s; sha1sum %s >> SHA1SUM' % (self.isodir, isoname))
             # keep track of the CD images we've written
-            isolist.append(relativize(self.destdir,isofile))
+            isolist.append(self.mkrelative(isofile))
         # Write out a line describing the CD set
-        self.writeinfo('cdset=%s' % ' '.join(isolist))
+        self.writeinfo('cdset: %s' % ' '.join(isolist))
 
         isolist=[]
         # We've asked for more than one disc, and we're not srpms, so make a DVD image
@@ -246,11 +247,11 @@ class Pungi:
                 bootargs = '' # clear out any existing bootargs
             
             isofile=os.path.join(self.isodir, isoname)
-            os.system('mkisofs %s %s %s -o %s/%s %s' % (mkisofsargs,
-                                                        volname,
-                                                        bootargs,
-                                                        isofile,
-                                                        self.topdir))
+            os.system('mkisofs %s %s %s -o %s %s' % (mkisofsargs,
+                                                     volname,
+                                                     bootargs,
+                                                     isofile,
+                                                     self.topdir))
             os.system('cd %s; sha1sum %s >> SHA1SUM' % (self.isodir, isoname))
             os.system('/usr/lib/anaconda-runtime/implantisomd5 %s' % isofile)
 
@@ -260,10 +261,10 @@ class Pungi:
             shutil.move(os.path.join(self.config.get('default', 'destdir'), 
                 'repodata-%s' % self.config.get('default', 'arch')), os.path.join(self.topdir, 'repodata'))
             # keep track of the DVD images we've written 
-            isolist.append(relativize(self.destdir,isofile))
+            isolist.append(self.mkrelative(isofile))
 
         # Write out a line describing the DVD set
-        self.writeinfo('dvdset=%s' % ' '.join(isolist))
+        self.writeinfo('dvdset: %s' % ' '.join(isolist))
 
         # Now make rescue images
         if not self.config.get('default', 'arch') == 'source':
