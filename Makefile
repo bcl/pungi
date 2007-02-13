@@ -17,7 +17,7 @@ tag:
 	@hg tag -m "$(HGTAG)" $(HGTAG)
 #	@hg push
 
-archive: tag
+archive:
 	@rm -rf ${PKGNAME}-$(VERSION)/
 	@python setup.py sdist > /dev/null
 	@echo "The archive is in dist/${PKGNAME}-$(VERSION).tar.gz"
@@ -27,7 +27,7 @@ srpm: archive
 	@rpmbuild -bs ${PKGRPMFLAGS} ${PKGNAME}.spec
 	@echo "The srpm is in $(SRPM)"
 
-rpm: archive
+rpm: archive tag
 	@rpmbuild --clean -bb ${PKGRPMFLAGS} ${PKGNAME}.spec
 	@echo "The rpm is in $(RPM)"
 
