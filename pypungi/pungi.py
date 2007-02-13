@@ -41,19 +41,19 @@ class Pungi:
             os.makedirs(self.workdir)
 
         self.common_files = []
-        self.infofile = os.path.join(self.config.get('default','destdir'),
+        self.infofile = os.path.join(self.config.get('default', 'destdir'),
                                      '.composeinfo')
 
-    def writeinfo(self,line):
-        '''Append a line to the infofile in self.infofile'''
-        f=open(self.infofile,"a+")
-        f.write(line.strip()+"\n")
+    def writeinfo(self, line):
+        """Append a line to the infofile in self.infofile"""
+        f=open(self.infofile, "a+")
+        f.write(line.strip() + "\n")
         f.close()
 
-    def mkrelative(self,subfile):
-        '''Return the relative path for 'subfile' underneath 'self.destdir'.'''
+    def mkrelative(self, subfile):
+        """Return the relative path for 'subfile' underneath 'self.destdir'."""
         if subfile.startswith(self.destdir):
-            return subfile.replace(self.destdir+os.path.sep,'')
+            return subfile.replace(self.destdir + os.path.sep, '')
 
     def doBuildinstall(self):
         # buildinstall looks for a comps file in base/ for now, copy it into place
@@ -201,7 +201,7 @@ class Pungi:
             else:
                 bootargs = '' # clear out any existing bootargs
 
-            isofile=os.path.join(self.isodir, isoname)
+            isofile = os.path.join(self.isodir, isoname)
             os.system('mkisofs %s %s %s -o %s %s' % (mkisofsargs,
                                                         volname,
                                                         bootargs,
@@ -246,7 +246,7 @@ class Pungi:
             else:
                 bootargs = '' # clear out any existing bootargs
             
-            isofile=os.path.join(self.isodir, isoname)
+            isofile = os.path.join(self.isodir, isoname)
             os.system('mkisofs %s %s %s -o %s %s' % (mkisofsargs,
                                                      volname,
                                                      bootargs,
