@@ -21,6 +21,7 @@ class Gather(yum.YumBase):
     def __init__(self, config, pkglist):
         # Create a yum object to use
         yum.YumBase.__init__(self)
+        self.config = config
         self.doConfigSetup(fn=config.get('default', 'yumconf'), debuglevel=6, errorlevel=6, root="/tmp")
         self.cleanMetadata() # clean metadata that might be in the cache from previous runs
         self.cleanSqlite() # clean metadata that might be in the cache from previous runs
@@ -39,11 +40,20 @@ class Gather(yum.YumBase):
         self.doSackSetup(arches)
         self.doSackFilelistPopulate()
         self.logger = yum.logging.getLogger("yum.verbose.pungi")
-        self.config = config
         self.pkglist = pkglist
         self.polist = []
         self.srpmlist = []
         self.resolved_deps = {} # list the deps we've already resolved, short circuit.
+
+    def doLoggingSetup(self, debuglevel, errorlevel):
+        logdir = os.path.join(self.config.get('default', 'destdir'), 'logs')
+        if not os.path.exists(logdir):
+            os.makedirs(logdir)
+        logfile = os.path.join(logdir, 'log.txt')
+        yum.logging.basicConfig(level=yum.logging.INFO, filename=logfile)
+
+    def doFileLogSetup(self, uid, logfile):
+        pass
 
     def _provideToPkg(self, req): #this is stolen from Anaconda
             bestlist = None

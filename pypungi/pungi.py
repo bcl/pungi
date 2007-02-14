@@ -12,12 +12,16 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
+import commands
+import logging
 import os
 import sys
 sys.path.append('/usr/lib/anaconda-runtime')
 import splittree
 import shutil
 import re
+
+log = logging.getLogger("pypungi.pungi")
 
 class Pungi:
     def __init__(self, config):
@@ -67,13 +71,15 @@ class Pungi:
             self.config.get('default', 'version'), '%s %s' % (self.config.get('default', 'product_name'), 
             self.config.get('default', 'version')), self.config.get('default', 'product_path'), 
             bugurl, self.topdir)
-        os.system('/usr/lib/anaconda-runtime/buildinstall %s' % args)
+        res = commands.getoutput('/usr/lib/anaconda-runtime/buildinstall %s' % args)
+        log.info("Result from buildinstall %s: %s" % (args, res))
         self.writeinfo('tree: %s' % self.mkrelative(self.topdir))
 
     def doPackageorder(self):
-        os.system('/usr/lib/anaconda-runtime/pkgorder %s %s %s > %s' % (self.topdir, self.config.get('default', 'arch'), 
+        res = commands.getoutput('/usr/lib/anaconda-runtime/pkgorder %s %s %s > %s' % (self.topdir, self.config.get('default', 'arch'), 
             self.config.get('default', 'product_path'), os.path.join(self.workdir, 
             'pkgorder-%s' % self.config.get('default', 'arch'))))
+        log.info("Result from pkgorder: %s" % res)
 
     def doGetRelnotes(self):
         docsdir = os.path.join(self.workdir, 'docs')
@@ -96,10 +102,10 @@ class Pungi:
             pkgname = pkg.rsplit('-', 2)[0]
             for relnoterpm in relnoterpms:
                 if pkgname == relnoterpm:
-                    output = os.system("pushd %s; rpm2cpio %s |cpio -imud; popd" % 
+                    res = commands.getoutput("pushd %s; rpm2cpio %s |cpio -imud; popd" % 
                                        (docsdir, 
                                         os.path.join(self.topdir, self.config.get('default', 'product_path'), pkg)))
-
+                    log.info("Result from rpm2cpio: %s" % res)
         # Walk the tree for our files
         for dirpath, dirname, filelist in os.walk(docsdir):
             for filename in filelist:
@@ -174,7 +180,8 @@ class Pungi:
         mediaid = discinfo[0].rstrip('\n')
         args = '-g %s --baseurl=media://%s --outputdir=%s-disc1 --basedir=%s-disc1 --split %s-disc?' % \
                 (os.path.join(self.topdir, 'repodata', 'comps.xml'), mediaid, self.topdir, self.topdir, self.topdir) 
-        os.system('/usr/bin/createrepo %s' % args)
+        res = commands.getoutput('/usr/bin/createrepo %s' % args)
+        log.info("Result from createrepo %s: %s" %(args, res))
 
     def doCreateIsos(self):
         anaruntime = '/usr/lib/anaconda-runtime/boot'
@@ -202,16 +209,19 @@ class Pungi:
                 bootargs = '' # clear out any existing bootargs
 
             isofile = os.path.join(self.isodir, isoname)
-            os.system('mkisofs %s %s %s -o %s %s' % (mkisofsargs,
+            res = commands.getoutput('mkisofs %s %s %s -o %s %s' % (mkisofsargs,
                                                         volname,
                                                         bootargs,
                                                         isofile,
                                                         os.path.join('%s-disc%s' % (self.topdir, disc))))
+            log.info("Result from mkisofs: %s" % res)
             # implant md5 for mediacheck on all but source arches
             if not self.config.get('default', 'arch') == 'source':
-                os.system('/usr/lib/anaconda-runtime/implantisomd5 %s' % isofile)
+                res = commands.getoutput('/usr/lib/anaconda-runtime/implantisomd5 %s' % isofile)
+                log.info("Result from implantisomd5: %s" % res)
             # shove the sha1sum into a file
-            os.system('cd %s; sha1sum %s >> SHA1SUM' % (self.isodir, isoname))
+            res = commands.getoutput('cd %s; sha1sum %s >> SHA1SUM' % (self.isodir, isoname))
+            log.info("Result from sha1sum: %s" % res)
             # keep track of the CD images we've written
             isolist.append(self.mkrelative(isofile))
         # Write out a line describing the CD set
@@ -247,13 +257,16 @@ class Pungi:
                 bootargs = '' # clear out any existing bootargs
             
             isofile = os.path.join(self.isodir, isoname)
-            os.system('mkisofs %s %s %s -o %s %s' % (mkisofsargs,
+            res = commands.getoutput('mkisofs %s %s %s -o %s %s' % (mkisofsargs,
                                                      volname,
                                                      bootargs,
                                                      isofile,
                                                      self.topdir))
-            os.system('cd %s; sha1sum %s >> SHA1SUM' % (self.isodir, isoname))
-            os.system('/usr/lib/anaconda-runtime/implantisomd5 %s' % isofile)
+            log.info("Result from mkisofs: %s" % res)
+            res = commands.getoutput('cd %s; sha1sum %s >> SHA1SUM' % (self.isodir, isoname))
+            log.info("Result from sha1sum: %s" % res)
+            res = commands.getoutput('/usr/lib/anaconda-runtime/implantisomd5 %s' % isofile)
+            log.info("Result from implantisomd5: %s" % res)
 
             shutil.move(os.path.join(self.config.get('default', 'destdir'), '.discinfo-%s' % self.config.get('default', 'arch')), discinfofile)
 
@@ -268,12 +281,13 @@ class Pungi:
 
         # Now make rescue images
         if not self.config.get('default', 'arch') == 'source':
-            os.system('/usr/lib/anaconda-runtime/mk-rescueimage.%s %s %s %s %s' % (
+            res = commands.getoutput('/usr/lib/anaconda-runtime/mk-rescueimage.%s %s %s %s %s' % (
                 self.config.get('default', 'arch'),
                 self.topdir,
                 self.workdir,
                 self.config.get('default', 'iso_basename'),
                 self.config.get('default', 'product_path')))
+            log.info("Result from mk-resueimage: %s" % res)
 
             # write the iso
             volname = '"%s %s %s Rescue"' % (self.config.get('default', 'product_name'), self.config.get('default', 'version'), 
@@ -289,14 +303,15 @@ class Pungi:
             else:
                 bootargs = '' # clear out any existing bootargs
 
-            os.system('mkisofs %s %s %s -o %s/%s %s' % (mkisofsargs,
-                                                        volname,
-                                                        bootargs,
-                                                        self.isodir,
-                                                        isoname,
-                                                        os.path.join(self.workdir, "%s-rescueimage" % self.config.get('default', 'arch'))))
+            res = commands.getoutput('mkisofs %s %s %s -o %s/%s %s'
+                    % (mkisofsargs, volname, bootargs, self.isodir, isoname,
+                       os.path.join(self.workdir, "%s-rescueimage" 
+                           % self.config.get('default', 'arch'))))
+            log.info("Result from mkisofs: %s" % res)
 
-            os.system('cd %s; sha1sum %s >> SHA1SUM' % (self.isodir, isoname))
+            res = commands.getoutput('cd %s; sha1sum %s >> SHA1SUM'
+                    % (self.isodir, isoname))
+            log.info("Result from sha1sum: %s" % res)
 
         # Do some clean up
         dirs = os.listdir(self.archdir)

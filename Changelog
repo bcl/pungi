@@ -1,3 +1,6 @@
+* Wed Feb 14 2007 Jesse Keating <jkeating@redhat.com>
+- Add logging patch from jbowes
+
 * Tue Feb 13 2007 Jesse Keating <jkeating@redhat.com>
 - Fix part of the patch from Essien
 - Add Contributors to the Authors file
