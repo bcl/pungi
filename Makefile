@@ -27,12 +27,14 @@ srpm: archive
 	@rpmbuild -bs ${PKGRPMFLAGS} ${PKGNAME}.spec
 	@echo "The srpm is in $(SRPM)"
 
-rpm: archive tag
+rpm: archive
 	@rpmbuild --clean -bb ${PKGRPMFLAGS} ${PKGNAME}.spec
 	@echo "The rpm is in $(RPM)"
 
 rpminstall: rpm
 	@rpm -ivh --force $(RPM)
+
+release: tag srpm
 
 clean:
 	@rm -f *.rpm 
