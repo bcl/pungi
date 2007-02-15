@@ -172,7 +172,7 @@ if __name__ == '__main__':
             print >> sys.stderr, "pungi: No such file:\'%s\'" % manifest
             sys.exit(1)
 
-        pkglist = [l.strip() for l in manifestfile.readlines()]
+        pkglist = [l.strip() for l in manifestfile.readlines() if not l.startswith('#')]
         manifestfile.close()
         return pkglist
 

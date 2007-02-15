@@ -2,6 +2,7 @@
 - Various logging tweaks
 - Use -d flag in createrepo for sqlite blobs
 - Add pydoc stuff to various functions
+- Support comments in the package manifest
 
 * Wed Feb 14 2007 Jesse Keating <jkeating@redhat.com>
 - Add logging patch from jbowes
