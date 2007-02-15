@@ -50,16 +50,23 @@ class Pungi:
 
     def writeinfo(self, line):
         """Append a line to the infofile in self.infofile"""
+
+
         f=open(self.infofile, "a+")
         f.write(line.strip() + "\n")
         f.close()
 
     def mkrelative(self, subfile):
         """Return the relative path for 'subfile' underneath 'self.destdir'."""
+
+
         if subfile.startswith(self.destdir):
             return subfile.replace(self.destdir + os.path.sep, '')
 
     def doBuildinstall(self):
+        """Run anaconda-runtime's buildinstall on the tree."""
+
+
         # buildinstall looks for a comps file in base/ for now, copy it into place
         os.makedirs(os.path.join(self.topdir, self.config.get('default', 'product_path'), 'base'))
         shutil.copy(self.config.get('default', 'comps'), os.path.join(self.topdir, 
@@ -76,12 +83,19 @@ class Pungi:
         self.writeinfo('tree: %s' % self.mkrelative(self.topdir))
 
     def doPackageorder(self):
+        """Run anaconda-runtime's pkgorder on the tree, used for splitting media."""
+
+
         res = commands.getoutput('/usr/lib/anaconda-runtime/pkgorder %s %s %s > %s' % (self.topdir, self.config.get('default', 'arch'), 
             self.config.get('default', 'product_path'), os.path.join(self.workdir, 
             'pkgorder-%s' % self.config.get('default', 'arch'))))
         log.info("Result from pkgorder: %s" % res)
 
     def doGetRelnotes(self):
+        """Get extra files from packages in the tree to put in the topdir of
+           the tree."""
+
+
         docsdir = os.path.join(self.workdir, 'docs')
         relnoterpms = self.config.get('default', 'relnotepkgs').split()
 
@@ -125,6 +139,10 @@ class Pungi:
         
 
     def doSplittree(self):
+        """Use anaconda-runtime's splittree to split the tree into appropriate
+           sized chunks."""
+
+
         timber = splittree.Timber()
         timber.arch = self.config.get('default', 'arch')
         timber.target_size = 685.0 * 1024.0 * 1024 # make this a config option
@@ -140,10 +158,12 @@ class Pungi:
         #timber.reserve_size =  
 
         output = timber.main()
-        for line in output:
-            print line
+        log.info("Output from splittree: %s" % '\n'.join(output))
 
     def doSplitSRPMs(self):
+        """Use anaconda-runtime's splittree to split the srpms into appropriate
+           sized chunks."""
+
         timber = splittree.Timber()
         timber.arch = self.config.get('default', 'arch')
         #timber.total_discs = self.config.getint('default', 'discs')
@@ -172,18 +192,23 @@ class Pungi:
                                timber.common_files)
 
         timber.splitSRPMS()
-        for line in timber.logfile:
-            print line
+        log.info("splitSRPMS complete")
 
     def doCreateSplitrepo(self):
+        """Create the split metadata for the isos"""
+
+
         discinfo = open('%s-disc1/.discinfo' % self.topdir, 'r').readlines()
         mediaid = discinfo[0].rstrip('\n')
-        args = '-g %s --baseurl=media://%s --outputdir=%s-disc1 --basedir=%s-disc1 --split %s-disc?' % \
+        args = '-d -g %s --baseurl=media://%s --outputdir=%s-disc1 --basedir=%s-disc1 --split %s-disc?' % \
                 (os.path.join(self.topdir, 'repodata', 'comps.xml'), mediaid, self.topdir, self.topdir, self.topdir) 
         res = commands.getoutput('/usr/bin/createrepo %s' % args)
         log.info("Result from createrepo %s: %s" %(args, res))
 
     def doCreateIsos(self):
+        """Create isos from the various split directories."""
+
+
         anaruntime = '/usr/lib/anaconda-runtime/boot'
         discinfofile = os.path.join(self.topdir, '.discinfo') # we use this a fair amount
         mkisofsargs = '-v -U -J -R -T -V' # common mkisofs flags
@@ -262,7 +287,7 @@ class Pungi:
                                                      bootargs,
                                                      isofile,
                                                      self.topdir))
-            log.info("Result from mkisofs: %s" % res)
+            log.info("Result from DVD mkisofs: %s" % res)
             res = commands.getoutput('cd %s; sha1sum %s >> SHA1SUM' % (self.isodir, isoname))
             log.info("Result from sha1sum: %s" % res)
             res = commands.getoutput('/usr/lib/anaconda-runtime/implantisomd5 %s' % isofile)
@@ -307,7 +332,7 @@ class Pungi:
                     % (mkisofsargs, volname, bootargs, self.isodir, isoname,
                        os.path.join(self.workdir, "%s-rescueimage" 
                            % self.config.get('default', 'arch'))))
-            log.info("Result from mkisofs: %s" % res)
+            log.info("Result from Rescue mkisofs: %s" % res)
 
             res = commands.getoutput('cd %s; sha1sum %s >> SHA1SUM'
                     % (self.isodir, isoname))
@@ -319,3 +344,5 @@ class Pungi:
         for dir in dirs:
             if dir.startswith('os-disc') or dir.startswith('SRPM-disc'):
                 shutil.move(os.path.join(self.archdir, dir), os.path.join(self.workdir, dir))
+
+        log.info("CreateIsos is done.")

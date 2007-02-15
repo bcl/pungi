@@ -46,16 +46,27 @@ class Gather(yum.YumBase):
         self.resolved_deps = {} # list the deps we've already resolved, short circuit.
 
     def doLoggingSetup(self, debuglevel, errorlevel):
+        """Setup the logging facility."""
+
+
         logdir = os.path.join(self.config.get('default', 'destdir'), 'logs')
         if not os.path.exists(logdir):
             os.makedirs(logdir)
-        logfile = os.path.join(logdir, 'log.txt')
-        yum.logging.basicConfig(level=yum.logging.INFO, filename=logfile)
+        logfile = os.path.join(logdir, '%s.%s.log' % (self.config.get('default', 'flavor'),
+                                                      self.config.get('default', 'arch')))
+        yum.logging.basicConfig(level=yum.logging.DEBUG, filename=logfile)
 
     def doFileLogSetup(self, uid, logfile):
+        # This function overrides a yum function, allowing pungi to control
+        # the logging.
         pass
 
     def _provideToPkg(self, req): #this is stolen from Anaconda
+        """Return a list of best possible providers for a requirement.
+
+           Returns a list or None"""
+
+
             bestlist = None
             (r, f, v) = req
 

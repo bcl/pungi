@@ -1,3 +1,8 @@
+* Thu Feb 15 2007 Jesse Keating <jkeating@redhat.com>
+- Various logging tweaks
+- Use -d flag in createrepo for sqlite blobs
+- Add pydoc stuff to various functions
+
 * Wed Feb 14 2007 Jesse Keating <jkeating@redhat.com>
 - Add logging patch from jbowes
 
