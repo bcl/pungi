@@ -1,7 +1,7 @@
 %{!?python_sitelib: %define python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")}
 
 Name:           pungi
-Version:        0.2.3
+Version:        0.2.4
 Release:        1%{?dist}
 Summary:        Distribution compose tool
 
@@ -46,6 +46,25 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Thu Feb 15 2007 Jesse Keating <jkeating@redhat.com> - 0.2.4-1
+- Add support for globbing in manifest
+- Add new Make targets (Essien Ita Essien)
+- Add runtime flags for doing specific stages of the compose (Essien Ita Essien)
+- Add ability to define destdir on the cli to override conf file
+- Clean up optionparse stuff, print usage if arg list is too small
+- Fix part of the patch from Essien
+- Add Contributors to the Authors file
+- Adjust the Makefile so that srpm doesn't cause a tag
+- Merged changes from Will Woods
+  - Write out some tree description files
+  - Don't traceback on existing files in download area (not sure this will stay)
+- Style fixed some stuff from Will
+- Add logging patch from jbowes
+- Various logging tweaks
+- Use -d flag in createrepo for sqlite blobs
+- Add pydoc stuff to various functions
+- Support comments in the package manifest
+
 * Tue Feb 06 2007 Jesse Keating <jkeating@redhat.com> - 0.2.3-1
 - Be able to opt-out of a bugurl since buildinstall supports this
 - Make isodir an object of pungi (wwoods)
