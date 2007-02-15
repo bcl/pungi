@@ -67,24 +67,24 @@ class Gather(yum.YumBase):
            Returns a list or None"""
 
 
-            bestlist = None
-            (r, f, v) = req
+        bestlist = None
+        (r, f, v) = req
 
-            satisfiers = []
-            for po in self.whatProvides(r, f, v):
-                # if we already have something installed which does the provide
-                # then that's obviously the one we want to use.  this takes
-                # care of the case that we select, eg, kernel-smp and then
-                # have something which requires kernel
-                if self.tsInfo.getMembers(po.pkgtup):
-                    return [po]
-                if po not in satisfiers:
-                    satisfiers.append(po)
+        satisfiers = []
+        for po in self.whatProvides(r, f, v):
+            # if we already have something installed which does the provide
+            # then that's obviously the one we want to use.  this takes
+            # care of the case that we select, eg, kernel-smp and then
+            # have something which requires kernel
+            if self.tsInfo.getMembers(po.pkgtup):
+                return [po]
+            if po not in satisfiers:
+                satisfiers.append(po)
 
-            if satisfiers:
-                bestlist = self.bestPackagesFromList(satisfiers, arch=self.compatarch)
-                return bestlist
-            return None
+        if satisfiers:
+            bestlist = self.bestPackagesFromList(satisfiers, arch=self.compatarch)
+            return bestlist
+        return None
 
     def getPackageDeps(self, po):
         """Return the dependencies for a given package, as well
