@@ -19,10 +19,16 @@ import sys
 
 class Gather(yum.YumBase):
     def __init__(self, config, pkglist):
+        self.workdir = os.path.join(config.get('default', 'destdir'),
+                                    'work',
+                                    config.get('default', 'flavor'),
+                                    config.get('default', 'arch'))
+
         # Create a yum object to use
         yum.YumBase.__init__(self)
         self.config = config
-        self.doConfigSetup(fn=config.get('default', 'yumconf'), debuglevel=6, errorlevel=6, root="/tmp")
+        self.doConfigSetup(fn=config.get('default', 'yumconf'), debuglevel=6, errorlevel=6, root=os.path.join(self.workdir, 'yumroot'))
+        self.config.cachedir = os.path.join(self.workdir, 'yumcache')
         self.cleanMetadata() # clean metadata that might be in the cache from previous runs
         self.cleanSqlite() # clean metadata that might be in the cache from previous runs
         self.doRepoSetup()

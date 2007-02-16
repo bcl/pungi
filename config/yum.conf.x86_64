@@ -1,8 +1,6 @@
 [main]
-cachedir=/tmp/fist
 #keepcache=0
 #debuglevel=2
-logfile=/var/log/yum.log
 pkgpolicy=newest
 distroverpkg=redhat-release
 tolerant=1
