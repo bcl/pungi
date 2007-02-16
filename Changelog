@@ -2,6 +2,7 @@
 - Make use of anaconda's TMPDIR support
 - Put yum tempdirs in the workdir
 - Add a version option to cli arguments
+- Make cdsize a config option
 
 * Thu Feb 15 2007 Jesse Keating <jkeating@redhat.com>
 - Various logging tweaks
