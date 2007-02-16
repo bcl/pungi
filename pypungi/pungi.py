@@ -78,7 +78,7 @@ class Pungi:
             self.config.get('default', 'version'), '%s %s' % (self.config.get('default', 'product_name'), 
             self.config.get('default', 'version')), self.config.get('default', 'product_path'), 
             bugurl, self.topdir)
-        res = commands.getoutput('/usr/lib/anaconda-runtime/buildinstall %s' % args)
+        res = commands.getoutput('TMPDIR=%s /usr/lib/anaconda-runtime/buildinstall %s' % (self.workdir, args))
         log.info("Result from buildinstall %s: %s" % (args, res))
         self.writeinfo('tree: %s' % self.mkrelative(self.topdir))
 
@@ -86,9 +86,9 @@ class Pungi:
         """Run anaconda-runtime's pkgorder on the tree, used for splitting media."""
 
 
-        res = commands.getoutput('/usr/lib/anaconda-runtime/pkgorder %s %s %s > %s' % (self.topdir, self.config.get('default', 'arch'), 
-            self.config.get('default', 'product_path'), os.path.join(self.workdir, 
-            'pkgorder-%s' % self.config.get('default', 'arch'))))
+        res = commands.getoutput('TMPDIR=%s /usr/lib/anaconda-runtime/pkgorder %s %s %s > %s' % (self.workdir, 
+                                 self.topdir, self.config.get('default', 'arch'), self.config.get('default', 
+                                 'product_path'), os.path.join(self.workdir, 'pkgorder-%s' % self.config.get('default', 'arch'))))
         log.info("Result from pkgorder: %s" % res)
 
     def doGetRelnotes(self):
