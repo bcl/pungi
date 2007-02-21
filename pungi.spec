@@ -1,7 +1,7 @@
 %{!?python_sitelib: %define python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")}
 
 Name:           pungi
-Version:        0.2.4
+Version:        0.2.5
 Release:        1%{?dist}
 Summary:        Distribution compose tool
 
@@ -46,6 +46,12 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Wed Feb 21 2007 Jesse Keating <jkeating@redhat.com> - 0.2.5-1
+- Make use of anaconda's TMPDIR support
+- Put yum tempdirs in the workdir
+- Add a version option to cli arguments
+- Make cdsize a config option
+
 * Thu Feb 15 2007 Jesse Keating <jkeating@redhat.com> - 0.2.4-1
 - Add support for globbing in manifest
 - Add new Make targets (Essien Ita Essien)
