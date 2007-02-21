@@ -1,3 +1,6 @@
+* Wed Feb 21 2007 Jesse Keating <jkeating@redhat.com>
+- Don't use TMPDIR with buildinstall for now
+
 * Fri Feb 16 2007 Jesse Keating <jkeating@redhat.com>
 - Make use of anaconda's TMPDIR support
 - Put yum tempdirs in the workdir

@@ -78,7 +78,9 @@ class Pungi:
             self.config.get('default', 'version'), '%s %s' % (self.config.get('default', 'product_name'), 
             self.config.get('default', 'version')), self.config.get('default', 'product_path'), 
             bugurl, self.topdir)
-        res = commands.getoutput('TMPDIR=%s /usr/lib/anaconda-runtime/buildinstall %s' % (self.workdir, args))
+        #res = commands.getoutput('TMPDIR=%s /usr/lib/anaconda-runtime/buildinstall %s' % (self.workdir, args))
+        # TMPDIR is broken in buildinstall + friends right now
+        res = commands.getoutput('/usr/lib/anaconda-runtime/buildinstall %s' % args)
         log.info("Result from buildinstall %s: %s" % (args, res))
         self.writeinfo('tree: %s' % self.mkrelative(self.topdir))
 
