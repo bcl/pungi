@@ -1,7 +1,7 @@
 %{!?python_sitelib: %define python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")}
 
 Name:           pungi
-Version:        0.2.5
+Version:        0.2.6
 Release:        1%{?dist}
 Summary:        Distribution compose tool
 
@@ -46,6 +46,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Thu Feb 22 2007 Jesse Keating <jkeating@redhat.com> - 0.2.6-1
+- Don't use TMPDIR with buildinstall, it is broken
+
 * Wed Feb 21 2007 Jesse Keating <jkeating@redhat.com> - 0.2.5-1
 - Make use of anaconda's TMPDIR support
 - Put yum tempdirs in the workdir
