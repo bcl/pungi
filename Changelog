@@ -1,3 +1,6 @@
+* Mon Feb 26 2007 Jesse Keating <jkeating@redhat.com>
+- Fix gathering of srpms (thanks skvidal)
+
 * Wed Feb 21 2007 Jesse Keating <jkeating@redhat.com>
 - Don't use TMPDIR with buildinstall for now
 

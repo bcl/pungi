@@ -246,6 +246,7 @@ class Gather(yum.YumBase):
 
         # Work around for yum bug
         for sack in self.pkgSack.sacks.values():
+            sack.added = {}
             sack.excludes = {}
 
         self.pkgSack.excludes = {}
