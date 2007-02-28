@@ -1,7 +1,7 @@
 %{!?python_sitelib: %define python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")}
 
 Name:           pungi
-Version:        0.2.6
+Version:        0.2.7
 Release:        1%{?dist}
 Summary:        Distribution compose tool
 
@@ -46,6 +46,10 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Wed Feb 28 2007 Jesse Keating <jkeating@redhat.com> - 0.2.7-1
+- Fix gathering of srpms (thanks skvidal)
+- Update comps from F7 Test2
+
 * Thu Feb 22 2007 Jesse Keating <jkeating@redhat.com> - 0.2.6-1
 - Don't use TMPDIR with buildinstall, it is broken
 

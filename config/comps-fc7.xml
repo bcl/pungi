@@ -169,7 +169,7 @@
     <name xml:lang="bn">আফ্রিকান ব্যবহারের সহায়ক</name>
     <name xml:lang="bn_IN">আফ্রিকান ভাষা ব্যবহারের সহায়তা</name>
     <name xml:lang="ca">Suport per a l'afrikaans</name>
-    <name xml:lang="cs">Podpora pro afrikaans</name>
+    <name xml:lang="cs">Afrikánština (jižní Afrika)</name>
     <name xml:lang="cy">Cynhaliaeth Affricaneg</name>
     <name xml:lang="da">Understøttelse for afrikaans</name>
     <name xml:lang="de">Unterstützung für Afrikaans</name>
@@ -245,7 +245,7 @@
     <name xml:lang="bn">আরবি ব্যবহারের সহায়ক</name>
     <name xml:lang="bn_IN">আরবি ভাষা ব্যবহারের সহায়তা</name>
     <name xml:lang="ca">Suport per a l'àrab</name>
-    <name xml:lang="cs">Podpora pro arabštinu</name>
+    <name xml:lang="cs">Arabština</name>
     <name xml:lang="cy">Cynhaliaeth Arabeg</name>
     <name xml:lang="da">Understøttelse for arabisk</name>
     <name xml:lang="de">Unterstützung für Arabisch</name>
@@ -314,7 +314,24 @@
   <group>
     <id>armenian-support</id>
     <name>Armenian Support</name>
+    <name xml:lang="ca">Suport per a l'armeni</name>
+    <name xml:lang="fi">Armenian kielituki</name>
+    <name xml:lang="hr">Podrška za armenski</name>
+    <name xml:lang="nb">Støtte for armensk</name>
+    <name xml:lang="nl">Armeense ondersteuning</name>
+    <name xml:lang="pa">ਅਰਮੀਨੀਆਈ ਸਹਿਯੋਗ</name>
+    <name xml:lang="sv">Stöd för armenska</name>
+    <name xml:lang="te">అర్మేరియన్ మద్దతు</name>
+    <name xml:lang="tr">Ermenice Desteği</name>
     <description>This group is a collection of tools and resources of Armenian environments.</description>
+    <description xml:lang="ca">Aquest grup és una col·lecció d'eines i recursos per a entorns armenis.</description>
+    <description xml:lang="fi">Tämä ryhmä sisältää kokoelman työkaluja ja välineitä armenialaisiin ympäristöihin.</description>
+    <description xml:lang="hr">Ova grupa je kolekcija alata i resursa armenskog radnog okruženja.</description>
+    <description xml:lang="nb">Denne gruppen er en samling av verktøy og ressurser for armenske miljøer.</description>
+    <description xml:lang="nl">Deze groep is een collectie van hulpmiddelen en hulpbronnen voor Armeense omgevingen.</description>
+    <description xml:lang="pa">ਇਹ ਗਰੁੱਪ 'ਚ ਅਮਰੀਨੀਆਈ ਵਾਤਾਵਰਨ ਦੇ ਸੰਦ ਅਤੇ ਸਰੋਤਾਂ ਦਾ ਭੰਡਾਰ ਹੈ।</description>
+    <description xml:lang="sv">Denna grupp är en samling av verktyg och resurser för armenska miljöer.</description>
+    <description xml:lang="te">అర్మేనియన్ వాతావరణాలకు ఈ సమూహం ఉపకరణాలను మరియూ ఆకరాలను కలిగి ఉంది.</description>
     <default>false</default>
     <uservisible>false</uservisible>
     <packagelist>
@@ -333,7 +350,7 @@
     <name xml:lang="bn">অসমিয়া ব্যবহারের সহায়ক</name>
     <name xml:lang="bn_IN">অসমিয়া ভাষার ব্যবহারের সহায়তা</name>
     <name xml:lang="ca">Suport per a l'assamès</name>
-    <name xml:lang="cs">Podpora pro assamese</name>
+    <name xml:lang="cs">Ásámština (Indie)</name>
     <name xml:lang="cy">Cynhaliaeth Asameg</name>
     <name xml:lang="da">Understøttelse for assamesisk</name>
     <name xml:lang="de">Unterstützung für Assamesisch</name>
@@ -467,6 +484,7 @@
     <description xml:lang="as">এই যন্ত্ৰ সমূহে আপোনাক DocBook আকৃতিত আলেখ সৃষ্টি কৰি HTML, PDF, Postscript আৰু লিখিত ৰূপে পৰিবৰ্ত্তন কৰিব'লৈ অনুমতি দিয়ে ।</description>
     <description xml:lang="bn_IN">এই সামগ্রীগুলির সাহায্যে আপনি DocBook বিন্যাসে নথিপত্র নির্মাণ করে তা HTML, PDF, Postscript এবং টেক্সট রূপে পরিবর্তন করতে পারবেন।</description>
     <description xml:lang="ca">Aquestes eines us permeten crear documents en format DocBook i convertir-los en format HTML, PDF, Postscript i text.</description>
+    <description xml:lang="cs">Tyto nástroje vám umožní vytvářet dokumentaci ve formátu DocBook a konvertovat ji do HTML, PDF, Postscriptu a textu.</description>
     <description xml:lang="da">Disse værktøjer lader dig skabe dokumentation i DocBook-formatet og konvertere dem til HTML, PDF, Postscript og tekst.</description>
     <description xml:lang="de">Mit diesen Programmen können Sie Dokumentationen im DocBook-Format anlegen und diese in HTML, PDF, Postscript und Text konvertieren.</description>
     <description xml:lang="el">Αυτά τα εργαλεία σας επιτρέπουν να δημιουργήσετε έγγραφα σε μορφή DocBook και να τα μετατρέψετε σε HTML, PDF, Postscript ή απλό κείμενο.</description>
@@ -545,7 +563,7 @@
     <name xml:lang="bn">ভিত্তি (Base)</name>
     <name xml:lang="bn_IN">ভিত্তি (Base)</name>
     <name xml:lang="ca">Bàsic</name>
-    <name xml:lang="cs">Základ</name>
+    <name xml:lang="cs">Základní instalace</name>
     <name xml:lang="cy">Sail</name>
     <name xml:lang="da">Base</name>
     <name xml:lang="de">Basis</name>
@@ -883,7 +901,7 @@
     <description xml:lang="bg">Инсталирайте пакетите за да използвате базовия графичен интерфейс (Х).</description>
     <description xml:lang="bn">এক্স (X -- গ্রাফিকাল ইন্টারফেসের জন্য জরুরী) চালাতে চাইলে এই প্যাকেজগুলো ইনস্টল করুন।</description>
     <description xml:lang="bn_IN">প্রধান গ্রাফিকাল (X) ইন্টারফেস ব্যবহারের জন্য চিহ্নিত প্যাকেজ সংকলন ইনস্টল করা আবশ্যক।</description>
-    <description xml:lang="ca">Instal·leu aquest grup de paquets per usar la interfície gràfica d'usuari (X) bàsica.</description>
+    <description xml:lang="ca">Instal·leu aquest grup de paquets per emprar la interfície gràfica d'usuari (X) bàsica.</description>
     <description xml:lang="cs">Tuto skupinu balíčků nainstalujte pro použití grafického (X) uživatelského prostředí.</description>
     <description xml:lang="cy">Arsefydlwch y grŵp yma o becynnau i ddefnyddio'r rhyngwyneb defnyddiwr graffigol sail (X).</description>
     <description xml:lang="da">Installér denne pakkegruppe for at bruge den grundlæggende grafiske brugergrænseflade (X).</description>
@@ -966,8 +984,10 @@
       <packagereq type="default">linuxwacom</packagereq>
       <packagereq type="default">openssh-askpass</packagereq>
       <packagereq type="default">pirut</packagereq>
+      <packagereq type="default">policycoreutils-gui</packagereq>
       <packagereq type="default">rhgb</packagereq>
       <packagereq type="default">setroubleshoot</packagereq>
+      <packagereq type="default">smolt-firstboot</packagereq>
       <packagereq type="default">synaptics</packagereq>
       <packagereq type="default">system-config-date</packagereq>
       <packagereq type="default">system-config-display</packagereq>
@@ -987,12 +1007,17 @@
       <packagereq type="optional">dejavu-fonts-experimental</packagereq>
       <packagereq type="optional">devilspie</packagereq>
       <packagereq type="optional">efont-unicode-bdf</packagereq>
+      <packagereq type="optional">fonts-chinese</packagereq>
+      <packagereq type="optional">fonts-japanese</packagereq>
+      <packagereq type="optional">fonts-korean</packagereq>
+      <packagereq type="optional">freefont</packagereq>
       <packagereq type="optional">FreeWnn</packagereq>
       <packagereq type="optional">kinput2</packagereq>
       <packagereq type="optional">lineak-defaultplugin</packagereq>
       <packagereq type="optional">lineak-xosdplugin</packagereq>
       <packagereq type="optional">lineakd</packagereq>
       <packagereq type="optional">lxpanel</packagereq>
+      <packagereq type="optional">mathml-fonts</packagereq>
       <packagereq type="optional">rss-glx</packagereq>
       <packagereq type="optional">rss-glx-xscreensaver</packagereq>
       <packagereq type="optional">rxvt</packagereq>
@@ -1020,7 +1045,7 @@
     <name xml:lang="bn">বাস্ক ভাষা ব্যবহারের সহায়ক</name>
     <name xml:lang="bn_IN">বাস্ক ভাষা ব্যবহারের সহায়তা</name>
     <name xml:lang="ca">Suport per al basc</name>
-    <name xml:lang="cs">Podpora pro baskičtinu</name>
+    <name xml:lang="cs">Baskičtina (Španělsko)</name>
     <name xml:lang="cy">Cynhaliaeth Basceg</name>
     <name xml:lang="da">Understøttelse for baskisk</name>
     <name xml:lang="de">Unterstützung für Baskisch (Spanien)</name>
@@ -1091,7 +1116,7 @@
     <name xml:lang="bn">বাংলা ব্যবহারের সহায়ক</name>
     <name xml:lang="bn_IN">বাংলা ভাষা ব্যবহারের সহায়তা</name>
     <name xml:lang="ca">Suport per al bengalí</name>
-    <name xml:lang="cs">Podpora pro bengálštinu</name>
+    <name xml:lang="cs">Bengálština (Indie)</name>
     <name xml:lang="cy">Cynhaliaeth Bengaleg</name>
     <name xml:lang="da">Understøttelse for bengali</name>
     <name xml:lang="de">Unterstützung für Bengali</name>
@@ -1167,7 +1192,7 @@
     <name xml:lang="bn">ব্রাজিলিয় পর্তুগিজ ব্যবহারের সহায়ক</name>
     <name xml:lang="bn_IN">ব্রাজিলিয়ান পর্তুগিজ ভাষা ব্যবহারের সহায়তা</name>
     <name xml:lang="ca">Suport per al portuguès de Brasil</name>
-    <name xml:lang="cs">Podpora pro brazilskou portugalštinu</name>
+    <name xml:lang="cs">Brazilská portugalština</name>
     <name xml:lang="cy">Cynhaliaeth Portiwgaleg Brasil</name>
     <name xml:lang="da">Understøttelse for brasiliansk portugisisk</name>
     <name xml:lang="de">Unterstützung für Portugiesisch (Brasilien)</name>
@@ -1237,7 +1262,7 @@
     <name xml:lang="bn">ব্রেটন ব্যবহারের সহায়ক</name>
     <name xml:lang="bn_IN">ব্রেটন ভাষা ব্যবহারের সহায়তা</name>
     <name xml:lang="ca">Suport per al bretó</name>
-    <name xml:lang="cs">Podpora pro bretonštinu</name>
+    <name xml:lang="cs">Bretonština (Francie)</name>
     <name xml:lang="cy">Cynhaliaeth Llydaweg</name>
     <name xml:lang="da">Understøttelse for bretonsk</name>
     <name xml:lang="de">Unterstützung für Bretonisch (Frankreich)</name>
@@ -1301,6 +1326,7 @@
     <name xml:lang="as">ইংৰাজী (UK)ভাষাৰ সমৰ্থন</name>
     <name xml:lang="bn_IN">ইংরাজি (যুক্তরাজ্য) ভাষা ব্যবহারের সমর্থন</name>
     <name xml:lang="ca">Suport per a l'anglès (Regne Unit)</name>
+    <name xml:lang="cs">Angličtina (UK)</name>
     <name xml:lang="da">Understøttelse for engelsk (britisk)</name>
     <name xml:lang="de">Unterstützung für Englisch (UK)</name>
     <name xml:lang="el">Υποστήριξη Αγγλικών (UK)</name>
@@ -1358,7 +1384,7 @@
     <name xml:lang="bn">বুলগেরিয় ব্যবহারের সহায়ক</name>
     <name xml:lang="bn_IN">বুলগারিয়ান ভাষা ব্যবহারের সহায়তা</name>
     <name xml:lang="ca">Suport per al búlgar</name>
-    <name xml:lang="cs">Podpora pro bulharštinu</name>
+    <name xml:lang="cs">Bulharština</name>
     <name xml:lang="cy">Cynhaliaeth Bwlgareg</name>
     <name xml:lang="da">Understøttelse for bulgarisk</name>
     <name xml:lang="de">Unterstützung für Bulgarisch</name>
@@ -1435,7 +1461,7 @@
     <name xml:lang="bn">ক্যাটালান ব্যবহারের সহায়ক</name>
     <name xml:lang="bn_IN">ক্যাটালান ভাষা ব্যবহারের সমর্থন</name>
     <name xml:lang="ca">Suport per al català</name>
-    <name xml:lang="cs">Podpora pro katalánštinu</name>
+    <name xml:lang="cs">Katalánština (Španělsko)</name>
     <name xml:lang="cy">Cynhaliaeth Gatalán</name>
     <name xml:lang="da">Understøttelse for katalansk</name>
     <name xml:lang="de">Unterstützung für Spanisch (Katalanien)</name>
@@ -1513,7 +1539,7 @@
     <name xml:lang="bn">চীনা ব্যবহারের সহায়ক</name>
     <name xml:lang="bn_IN">চীনা ভাষা ব্যবহারের সমর্থন</name>
     <name xml:lang="ca">Suport per al xinès</name>
-    <name xml:lang="cs">Podpora pro čínštinu</name>
+    <name xml:lang="cs">Čínština</name>
     <name xml:lang="cy">Cynhaliaeth Tseineg</name>
     <name xml:lang="da">Understøttelse for kinesisk</name>
     <name xml:lang="de">Unterstützung für Chinesisch</name>
@@ -1585,8 +1611,8 @@
       <packagereq type="conditional" requires="xorg-x11-server-Xorg">scim-pinyin</packagereq>
       <packagereq type="conditional" requires="qt">scim-qtimm</packagereq>
       <packagereq type="conditional" requires="xorg-x11-server-Xorg">scim-tables-chinese</packagereq>
-      <packagereq type="default">lv</packagereq>
-      <packagereq type="default">stardict</packagereq>
+      <packagereq type="optional">lv</packagereq>
+      <packagereq type="optional">stardict</packagereq>
     </packagelist>
   </group>
   <group>
@@ -1597,7 +1623,7 @@
     <name xml:lang="bn">ক্লাস্টারিং</name>
     <name xml:lang="bn_IN">ক্লাস্টার ব্যবস্থা</name>
     <name xml:lang="ca">Clústers</name>
-    <name xml:lang="cs">Clustering</name>
+    <name xml:lang="cs">Clustery</name>
     <name xml:lang="da">Klynger</name>
     <name xml:lang="de">Clustering</name>
     <name xml:lang="el">Συστοίχιση</name>
@@ -1644,7 +1670,7 @@
     <description xml:lang="as">কম্পিউটাৰক থূপ কৰা প্ৰযুক্তি বিদ্যাৰ সমৰ্থন</description>
     <description xml:lang="bn_IN">ক্লাস্টার ব্যবহারের সহায়তা</description>
     <description xml:lang="ca">Suport per a clústers</description>
-    <description xml:lang="cs">Podpora Clusteringu</description>
+    <description xml:lang="cs">Clustery</description>
     <description xml:lang="da">Understøttelse for klynger</description>
     <description xml:lang="de">Unterstützung für Clustering</description>
     <description xml:lang="el">Υποστήριξη συστοίχισης</description>
@@ -1684,7 +1710,7 @@
     <description xml:lang="te">సంయుక్త మద్దతు</description>
     <description xml:lang="th">สนับสนุนคลัสเตอร์</description>
     <description xml:lang="tr">Kümeleme Desteği</description>
-    <description xml:lang="uk">Підтримка кластерів.</description>
+    <description xml:lang="uk">Підтримка кластерів</description>
     <description xml:lang="zh_CN">集群支持</description>
     <description xml:lang="zh_TW">叢集（Clustering）支援</description>
     <default>false</default>
@@ -1708,7 +1734,7 @@
     <name xml:lang="bn">কোর (Core)</name>
     <name xml:lang="bn_IN">কোর</name>
     <name xml:lang="ca">Nucli</name>
-    <name xml:lang="cs">Jádro</name>
+    <name xml:lang="cs">Základ</name>
     <name xml:lang="cy">Craidd</name>
     <name xml:lang="da">Grundlæggende</name>
     <name xml:lang="de">Kern</name>
@@ -1886,7 +1912,7 @@
     <name xml:lang="bn">ক্রোশিয় ব্যবহারের সহায়ক</name>
     <name xml:lang="bn_IN">ক্রোয়েশিয়ান ভাষা ব্যবহারের সহায়তা</name>
     <name xml:lang="ca">Suport per al croat</name>
-    <name xml:lang="cs">Podpora pro chorvatštinu</name>
+    <name xml:lang="cs">Chorvatština</name>
     <name xml:lang="cy">Cynhaliaeth Croateg</name>
     <name xml:lang="da">Understøttelse for kroatisk</name>
     <name xml:lang="de">Unterstützung für Kroatisch</name>
@@ -1962,7 +1988,7 @@
     <name xml:lang="bn">চেক (Czech) ব্যবহারের সহায়ক</name>
     <name xml:lang="bn_IN">চেক ভাষা ব্যবহারের সমর্থন</name>
     <name xml:lang="ca">Suport per al txec</name>
-    <name xml:lang="cs">Podpora pro češtinu</name>
+    <name xml:lang="cs">Čeština</name>
     <name xml:lang="cy">Cynhaliaeth Tsiec</name>
     <name xml:lang="da">Understøttelse for tjekkisk</name>
     <name xml:lang="de">Unterstützung für Tschechisch</name>
@@ -2045,7 +2071,7 @@
     <name xml:lang="bn">দিনেমার (Danish) ব্যবহারের সহায়ক</name>
     <name xml:lang="bn_IN">ড্যানিশ ভাষা ব্যবহারের সমর্থন</name>
     <name xml:lang="ca">Suport per al danès</name>
-    <name xml:lang="cs">Podpora pro dánštinu</name>
+    <name xml:lang="cs">Dánština</name>
     <name xml:lang="cy">Cynhaliaeth Daneg</name>
     <name xml:lang="da">Understøttelse for dansk</name>
     <name xml:lang="de">Unterstützung für Dänisch</name>
@@ -2454,7 +2480,6 @@
       <packagereq type="default" basearchonly="true">oprofile</packagereq>
       <packagereq type="default" basearchonly="true">oprofile-gui</packagereq>
       <packagereq type="default">patchutils</packagereq>
-      <packagereq type="default">pfmon</packagereq>
       <packagereq type="default" basearchonly="true">pstack</packagereq>
       <packagereq type="default">python-ldap</packagereq>
       <packagereq type="default">rcs</packagereq>
@@ -2477,6 +2502,7 @@
       <packagereq type="optional">clips-xclips</packagereq>
       <packagereq type="optional">clisp</packagereq>
       <packagereq type="optional">cmake</packagereq>
+      <packagereq type="optional">cmucl</packagereq>
       <packagereq type="optional">codeblocks</packagereq>
       <packagereq type="optional">cogito</packagereq>
       <packagereq type="optional">colordiff</packagereq>
@@ -2495,6 +2521,7 @@
       <packagereq type="optional">ecl</packagereq>
       <packagereq type="optional">ElectricFence</packagereq>
       <packagereq type="optional">epydoc</packagereq>
+      <packagereq type="optional">eric</packagereq>
       <packagereq type="optional">erlang</packagereq>
       <packagereq type="optional">expect</packagereq>
       <packagereq type="optional">flasm</packagereq>
@@ -2552,6 +2579,7 @@
       <packagereq type="optional">regexxer</packagereq>
       <packagereq type="optional">rpmdevtools</packagereq>
       <packagereq type="optional">rpmlint</packagereq>
+      <packagereq type="optional">sbcl</packagereq>
       <packagereq type="optional">scons</packagereq>
       <packagereq type="optional">smarteiffel</packagereq>
       <packagereq type="optional">splint</packagereq>
@@ -2583,6 +2611,7 @@
     <name xml:lang="as">ডাইল্ কৰা জালপ্ৰসাৰৰ সমৰ্থন</name>
     <name xml:lang="bn_IN">ডায়াল-আপ নেটওয়ার্কিং ব্যবস্থা</name>
     <name xml:lang="ca">Suport per a la connexió a la xarxa</name>
+    <name xml:lang="cs">Podpora vytáčeného připojení k síti</name>
     <name xml:lang="da">Understøttelse for opkaldt netopkobling</name>
     <name xml:lang="de">DFÜ-Netzwerk Unterstützung</name>
     <name xml:lang="el">Υποστήριξη δικτύωσης μέσω τηλεφώνου</name>
@@ -2644,13 +2673,13 @@
     <name xml:lang="af">DNS-naambediener</name>
     <name xml:lang="am">DNS የስም ሰርቨር</name>
     <name xml:lang="ar">اسم خادم خدمة أسم النّطاق (DNS)</name>
-    <name xml:lang="as">DNS নাম সেৱা‌-প্ৰদান কৰোঁতা</name>
+    <name xml:lang="as">DNS নাম সেৱক</name>
     <name xml:lang="be">Паслужнік DNS</name>
     <name xml:lang="bg">DNS Nameserver</name>
     <name xml:lang="bn">ডি.এন.এস. (DNS) নেইম সার্ভার</name>
     <name xml:lang="bn_IN">DNS নেইম সার্ভার</name>
     <name xml:lang="ca">Servidor de noms de DNS</name>
-    <name xml:lang="cs">Jmenný server DNS</name>
+    <name xml:lang="cs">DNS server</name>
     <name xml:lang="cy">Gweinydd Enwau DNS</name>
     <name xml:lang="da">DNS-navneserver</name>
     <name xml:lang="de">DNS Name Server</name>
@@ -2788,7 +2817,7 @@
     <name xml:lang="bn">ওলন্দাজ (Dutch) ব্যবহারের সহায়ক</name>
     <name xml:lang="bn_IN">ডাচ ভাষা ব্যবহারের সমর্থন</name>
     <name xml:lang="ca">Suport per a l'holandès</name>
-    <name xml:lang="cs">Podpora pro holandštinu</name>
+    <name xml:lang="cs">Holandština</name>
     <name xml:lang="cy">Cynhaliaeth Iseldireg</name>
     <name xml:lang="da">Understøttelse for hollandsk</name>
     <name xml:lang="de">Unterstützung für Holländisch</name>
@@ -3056,6 +3085,7 @@
     <description xml:lang="as">কেতিয়াবা পাঠ সম্পাদক নামেৰে জনা, এই প্ৰ'গ্ৰামসমূহে আপোনাক নথিপত্ৰ সৃষ্টি আৰু সম্পাদন কৰিব'লৈ সক্ষম কৰে । ইয়াত অন্তৰ্ভুক্ত হৈ আছে Emacs আৰু Vi ।</description>
     <description xml:lang="bn_IN">এই প্রোগ্রামগুলির সাহায্যে আপনি সরাসরি ফাইল তৈরি এবং পরিবর্তন করতে পারবেন। সাধারণত এগুলি টেক্সট এডিটর নামে পরিচিত।  এর মধ্যে রয়েছে Emacs এবং Vi।</description>
     <description xml:lang="ca">Els editors de text us permeten crear i editar fitxers. S'inclouen l'Emacs i el Vi.</description>
+    <description xml:lang="cs">Někdy označované jako textové editory. Tyto programy vám umožní vytvářet a upravovat soubory. Tato skupina zahrnuje Emacs a Vi.</description>
     <description xml:lang="da">Dette er programmer som lader dig skabe og redigere filer, og de kaldes ofte for tekstredigerere. Disse inkluderer Emacs og Vi.</description>
     <description xml:lang="de">Diese auch als Text-Editoren bezeichneten Programme ermöglichen das Anlegen und Bearbeiten von Text-Dateien. Dazu gehören Emacs und Vi.</description>
     <description xml:lang="el">Οι εφαρμογές αυτές ονομάζονται και κειμενογράφοι και κάνουν δυνατή τη δημιουργία και μετατροπή αρχείων. Δύο παραδείγματα είναι ο Emacs και ο Vi.</description>
@@ -3115,7 +3145,25 @@
   <group>
     <id>education</id>
     <name>Educational Software</name>
+    <name xml:lang="ca">Programari educatiu</name>
+    <name xml:lang="fi">Opetusohjelmistoja</name>
+    <name xml:lang="hr">Obrazovni softver</name>
+    <name xml:lang="nb">Utdanningsprogrammer</name>
+    <name xml:lang="nl">Educatieve software</name>
+    <name xml:lang="pa">ਵਿਦਿਅਕ ਸਾਫਟਵੇਅਰ</name>
+    <name xml:lang="sv">Utbildningsprogramvara</name>
+    <name xml:lang="te">విద్యాప</name>
+    <name xml:lang="tr">Eğitim Yazılımı</name>
     <description>Educational software for learning</description>
+    <description xml:lang="ca">Programari educatiu per a aprendre</description>
+    <description xml:lang="fi">Opetusohjelmistoja</description>
+    <description xml:lang="hr">Obrazovni softver i učenje</description>
+    <description xml:lang="nb">Utdanningsprogrammer for læring</description>
+    <description xml:lang="nl">Educatieve software om te leren</description>
+    <description xml:lang="pa">ਸਿੱਖਣ ਲਈ ਵਿਦਿਅਕ ਸਾਫਟਵੇਅਰ</description>
+    <description xml:lang="sv">Utbildningsprogramvara för inlärning</description>
+    <description xml:lang="te">విద్యాప</description>
+    <description xml:lang="tr">Öğrenim için eğitim yazılımı</description>
     <default>false</default>
     <uservisible>true</uservisible>
     <packagelist>
@@ -3125,6 +3173,7 @@
       <packagereq type="optional">gcompris</packagereq>
       <packagereq type="optional">gperiodic</packagereq>
       <packagereq type="optional">gtypist</packagereq>
+      <packagereq type="optional">kdeedu</packagereq>
       <packagereq type="optional">stellarium</packagereq>
       <packagereq type="optional">tuxtype2</packagereq>
     </packagelist>
@@ -3428,6 +3477,7 @@
       <packagereq type="optional">geda-symbols</packagereq>
       <packagereq type="optional">geda-utils</packagereq>
       <packagereq type="optional">genius</packagereq>
+      <packagereq type="optional">geomview</packagereq>
       <packagereq type="optional">ghdl</packagereq>
       <packagereq type="optional">gnucap</packagereq>
       <packagereq type="optional">gpredict</packagereq>
@@ -3449,6 +3499,8 @@
       <packagereq type="optional">libctl</packagereq>
       <packagereq type="optional">libmatheval</packagereq>
       <packagereq type="optional">libtcd</packagereq>
+      <packagereq type="optional">Macaulay2</packagereq>
+      <packagereq type="optional">maxima</packagereq>
       <packagereq type="optional">ncarg</packagereq>
       <packagereq type="optional">nco</packagereq>
       <packagereq type="optional">ncview</packagereq>
@@ -3472,6 +3524,7 @@
       <packagereq type="optional">R</packagereq>
       <packagereq type="optional">rrdtool</packagereq>
       <packagereq type="optional">scalapack</packagereq>
+      <packagereq type="optional">scigraphica</packagereq>
       <packagereq type="optional">scrip</packagereq>
       <packagereq type="optional">sextractor</packagereq>
       <packagereq type="optional">SIBsim4</packagereq>
@@ -3480,7 +3533,9 @@
       <packagereq type="optional">toped</packagereq>
       <packagereq type="optional">veusz</packagereq>
       <packagereq type="optional">wcstools</packagereq>
+      <packagereq type="optional">wgrib</packagereq>
       <packagereq type="optional">wvs-data</packagereq>
+      <packagereq type="optional">wxMaxima</packagereq>
       <packagereq type="optional">xcircuit</packagereq>
       <packagereq type="optional">xdrawchem</packagereq>
       <packagereq type="optional">xtide</packagereq>
@@ -3498,7 +3553,7 @@
     <name xml:lang="bn">এস্তোনিয় ব্যবহারের সহায়ক</name>
     <name xml:lang="bn_IN">এস্তোনিয়ান ভাষা ব্যবহারের সমর্থন</name>
     <name xml:lang="ca">Suport per a l'estonià</name>
-    <name xml:lang="cs">Podpora pro estonštinu</name>
+    <name xml:lang="cs">Estonština</name>
     <name xml:lang="cy">Cynhaliaeth Estoneg</name>
     <name xml:lang="da">Understøttelse for estisk</name>
     <name xml:lang="de">Unterstützung für Estnisch</name>
@@ -3573,7 +3628,7 @@
     <name xml:lang="bn">ইথিওপিয়ান সাপোর্ট</name>
     <name xml:lang="bn_IN">ইথিওপিক ভাষা ব্যবহারের সমর্থন</name>
     <name xml:lang="ca">Suport per a l'etiòpic</name>
-    <name xml:lang="cs">Podpora pro etiopštinu</name>
+    <name xml:lang="cs">Etiopština</name>
     <name xml:lang="cy">Cynhaliaeth Ethiopeg</name>
     <name xml:lang="da">Understøttelse for etiopisk</name>
     <name xml:lang="de">Unterstützung für Äthiopisch</name>
@@ -3633,7 +3688,7 @@
     <name xml:lang="bn">ফারাও ভাষা ব্যবহারের সহায়ক</name>
     <name xml:lang="bn_IN">ফেরোইস ভাষা ব্যবহারের সমর্থন</name>
     <name xml:lang="ca">Suport per al feroès</name>
-    <name xml:lang="cs">Podpora pro faeroese</name>
+    <name xml:lang="cs">Faerština (Dánsko)</name>
     <name xml:lang="cy">Cynhaliaeth Ffaroeg</name>
     <name xml:lang="da">Understøttelse for færøsk</name>
     <name xml:lang="de">Unterstützung für Färöerisch</name>
@@ -3700,7 +3755,7 @@
     <name xml:lang="bn">ফিনিশিয় (Finnish) ব্যবহারের সহায়ক</name>
     <name xml:lang="bn_IN">ফিনিশ ভাষা ব্যবহারের সমর্থন</name>
     <name xml:lang="ca">Suport per al finès</name>
-    <name xml:lang="cs">Podpora pro finštinu</name>
+    <name xml:lang="cs">Finština</name>
     <name xml:lang="cy">Cynhaliaeth Ffinneg</name>
     <name xml:lang="da">Understøttelse for finsk</name>
     <name xml:lang="de">Unterstützung für Finnisch</name>
@@ -3777,7 +3832,7 @@
     <name xml:lang="bn">ফরাসি ব্যবহারের সহায়ক</name>
     <name xml:lang="bn_IN">ফ্রেঞ্চ ভাষা ব্যবহারের সমর্থন</name>
     <name xml:lang="ca">Suport per al francès</name>
-    <name xml:lang="cs">Podpora pro francouzštinu</name>
+    <name xml:lang="cs">Francouzština</name>
     <name xml:lang="cy">Cynhaliaeth Ffrangeg</name>
     <name xml:lang="da">Understøttelse for fransk</name>
     <name xml:lang="de">Unterstützung für Französisch</name>
@@ -3850,7 +3905,7 @@
     <name xml:lang="af">FTP-bediener</name>
     <name xml:lang="am">FTP ሰርቨር</name>
     <name xml:lang="ar">خادم FTP</name>
-    <name xml:lang="as">FTP সেৱা‌-প্ৰদান কৰোঁতা</name>
+    <name xml:lang="as">FTP সেৱক</name>
     <name xml:lang="be">Паслужнік FTP</name>
     <name xml:lang="bg">FTP сървър</name>
     <name xml:lang="bn">এফ.টি.পি. সার্ভার</name>
@@ -3994,7 +4049,7 @@
     <name xml:lang="bn">গ্যালিক ব্যবহারের সহায়ক</name>
     <name xml:lang="bn_IN">গেলিক ভাষা ব্যবহারের সহায়তা</name>
     <name xml:lang="ca">Suport per al gaèlic</name>
-    <name xml:lang="cs">Podpora pro galštinu</name>
+    <name xml:lang="cs">Gaelic (Irsko, Skotsko)</name>
     <name xml:lang="cy">Cynhaliaeth Gaeleg</name>
     <name xml:lang="da">Understøttelse for gælisk</name>
     <name xml:lang="de">Unterstützung für Gälisch</name>
@@ -4062,7 +4117,7 @@
     <name xml:lang="bn">গ্যালিশিয় ব্যবহারের সহায়ক</name>
     <name xml:lang="bn_IN">গেলিশিয়ান ভাষা ব্যবহারের সহায়তা</name>
     <name xml:lang="ca">Suport per al gallec</name>
-    <name xml:lang="cs">Podpora pro galičtinu</name>
+    <name xml:lang="cs">Galicijština (Španělsko)</name>
     <name xml:lang="cy">Cynhaliaeth Galiseg</name>
     <name xml:lang="da">Understøttelse for galisisk</name>
     <name xml:lang="de">Unterstützung für Galizisch</name>
@@ -4284,6 +4339,7 @@
       <packagereq type="optional">csmash</packagereq>
       <packagereq type="optional">cyphesis</packagereq>
       <packagereq type="optional">dd2</packagereq>
+      <packagereq type="optional">duel3</packagereq>
       <packagereq type="optional">enigma</packagereq>
       <packagereq type="optional">fbg</packagereq>
       <packagereq type="optional">fillets-ng</packagereq>
@@ -4297,6 +4353,7 @@
       <packagereq type="optional">freedroid</packagereq>
       <packagereq type="optional">freedroidrpg</packagereq>
       <packagereq type="optional">frozen-bubble</packagereq>
+      <packagereq type="optional">gemdropx</packagereq>
       <packagereq type="optional">gl-117</packagereq>
       <packagereq type="optional">glest</packagereq>
       <packagereq type="optional">gnofract4d</packagereq>
@@ -4316,6 +4373,7 @@
       <packagereq type="optional">Maelstrom</packagereq>
       <packagereq type="optional">magicor</packagereq>
       <packagereq type="optional">manaworld</packagereq>
+      <packagereq type="optional">methane</packagereq>
       <packagereq type="optional">mirrormagic</packagereq>
       <packagereq type="optional">monkey-bubble</packagereq>
       <packagereq type="optional">monsterz</packagereq>
@@ -4328,6 +4386,7 @@
       <packagereq type="optional">nexuiz</packagereq>
       <packagereq type="optional">njam</packagereq>
       <packagereq type="optional">oneko</packagereq>
+      <packagereq type="optional">openarena</packagereq>
       <packagereq type="optional">overgod</packagereq>
       <packagereq type="optional">pachi</packagereq>
       <packagereq type="optional">pengupop</packagereq>
@@ -4345,6 +4404,7 @@
       <packagereq type="optional">scorched3d</packagereq>
       <packagereq type="optional">scummvm</packagereq>
       <packagereq type="optional">shippy</packagereq>
+      <packagereq type="optional">smashteroid</packagereq>
       <packagereq type="optional">sopwith</packagereq>
       <packagereq type="optional">starfighter</packagereq>
       <packagereq type="optional">sturmbahnfahrer</packagereq>
@@ -4360,6 +4420,7 @@
       <packagereq type="optional">uqm</packagereq>
       <packagereq type="optional">vdr-sudoku</packagereq>
       <packagereq type="optional">viruskiller</packagereq>
+      <packagereq type="optional">warzone2100</packagereq>
       <packagereq type="optional">wesnoth</packagereq>
       <packagereq type="optional">worminator</packagereq>
       <packagereq type="optional">wormux</packagereq>
@@ -4387,7 +4448,7 @@
     <name xml:lang="bn">জার্মান ব্যবহারের সহায়ক</name>
     <name xml:lang="bn_IN">জার্মান ভাষা ব্যবহারের সমর্থন</name>
     <name xml:lang="ca">Suport per a l'alemany</name>
-    <name xml:lang="cs">Podpora pro němčinu</name>
+    <name xml:lang="cs">Němčina</name>
     <name xml:lang="cy">Cynhaliaeth Almaeneg</name>
     <name xml:lang="da">Understøttelse for tysk</name>
     <name xml:lang="de">Unterstützung für Deutsch</name>
@@ -4466,7 +4527,7 @@
     <name xml:lang="bn">গনোম ডেস্কটপ</name>
     <name xml:lang="bn_IN">GNOME ডেস্কটপ পরিবেশ</name>
     <name xml:lang="ca">Entorn d'escriptori GNOME</name>
-    <name xml:lang="cs">Prostředí pracovní plochy GNOME</name>
+    <name xml:lang="cs">GNOME - grafické uživatelské prostředí</name>
     <name xml:lang="cy">Amgylchedd Penbwrdd GNOME</name>
     <name xml:lang="da">Skrivebordsmiljøet Gnome</name>
     <name xml:lang="de">GNOME Desktopumgebung</name>
@@ -4524,9 +4585,10 @@
     <name xml:lang="zh_TW">GNOME 桌面環境</name>
     <name xml:lang="zu">Imvelaphi Yedesktop ye-Gnome</name>
     <description>GNOME is a powerful graphical user interface which includes a panel, desktop, system icons, and a graphical file manager.</description>
-    <description xml:lang="as">GNOME এটা শক্তিশালী চিত্ৰাংকিত ব্যৱহাৰকৰ্তাৰ সংযোগ মাধ্যম য'ত অন্তৰ্ভূক্ত আছে এটা পেনেল্, ডেষ্কটপ, ব্যৱস্থাপ্ৰণালীৰ প্ৰতিকৃতি আৰু এটা চিত্ৰাংকিত নথি‌পত্ৰৰ পৰিচালক  ।</description>
+    <description xml:lang="as">GNOME এটা শক্তিশালী চিত্ৰাংকিত ব্যৱহাৰকৰ্তাৰ সংযোগ মাধ্যম য'ত অন্তৰ্ভূক্ত আছে এটা পেনেল, ডেষ্কটপ, ব্যৱস্থাপ্ৰণালীৰ প্ৰতিকৃতি আৰু এটা চিত্ৰাংকিত নথি‌পত্ৰৰ পৰিচালক  ।</description>
     <description xml:lang="bn_IN">GNOME একটি সমৃদ্ধ গ্রাফিকাল ইন্টারফেস যার মধ্যে অন্তর্ভুক্ত রয়েছে একটি প্যানেল, ডেস্কটপ, বিভিন্ন সিস্টেম আইকন এবং একটি গ্রাফিকাল ফাইল পরিচালন ব্যবস্থা।</description>
     <description xml:lang="ca">El GNOME és una interfície gràfica avançada que inclou un quadre, un escriptori, icones de sistema i un gestor de fitxers gràfic.</description>
+    <description xml:lang="cs">GNOME je výkonné grafické uživatelské prostředí, které zahrnuje panel, prostředí pracovní plochy, systémové ikony a grafického správce souborů.</description>
     <description xml:lang="da">Gnome er en stærk grafisk brugergrænseflade som indholder et panel, et skrivebord, systemikoner og en grafisk filbehandler.</description>
     <description xml:lang="de">GNOME ist eine mächtige grafische Benutzerschnittstelle mit Panel, Desktop, Systemsymbolen und grafischem Dateimanager.</description>
     <description xml:lang="el">Το GNOME είναι ένα ισχυρό, γραφικό περιβάλλον που περιέχει, μεταξύ άλλων, πίνακα εφαρμογών, επιφάνεια εργασίας, εικονίδια συστήματος και γραφικό διαχειριστή αρχείων.</description>
@@ -4587,9 +4649,9 @@
       <packagereq type="default">eog</packagereq>
       <packagereq type="default">esc</packagereq>
       <packagereq type="default">evince</packagereq>
+      <packagereq type="default">fast-user-switch-applet</packagereq>
       <packagereq type="default">file-roller</packagereq>
       <packagereq type="default">gedit</packagereq>
-      <packagereq type="default">gimp-print-utils</packagereq>
       <packagereq type="default">gnome-audio</packagereq>
       <packagereq type="default">gnome-backgrounds</packagereq>
       <packagereq type="default">gnome-bluetooth</packagereq>
@@ -4623,6 +4685,7 @@
       <packagereq type="optional">deskbar-applet</packagereq>
       <packagereq type="optional">gconf-editor</packagereq>
       <packagereq type="optional">gdesklets</packagereq>
+      <packagereq type="optional">gimp-print-utils</packagereq>
       <packagereq type="optional">glipper</packagereq>
       <packagereq type="optional">glunarclock</packagereq>
       <packagereq type="optional">gmpc</packagereq>
@@ -4650,6 +4713,7 @@
       <packagereq type="optional">sabayon</packagereq>
       <packagereq type="optional">seahorse</packagereq>
       <packagereq type="optional">themes-backgrounds-gnome</packagereq>
+      <packagereq type="optional">tracker-search-tool</packagereq>
       <packagereq type="optional">verbiste-gnome</packagereq>
       <packagereq type="optional">wallpapoz</packagereq>
       <packagereq type="optional">wp_tray</packagereq>
@@ -4669,7 +4733,7 @@
     <name xml:lang="bn">গনোম-ভিত্তিক সফটওয়্যার তৈরি</name>
     <name xml:lang="bn_IN">GNOME ভিত্তিক সফ্টওয়্যার নির্মাণ</name>
     <name xml:lang="ca">Desenvolupament de programari per al GNOME</name>
-    <name xml:lang="cs">Vývoj software pro GNOME</name>
+    <name xml:lang="cs">GNOME - vývoj aplikací</name>
     <name xml:lang="cy">Datblygu Meddalwedd GNOME</name>
     <name xml:lang="da">Gnome-programmeludvikling</name>
     <name xml:lang="de">GNOME Softwareentwicklung</name>
@@ -4748,7 +4812,7 @@
     <description xml:lang="gl">Instale estes paquetes para poder desenvolver aplicacións gráficas GTK+ e GNOME.</description>
     <description xml:lang="gu">GTK+ અને જીનોમ ગ્રાફિકવાળા કાર્યક્રમોનો વિકાસ કરવા માટે આ પેકેજો સ્થાપિત કરો.</description>
     <description xml:lang="hi">GTK+ और GNOME आलेखी अनुप्रयोगों का विकास करने के लिए इन संकुलों का अधिष्ठापन करें.</description>
-    <description xml:lang="hr">Instalirajte ove pakete ukoliko želite razvijati grafičke aplikacije za GTK+ i GNOME .</description>
+    <description xml:lang="hr">Instalirajte ove pakete ukoliko želite razvijati grafičke aplikacije za GTK+ i GNOME.</description>
     <description xml:lang="hu">Ezek a csomagok GTK+- és GNOME-alapú grafikus alkalmazások fejlesztéséhez szükségesek.</description>
     <description xml:lang="hy">Տեղադրե՛ք այս փաթեթները GTK+ի կամ GNOME-ի գրաֆիկական ծրագրեր գրելու համար։</description>
     <description xml:lang="id">Install paket ini untuk develop GTK+ dan aplikasi grafis GNOME.</description>
@@ -4868,7 +4932,7 @@
     <name xml:lang="bn">গ্রাফিকাল ইন্টারনেট</name>
     <name xml:lang="bn_IN">গ্রাফিকাল ইন্টারনেট</name>
     <name xml:lang="ca">Internet amb interfície gràfica</name>
-    <name xml:lang="cs">Grafický Internet</name>
+    <name xml:lang="cs">Internet - grafické programy</name>
     <name xml:lang="cy">Rhyngrwyd Graffigol</name>
     <name xml:lang="da">Grafisk internet</name>
     <name xml:lang="de">Grafisches Internet</name>
@@ -5007,6 +5071,7 @@
       <packagereq type="optional">dillo</packagereq>
       <packagereq type="optional">drivel</packagereq>
       <packagereq type="optional">epiphany</packagereq>
+      <packagereq type="optional">epiphany-extensions</packagereq>
       <packagereq type="optional">evolution-bogofilter</packagereq>
       <packagereq type="optional">evolution-connector</packagereq>
       <packagereq type="optional">fwbuilder</packagereq>
@@ -5025,6 +5090,8 @@
       <packagereq type="optional">gwget</packagereq>
       <packagereq type="optional">jd</packagereq>
       <packagereq type="optional">kadu</packagereq>
+      <packagereq type="optional">kasablanca</packagereq>
+      <packagereq type="optional">kazehakase</packagereq>
       <packagereq type="optional">kdewebdev</packagereq>
       <packagereq type="optional">kickpim</packagereq>
       <packagereq type="optional">kita</packagereq>
@@ -5192,9 +5259,8 @@
     <packagelist>
       <packagereq type="default">dcraw</packagereq>
       <packagereq type="default">gimp</packagereq>
-      <packagereq type="default">gimp-data-extras</packagereq>
       <packagereq type="default">gimp-help</packagereq>
-      <packagereq type="default">gimp-print-plugin</packagereq>
+      <packagereq type="default">gutenprint</packagereq>
       <packagereq type="default">ImageMagick</packagereq>
       <packagereq type="default">netpbm-progs</packagereq>
       <packagereq type="default">sane-frontends</packagereq>
@@ -5205,20 +5271,23 @@
       <packagereq type="optional">blender</packagereq>
       <packagereq type="optional">comix</packagereq>
       <packagereq type="optional">digikam</packagereq>
+      <packagereq type="optional">digikamimageplugins</packagereq>
       <packagereq type="optional">f-spot</packagereq>
       <packagereq type="optional">fontforge</packagereq>
       <packagereq type="optional">fonttools</packagereq>
       <packagereq type="optional">fyre</packagereq>
+      <packagereq type="optional">gimp-print-plugin</packagereq>
       <packagereq type="optional">gpp</packagereq>
       <packagereq type="optional">gqview</packagereq>
       <packagereq type="optional">graphviz</packagereq>
-      <packagereq type="optional">gutenprint</packagereq>
       <packagereq type="optional">gv</packagereq>
       <packagereq type="optional">gwenview</packagereq>
       <packagereq type="optional">inkscape</packagereq>
       <packagereq type="optional">ipe</packagereq>
       <packagereq type="optional">k3d</packagereq>
       <packagereq type="optional">kdegraphics</packagereq>
+      <packagereq type="optional">kipi-plugins</packagereq>
+      <packagereq type="optional">kphotoalbum</packagereq>
       <packagereq type="optional">libsane-hpaio</packagereq>
       <packagereq type="optional">mirage</packagereq>
       <packagereq type="optional">nip2</packagereq>
@@ -5249,7 +5318,7 @@
     <name xml:lang="bn">গ্রিক ব্যবহারের সহায়ক</name>
     <name xml:lang="bn_IN">গ্রিক ভাষা ব্যবহারের সমর্থন</name>
     <name xml:lang="ca">Suport per al grec</name>
-    <name xml:lang="cs">Podpora pro řečtinu</name>
+    <name xml:lang="cs">Řečtina</name>
     <name xml:lang="cy">Cynhaliaeth Groeg</name>
     <name xml:lang="da">Understøttelse for græsk</name>
     <name xml:lang="de">Unterstützung für Griechisch</name>
@@ -5325,7 +5394,7 @@
     <name xml:lang="bn">গুজরাটি ব্যবহারের সহায়ক</name>
     <name xml:lang="bn_IN">গুজরাতি ভাষা ব্যবহারের সহায়তা</name>
     <name xml:lang="ca">Suport per al gujarati</name>
-    <name xml:lang="cs">Podpora pro gujarati</name>
+    <name xml:lang="cs">Gudžarátština (Indie)</name>
     <name xml:lang="cy">Cynhaliaeth Gujarati</name>
     <name xml:lang="da">Understøttelse for gujarati</name>
     <name xml:lang="de">Unterstützung für Gujarati</name>
@@ -5388,8 +5457,25 @@
   <group>
     <id>hardware-support</id>
     <name>Hardware Support</name>
+    <name xml:lang="ca">Suport per al maquinari</name>
+    <name xml:lang="fi">Laitteistotuki</name>
+    <name xml:lang="hr">Hardverska podrška</name>
+    <name xml:lang="nb">Støtte for maskinvare</name>
+    <name xml:lang="nl">Hardware-ondersteuning</name>
+    <name xml:lang="pa">ਜੰਤਰ ਸਹਿਯੋਗ</name>
+    <name xml:lang="sv">Stöd för maskinvara</name>
+    <name xml:lang="te">హిబ్రూ మద్దతు</name>
+    <name xml:lang="tr">Donanım Desteği</name>
     <description>This group is a collection of tools for various hardware specific utilities.</description>
-    <default>false</default>
+    <description xml:lang="ca">Aquest grup és una col·lecció d'eines per a diferents tipus de maquinari.</description>
+    <description xml:lang="fi">Tämä ryhmä on kokoelma laitteistospesifisiä hyötyohjelmia.</description>
+    <description xml:lang="hr">Ova grupa je kolekcija alata i namijenjenih određenom hardveru.</description>
+    <description xml:lang="nb">Denne gruppen er en samling av verktøy for diverse maskinvare-spesifikke tilbehør.</description>
+    <description xml:lang="nl">Deze groep is een collectie van hulpmiddelen voor diverse hardware-specifieke gereedschappen.</description>
+    <description xml:lang="pa">ਇਹ ਗਰੁੱਪ ਵਿੱਚ ਜੰਤਰਾਂ ਲਈ ਖਾਸ ਸਹੂਲਤਾਂ ਉਪਲੱਬਧ ਹਨ।</description>
+    <description xml:lang="sv">Denna grupp är en samling verktyg för olika maskinvaru-specifika tillbehör.</description>
+    <description xml:lang="te">ఈ సమూహం పెక్కు హార్డువేరు వినియోగాలకు కావలసిన ఉపకరణాలను కలిగి ఉంది.</description>
+    <default>true</default>
     <uservisible>true</uservisible>
     <packagelist>
       <packagereq type="optional">acpi</packagereq>
@@ -5399,6 +5485,8 @@
       <packagereq type="optional">hddtemp</packagereq>
       <packagereq type="optional">i810switch</packagereq>
       <packagereq type="optional">i8kutils</packagereq>
+      <packagereq type="default">ipw2100-firmware</packagereq>
+      <packagereq type="default">ipw2200-firmware</packagereq>
       <packagereq type="optional">libifp</packagereq>
       <packagereq type="optional">lsscsi</packagereq>
       <packagereq type="optional">multican</packagereq>
@@ -5420,7 +5508,7 @@
     <name xml:lang="bn">হিব্রু ব্যবহারের সহায়ক</name>
     <name xml:lang="bn_IN">হিব্রু ভাষা ব্যবহারের সমর্থন</name>
     <name xml:lang="ca">Suport per a l'hebreu</name>
-    <name xml:lang="cs">Podpora pro hebrejštinu</name>
+    <name xml:lang="cs">Hebrejština (Izrael)</name>
     <name xml:lang="cy">Cynhaliaeth Hebraeg</name>
     <name xml:lang="da">Understøttelse for hebraisk</name>
     <name xml:lang="de">Unterstützung für Hebräisch</name>
@@ -5497,7 +5585,7 @@
     <name xml:lang="bn">হিন্দি ব্যবহারের সহায়ক</name>
     <name xml:lang="bn_IN">হিন্দি ভাষা ব্যবহারের সমর্থন</name>
     <name xml:lang="ca">Suport per a l'hindi</name>
-    <name xml:lang="cs">Podpora pro hindi</name>
+    <name xml:lang="cs">Hindština (Indie)</name>
     <name xml:lang="cy">Cynhaliaeth Hindi</name>
     <name xml:lang="da">Understøttelse for hindi</name>
     <name xml:lang="de">Unterstützung für Hindi</name>
@@ -5572,7 +5660,7 @@
     <name xml:lang="bn">হাঙ্গেরিয় ব্যবহারের সহায়ক</name>
     <name xml:lang="bn_IN">হাঙ্গেরিয়ান ভাষা ব্যবহারের সমর্থন</name>
     <name xml:lang="ca">Suport per a l'hongarès</name>
-    <name xml:lang="cs">Podpora pro maďarštinu</name>
+    <name xml:lang="cs">Maďarština</name>
     <name xml:lang="cy">Cynhaliaeth Hwngareg</name>
     <name xml:lang="da">Understøttelse for ungarsk</name>
     <name xml:lang="de">Unterstützung für Ungarisch</name>
@@ -5652,7 +5740,7 @@
     <name xml:lang="bn">আইসল্যাণ্ডিয় ব্যবহারের সহায়ক</name>
     <name xml:lang="bn_IN">আইসল্যান্ডিক ভাষা ব্যবহারের সমর্থন</name>
     <name xml:lang="ca">Suport per a l'islandès</name>
-    <name xml:lang="cs">Podpora pro islandštinu</name>
+    <name xml:lang="cs">Islandština</name>
     <name xml:lang="cy">Cynhaliaeth Iaith Ynys yr Iâ</name>
     <name xml:lang="da">Understøttelse for islandsk</name>
     <name xml:lang="de">Unterstützung für Isländisch</name>
@@ -5727,7 +5815,7 @@
     <name xml:lang="bn">ইন্দোনেশিয় ব্যবহারের সহায়ক</name>
     <name xml:lang="bn_IN">ইন্দোনেশিয়ান ভাষা ব্যবহারের সহায়তা</name>
     <name xml:lang="ca">Suport per a l'indonesi</name>
-    <name xml:lang="cs">Podpora pro indonéštinu</name>
+    <name xml:lang="cs">Indonésština</name>
     <name xml:lang="cy">Cynhaliaeth Indonesieg</name>
     <name xml:lang="da">Understøttelse for indonesisk</name>
     <name xml:lang="de">Unterstützung für Indonesisch</name>
@@ -5795,7 +5883,7 @@
     <name xml:lang="bn">আইরিশ ব্যবহারের সহায়ক</name>
     <name xml:lang="bn_IN">আইরিশ ব্যবহারের সহায়তা</name>
     <name xml:lang="ca">Suport per a l'irlandès</name>
-    <name xml:lang="cs">Podpora pro irštinu</name>
+    <name xml:lang="cs">Irština</name>
     <name xml:lang="cy">Cynhaliaeth Gwyddeleg</name>
     <name xml:lang="da">Understøttelse for irsk</name>
     <name xml:lang="de">Unterstützung für Irisch</name>
@@ -5865,7 +5953,7 @@
     <name xml:lang="bn">ইতালিয় ব্যবহারের সহায়ক</name>
     <name xml:lang="bn_IN">ইতালিয়ান ভাষা ব্যবহারের সহায়তা</name>
     <name xml:lang="ca">Suport per a l'italià</name>
-    <name xml:lang="cs">Podpora pro italštinu</name>
+    <name xml:lang="cs">Italština</name>
     <name xml:lang="cy">Cynhaliaeth Eidaleg</name>
     <name xml:lang="da">Understøttelse for italiensk</name>
     <name xml:lang="de">Unterstützung für Italienisch</name>
@@ -5944,7 +6032,7 @@
     <name xml:lang="bn">জাপানি ব্যবহারের সহায়ক</name>
     <name xml:lang="bn_IN">জাপানি ভাষা ব্যবহারের সহায়তা</name>
     <name xml:lang="ca">Suport per al japonès</name>
-    <name xml:lang="cs">Podpora pro japonštinu</name>
+    <name xml:lang="cs">Japonština</name>
     <name xml:lang="cy">Cynhaliaeth Japaneaidd</name>
     <name xml:lang="da">Understøttelse for japansk</name>
     <name xml:lang="de">Unterstützung für Japanisch</name>
@@ -6013,11 +6101,11 @@
       <packagereq type="conditional" requires="xorg-x11-server-Xorg">scim-anthy</packagereq>
       <packagereq type="conditional" requires="xorg-x11-server-Xorg">scim-bridge-gtk</packagereq>
       <packagereq type="conditional" requires="qt">scim-qtimm</packagereq>
-      <packagereq type="default">anthy</packagereq>
-      <packagereq type="default">kcc</packagereq>
-      <packagereq type="default">lv</packagereq>
-      <packagereq type="default">nkf</packagereq>
-      <packagereq type="default">perl-NKF</packagereq>
+      <packagereq type="optional">anthy</packagereq>
+      <packagereq type="optional">kcc</packagereq>
+      <packagereq type="optional">lv</packagereq>
+      <packagereq type="optional">nkf</packagereq>
+      <packagereq type="optional">perl-NKF</packagereq>
       <packagereq type="optional">jfbterm</packagereq>
       <packagereq type="optional">scim-input-pad</packagereq>
       <packagereq type="optional">scim-skk</packagereq>
@@ -6094,7 +6182,7 @@
     <description xml:lang="bn">জাভা প্রোগ্রামিং ভাষায় লিখিত প্রোগ্রাম চালানোর সমর্থন।</description>
     <description xml:lang="bn_IN">Java প্রোগ্রামিং ভাষায় লেখা প্রোগ্রাম সঞ্চালনের সমর্থন।</description>
     <description xml:lang="ca">Suport per a executar programes escrits en el llenguatge de programació Java.</description>
-    <description xml:lang="cs">Podpora pro běh programů napsaných v programovacím jazyku Java.</description>
+    <description xml:lang="cs">běh programů napsaných v programovacím jazyku Java.</description>
     <description xml:lang="da">Understøttelse for kørsel af programmer skrevet i programmeringssproget Java.</description>
     <description xml:lang="de">Unterstützung für die Ausführung von in Java geschriebenen Programmen.</description>
     <description xml:lang="el">Υποστήριξη για εφαρμογές γραμμένα στη γλώσσα προγραμματισμού Java.</description>
@@ -6219,7 +6307,7 @@
     <description xml:lang="bn">জাভা প্রোগ্রামিং ভাষায় প্রোগ্রাম তৈরির সমর্থন।</description>
     <description xml:lang="bn_IN">Java প্রোগ্রামিং ভাষা প্রয়োগ করে প্রোগ্রাম নির্মাণ ব্যবস্থার সমর্থন।</description>
     <description xml:lang="ca">Suport per a desenvolupar programes en el llenguatge de programació Java.</description>
-    <description xml:lang="cs">Podpora pro vývoj programů v programovacím jazyku Java.</description>
+    <description xml:lang="cs">vývoj programů v programovacím jazyku Java.</description>
     <description xml:lang="cy">.</description>
     <description xml:lang="da">Understøttelse for programudvikling i programmeringssproget Java.</description>
     <description xml:lang="de">Unterstützung für die Entwicklung von Programmen in der Programmiersprache Java.</description>
@@ -6312,8 +6400,8 @@
       <packagereq type="default">cryptix-javadoc</packagereq>
       <packagereq type="default">gnu-crypto</packagereq>
       <packagereq type="default">gnu-crypto-javadoc</packagereq>
-      <packagereq type="default">gnu.getopt</packagereq>
-      <packagereq type="default">gnu.getopt-javadoc</packagereq>
+      <packagereq type="default">gnu-getopt</packagereq>
+      <packagereq type="default">gnu-getopt-javadoc</packagereq>
       <packagereq type="default">jakarta-commons-beanutils</packagereq>
       <packagereq type="default">jakarta-commons-beanutils-javadoc</packagereq>
       <packagereq type="default">jakarta-commons-collections</packagereq>
@@ -6401,7 +6489,7 @@
     <name xml:lang="bn">কানাড়া ব্যবহারের সহায়ক</name>
     <name xml:lang="bn_IN">কন্নড় ভাষা ব্যবহারের সহায়তা</name>
     <name xml:lang="ca">Suport per al kannada</name>
-    <name xml:lang="cs">Podpora pro kannada</name>
+    <name xml:lang="cs">Kannada (Indie)</name>
     <name xml:lang="cy">Cynhaliaeth Kannada</name>
     <name xml:lang="da">Understøttelse for kannada</name>
     <name xml:lang="de">Unterstützung für Kannada (Indien)</name>
@@ -6476,7 +6564,7 @@
     <name xml:lang="bn">কে.ডি.ই. (KDE) ডেস্কটপ</name>
     <name xml:lang="bn_IN">KDE (K ডেস্কটপ পরিবেশ)</name>
     <name xml:lang="ca">KDE (Entorn d'escriptori K)</name>
-    <name xml:lang="cs">KDE (Prostředí pracovní plochy K)</name>
+    <name xml:lang="cs">KDE (grafické uživatelské prostředí)</name>
     <name xml:lang="cy">KDE (Amgylchedd Penbwrdd K)</name>
     <name xml:lang="da">KDE (K-skrivebordsmiljøet)</name>
     <name xml:lang="de">KDE (K-Desktop-Environment)</name>
@@ -6531,9 +6619,10 @@
     <name xml:lang="zh_CN">KDE （K 桌面环境）</name>
     <name xml:lang="zh_TW">KDE 桌面環境</name>
     <description>KDE is a powerful graphical user interface which includes a panel, desktop, system icons, and a graphical file manager.</description>
-    <description xml:lang="as">KDE এটা শক্তিশালী চিত্ৰাংকিত ব্যৱহাৰকৰ্তাৰ সংযোগ মাধ্যম য'ত অন্তৰ্ভূক্ত আছে এটা পেনেল্, ডেষ্কটপ, ব্যৱস্থাপ্ৰণালীৰ প্ৰতিকৃতি আৰু এটা চিত্ৰাংকিত নথি‌পত্ৰৰ পৰিচালক ।</description>
+    <description xml:lang="as">KDE এটা শক্তিশালী চিত্ৰাংকিত ব্যৱহাৰকৰ্তাৰ সংযোগ মাধ্যম য'ত অন্তৰ্ভূক্ত আছে এটা পেনেল, ডেষ্কটপ, ব্যৱস্থাপ্ৰণালীৰ প্ৰতিকৃতি আৰু এটা চিত্ৰাংকিত নথি‌পত্ৰৰ পৰিচালক ।</description>
     <description xml:lang="bn_IN">KDE একটি সমৃদ্ধ গ্রাফিকাল ইন্টারফেস যার মধ্যে অন্তর্ভুক্ত রয়েছে একটি প্যানেল, ডেস্কটপ, বিভিন্ন সিস্টেম আইকন এবং একটি গ্রাফিকাল ফাইল পরিচালন ব্যবস্থা।</description>
     <description xml:lang="ca">El KDE és una interfície gràfica avançada que inclou un quadre, un escriptori, icones de sistema i un gestor de fitxers gràfic.</description>
+    <description xml:lang="cs">KDE je výkonné grafické uživatelské prostředí, které zahrnuje panel, prostředí pracovní plochy, systémové ikony a grafického správce souborů.</description>
     <description xml:lang="da">KDE er en stærk, grafisk brugergrænseflade som indholder et panel, et skrivebord, systemikoner og en grafisk filbehandler.</description>
     <description xml:lang="de">KDE ist eine mächtige, grafische Benutzerschnittstelle mit Panel, Desktop, Systemsymbolen und grafischem Dateimanager.</description>
     <description xml:lang="el">Το KDE είναι ένα ισχυρό, γραφικό περιβάλλον που περιέχει, μεταξύ άλλων, πίνακα εφαρμογών, επιφάνεια εργασίας, εικονίδια συστήματος και γραφικό διαχειριστή αρχείων.</description>
@@ -6589,11 +6678,17 @@
       <packagereq type="default">kdeutils</packagereq>
       <packagereq type="optional">basket</packagereq>
       <packagereq type="optional">crystal</packagereq>
+      <packagereq type="optional">gtk-qt-engine</packagereq>
+      <packagereq type="optional">kasablanca</packagereq>
       <packagereq type="optional">katapult</packagereq>
       <packagereq type="optional">kbackup</packagereq>
       <packagereq type="optional">kbibtex</packagereq>
       <packagereq type="optional">kchmviewer</packagereq>
       <packagereq type="optional">kdeadmin</packagereq>
+      <packagereq type="optional">kdeartwork-extras</packagereq>
+      <packagereq type="optional">kdegraphics-extras</packagereq>
+      <packagereq type="optional">kdemultimedia-extras</packagereq>
+      <packagereq type="optional">kdetoys</packagereq>
       <packagereq type="optional">kdissert</packagereq>
       <packagereq type="optional">kdmtheme</packagereq>
       <packagereq type="optional">kerry</packagereq>
@@ -6777,6 +6872,8 @@
       <packagereq type="optional">gambas</packagereq>
       <packagereq type="optional">kdesdk-devel</packagereq>
       <packagereq type="optional">kdesvn</packagereq>
+      <packagereq type="optional">PyKDE-devel</packagereq>
+      <packagereq type="optional">qt4-devel</packagereq>
     </packagelist>
   </group>
   <group>
@@ -6791,7 +6888,7 @@
     <name xml:lang="bn">কোরিয় ব্যবহারের সহায়ক</name>
     <name xml:lang="bn_IN">কোরিয়ান ভাষা ব্যবহারের সহায়তা</name>
     <name xml:lang="ca">Suport per al coreà</name>
-    <name xml:lang="cs">Podpora pro korejštinu</name>
+    <name xml:lang="cs">Korejština</name>
     <name xml:lang="cy">Cynhaliaeth Corëeg</name>
     <name xml:lang="da">Understøttelse for koreansk</name>
     <name xml:lang="de">Unterstützung für Koreanisch</name>
@@ -6859,7 +6956,7 @@
       <packagereq type="conditional" requires="xorg-x11-server-Xorg">scim-bridge-gtk</packagereq>
       <packagereq type="conditional" requires="xorg-x11-server-Xorg">scim-hangul</packagereq>
       <packagereq type="conditional" requires="qt">scim-qtimm</packagereq>
-      <packagereq type="default">lv</packagereq>
+      <packagereq type="optional">lv</packagereq>
     </packagelist>
   </group>
   <group>
@@ -6873,7 +6970,7 @@
     <name xml:lang="bn">পুরনো নেটওয়ার্ক সার্ভার</name>
     <name xml:lang="bn_IN">লিগ্যাসি নেটওয়ার্ক সার্ভার</name>
     <name xml:lang="ca">Servidor de xarxa genèric</name>
-    <name xml:lang="cs">Zděděné síťové servery</name>
+    <name xml:lang="cs">Starší síťové servery</name>
     <name xml:lang="cy">Gweinydd Rhwydwaith Etifeddol</name>
     <name xml:lang="da">Ældre netværksserver</name>
     <name xml:lang="de">Alte Netzwerk-Server</name>
@@ -6994,8 +7091,8 @@
     <default>false</default>
     <uservisible>true</uservisible>
     <packagelist>
-      <packagereq type="default">rusers</packagereq>
-      <packagereq type="default">rwho</packagereq>
+      <packagereq type="optional">rusers</packagereq>
+      <packagereq type="optional">rwho</packagereq>
       <packagereq type="optional">bootparamd</packagereq>
       <packagereq type="optional">rarpd</packagereq>
       <packagereq type="optional">rsh-server</packagereq>
@@ -7017,7 +7114,7 @@
     <name xml:lang="bn">পুরনো (Legacy) সফটওয়্যার তৈরি</name>
     <name xml:lang="bn_IN">লিগ্যাসি সফ্টওয়্যার নির্মাণ</name>
     <name xml:lang="ca">Desenvolupament de programari genèric</name>
-    <name xml:lang="cs">Podpora pro vývoj zděděného software</name>
+    <name xml:lang="cs">Starší aplikace - podpora pro vývoj</name>
     <name xml:lang="cy">Datblygu Meddalwedd Etifeddol</name>
     <name xml:lang="da">Udvikling af ældre programmel</name>
     <name xml:lang="de">Alt-Software Entwicklung</name>
@@ -7076,6 +7173,7 @@
     <description xml:lang="as">এই সৰঞ্জাম সমূহে প্ৰাক্তন প্ৰকাশনসমূহৰ সুসংগত সমৰ্থনৰ যোগান ধৰে ।</description>
     <description xml:lang="bn_IN">এই প্যাকেজগুলি পূর্ববর্তী সংস্করণের সাথে সমন্বয় সাধন করতে সহায়ক।</description>
     <description xml:lang="ca">Aquests paquets proporcionen compatibilitat amb versions anteriors.</description>
+    <description xml:lang="cs">Tyto balíčky poskytují možnost běhu programů určených pro předchozí verze systému.</description>
     <description xml:lang="da">Disse pakker giver kompatibilitet med tidligere udgaver.</description>
     <description xml:lang="de">Diese Pakete liefern Kompatibilität für frühere Versionen.</description>
     <description xml:lang="el">Τα πακέτα αυτά παρέχουν υποστήριξη συμβατότητας με προηγούμενες εκδόσεις.</description>
@@ -7138,7 +7236,7 @@
     <name xml:lang="bn">পুরনো সফটওয়্যার সমর্থন</name>
     <name xml:lang="bn_IN">লিগ্যাসি সফ্টওয়্যার সহায়তা</name>
     <name xml:lang="ca">Suport per a programari genèric</name>
-    <name xml:lang="cs">Podpora pro zděděný software</name>
+    <name xml:lang="cs">Starší aplikace - podpora pro spouštění</name>
     <name xml:lang="cy">Cynhaliaeth Meddalwedd Etifeddol</name>
     <name xml:lang="da">Understøttelse af ældre programmel</name>
     <name xml:lang="de">Unterstützung für Alt-Software</name>
@@ -7216,7 +7314,7 @@
     <name xml:lang="bn">লিথুনিয় ব্যবহারের সহায়ক</name>
     <name xml:lang="bn_IN">লিথুয়েনিয়ান ভাষা ব্যবহারের সহায়তা</name>
     <name xml:lang="ca">Suport per al lituà</name>
-    <name xml:lang="cs">Podpora pro litevštinu</name>
+    <name xml:lang="cs">Litevština</name>
     <name xml:lang="cy">Cynhaliaeth Lithwaneg</name>
     <name xml:lang="da">Understøttelse for litausk</name>
     <name xml:lang="de">Unterstützung für Litauisch</name>
@@ -7425,6 +7523,7 @@
       <packagereq type="optional">spamass-milter</packagereq>
       <packagereq type="optional">sqlgrey</packagereq>
       <packagereq type="optional">squirrelmail</packagereq>
+      <packagereq type="optional">uw-imap</packagereq>
     </packagelist>
   </group>
   <group>
@@ -7436,7 +7535,7 @@
     <name xml:lang="bn">মালয় ব্যবহারের সহায়ক</name>
     <name xml:lang="bn_IN">মালায় ভাষা ব্যবহারের সহায়তা</name>
     <name xml:lang="ca">Suport per al malai</name>
-    <name xml:lang="cs">Podpora pro malajštinu</name>
+    <name xml:lang="cs">Malajština</name>
     <name xml:lang="cy">Cynhaliaeth Malay</name>
     <name xml:lang="da">Understøttelse for malajsisk</name>
     <name xml:lang="de">Unterstützung für Malaiisch</name>
@@ -7503,7 +7602,7 @@
     <name xml:lang="bn">মালায়লাম সাপোর্ট</name>
     <name xml:lang="bn_IN">মালায়ালম ভাষা ব্যবহারের সহায়তা</name>
     <name xml:lang="ca">Suport per al malayalam</name>
-    <name xml:lang="cs">Podpora pro malayalam</name>
+    <name xml:lang="cs">Malajálamština (Indie)</name>
     <name xml:lang="cy">Cynhaliaeth Malayam</name>
     <name xml:lang="da">Understøttelse for malajalam</name>
     <name xml:lang="de">Unterstützung für Malayalam</name>
@@ -7567,7 +7666,7 @@
     <name xml:lang="bn">মারাঠি সাপোর্ট</name>
     <name xml:lang="bn_IN">মারাঠি ভাষা ব্যবহারের সহায়তা</name>
     <name xml:lang="ca">Suport per al marathi</name>
-    <name xml:lang="cs">Podpora pro marathi</name>
+    <name xml:lang="cs">Marathi (Indie)</name>
     <name xml:lang="cy">Cynhaliaeth Marathi</name>
     <name xml:lang="da">Understøttelse for marathi</name>
     <name xml:lang="de">Unterstützung für Marathi</name>
@@ -7636,7 +7735,7 @@
     <name xml:lang="bn">মাই-এস.কিউ.এল. ডেটাবেস</name>
     <name xml:lang="bn_IN">MySQL ডাটাবেস</name>
     <name xml:lang="ca">Base de dades MySQL</name>
-    <name xml:lang="cs">Databáze MySQL</name>
+    <name xml:lang="cs">MySQL databáze</name>
     <name xml:lang="cy">Cronfa Ddata MySQL</name>
     <name xml:lang="da">MySQL-database</name>
     <name xml:lang="de">MySQL Datenbank</name>
@@ -8097,7 +8196,7 @@
     <name xml:lang="bn">উত্তরীয় সোথো সাপোর্ট</name>
     <name xml:lang="bn_IN">উত্তর সোথো ভাষা ব্যবহারের সহায়তা</name>
     <name xml:lang="ca">Suport per al sotho del nord</name>
-    <name xml:lang="cs">Podpora pro severní sotho</name>
+    <name xml:lang="cs">Sotho severní (jižní Afrika)</name>
     <name xml:lang="cy">Cynhaliaeth Sothoeg Gogleddol</name>
     <name xml:lang="da">Understøttelse for nordlig sothisk</name>
     <name xml:lang="de">Unterstützung für Nord-Sotho</name>
@@ -8161,7 +8260,7 @@
     <name xml:lang="bn">নরওয়েজিয় ব্যবহারের সহায়ক</name>
     <name xml:lang="bn_IN">নরওয়েজিয়ান ভাষা ব্যবহারের সহায়তা</name>
     <name xml:lang="ca">Suport per al noruec</name>
-    <name xml:lang="cs">Podpora pro norštinu</name>
+    <name xml:lang="cs">Norština</name>
     <name xml:lang="cy">Cynhaliaeth Norwyeg</name>
     <name xml:lang="da">Understøttelse for norsk</name>
     <name xml:lang="de">Unterstützung für Norwegisch</name>
@@ -8242,7 +8341,7 @@
     <name xml:lang="bn">অফিস/কাজকর্ম</name>
     <name xml:lang="bn_IN">অফিস/কাজকর্ম</name>
     <name xml:lang="ca">Ofimàtica i productivitat</name>
-    <name xml:lang="cs">Kancelář/produktivita</name>
+    <name xml:lang="cs">Kancelář/Tvořivost</name>
     <name xml:lang="cy">Swyddfa/Cynhyrchiant</name>
     <name xml:lang="da">Kontorprogrammel</name>
     <name xml:lang="de">Büro/Produktivität</name>
@@ -8393,6 +8492,7 @@
       <packagereq type="optional">krecipes</packagereq>
       <packagereq type="optional">labyrinth</packagereq>
       <packagereq type="optional">lyx</packagereq>
+      <packagereq type="optional">MagicPoint</packagereq>
       <packagereq type="optional">notecase</packagereq>
       <packagereq type="optional">openoffice.org-base</packagereq>
       <packagereq type="optional">openoffice.org-emailmerge</packagereq>
@@ -8419,7 +8519,7 @@
     <name xml:lang="bn">ওরীয়া সাপোর্ট</name>
     <name xml:lang="bn_IN">ওড়িয়া ভাষা ব্যবহারের সহায়তা</name>
     <name xml:lang="ca">Suport per a l'oriya</name>
-    <name xml:lang="cs">Podpora pro oriya</name>
+    <name xml:lang="cs">Oriya (jižní Afrika)</name>
     <name xml:lang="cy">Cynhaliaeth Oriya</name>
     <name xml:lang="da">Understøttelse for oriya</name>
     <name xml:lang="de">Unterstützung für Oriya</name>
@@ -8488,7 +8588,7 @@
     <name xml:lang="bn">পোলিশ ব্যবহারের সহায়ক</name>
     <name xml:lang="bn_IN">পোলিশ ভাষা ব্যবহারের সহায়তা</name>
     <name xml:lang="ca">Suport per al polonès</name>
-    <name xml:lang="cs">Podpora pro polštinu</name>
+    <name xml:lang="cs">Polština</name>
     <name xml:lang="cy">Cynhaliaeth Pwyleg</name>
     <name xml:lang="da">Understøttelse for polsk</name>
     <name xml:lang="de">Unterstützung für Polnisch</name>
@@ -8569,7 +8669,7 @@
     <name xml:lang="bn">পর্তুগিজ ব্যবহারের সহায়ক</name>
     <name xml:lang="bn_IN">পর্তুগিজ ভাষা ব্যবহারের সহায়তা</name>
     <name xml:lang="ca">Suport per al portuguès</name>
-    <name xml:lang="cs">Podpora pro portugalštinu</name>
+    <name xml:lang="cs">Portugalština</name>
     <name xml:lang="cy">Cynhaliaeth Portiwgaleg</name>
     <name xml:lang="da">Understøttelse for portugisisk</name>
     <name xml:lang="de">Unterstützung für Portugiesisch</name>
@@ -8647,7 +8747,7 @@
     <name xml:lang="bn">মুদ্রণ ব্যবস্থা</name>
     <name xml:lang="bn_IN">প্রিন্ট কর্মে সহায়তা</name>
     <name xml:lang="ca">Suport per a la impressió</name>
-    <name xml:lang="cs">Podpora pro tisk</name>
+    <name xml:lang="cs">Tisk</name>
     <name xml:lang="cy">Cynhaliaeth Argraffu</name>
     <name xml:lang="da">Udskriftsunderstøttelse</name>
     <name xml:lang="de">Drucker-Unterstützung</name>
@@ -8794,7 +8894,7 @@
     <name xml:lang="bn">পাঞ্জাবি ব্যবহারের সহায়ক</name>
     <name xml:lang="bn_IN">পাঞ্জাবি ভাষা ব্যবহারের সহায়তা</name>
     <name xml:lang="ca">Suport per al punjabi</name>
-    <name xml:lang="cs">Podpora pro pujabi</name>
+    <name xml:lang="cs">Punjabi (Indie, Pákistán)</name>
     <name xml:lang="cy">Cynhaliaeth Pwnjabi</name>
     <name xml:lang="da">Understøttelse for punjabi</name>
     <name xml:lang="de">Unterstützung für Punjabi</name>
@@ -8873,7 +8973,7 @@
     <name xml:lang="bn">রুমানিয় ব্যবহারের সহায়ক</name>
     <name xml:lang="bn_IN">রুমানিয়ান ভাষা ব্যবহারের সহায়তা</name>
     <name xml:lang="ca">Suport per al romanès</name>
-    <name xml:lang="cs">Podpora pro rumunštinu</name>
+    <name xml:lang="cs">Rumunština</name>
     <name xml:lang="cy">Cynhaliaeth Rwmaneg</name>
     <name xml:lang="da">Understøttelse for rumænsk</name>
     <name xml:lang="de">Unterstützung für Rumänisch</name>
@@ -9012,7 +9112,7 @@
     <description xml:lang="af">Basiese ondersteuning vir die Ruby-programmeringtaal.</description>
     <description xml:lang="am">መሠረታዊ ድጋፍ ለRuby ፕሮግራም ቋንቋ።</description>
     <description xml:lang="ar">دعم بدائي للغة برمجة روبي</description>
-    <description xml:lang="as">ৰূবী প্ৰ'গ্ৰামিং ভাষাৰ মৌলিক সনৰ্থন ।</description>
+    <description xml:lang="as">ৰূবী প্ৰ'গ্ৰামিং ভাষাৰ মৌলিক সমৰ্থন ।</description>
     <description xml:lang="be">Базавая падтрымка для Рубі - мовы праграмаваньня.</description>
     <description xml:lang="bg">Базова поддръжка за Ruby език за програмиране.</description>
     <description xml:lang="bn">রুবি প্রোগ্রামিং ভাষা ব্যবহারের প্রাথমিক সমর্থন।</description>
@@ -9096,7 +9196,7 @@
     <name xml:lang="bn">রুশ ব্যবহারের সহায়ক</name>
     <name xml:lang="bn_IN">রুশ ভাষা ব্যবহারের সহায়তা</name>
     <name xml:lang="ca">Suport per al rus</name>
-    <name xml:lang="cs">Podpora pro ruštinu</name>
+    <name xml:lang="cs">Ruština</name>
     <name xml:lang="cy">Cynhaliaeth Rwsieg</name>
     <name xml:lang="da">Understøttelse for russisk</name>
     <name xml:lang="de">Unterstützung für Russisch</name>
@@ -9179,7 +9279,7 @@
     <name xml:lang="bn">সার্বিয় ব্যবহারের সহায়ক</name>
     <name xml:lang="bn_IN">সার্বিয়ান ভাষা ব্যবহারের সহায়তা</name>
     <name xml:lang="ca">Suport per al serbi</name>
-    <name xml:lang="cs">Podpora srbštiny</name>
+    <name xml:lang="cs">Srbština</name>
     <name xml:lang="cy">Cynhaliaeth Serbeg</name>
     <name xml:lang="da">Understøttelse for serbisk</name>
     <name xml:lang="de">Unterstützung für Serbisch</name>
@@ -9399,7 +9499,7 @@
     <name xml:lang="bn">সিনহালা সাপোর্ট</name>
     <name xml:lang="bn_IN">সিংহলি ভাষা ব্যবহারের সহায়তা</name>
     <name xml:lang="ca">Suport per al sinhala</name>
-    <name xml:lang="cs">Podpora pro sinhala</name>
+    <name xml:lang="cs">Sinhala (Srí Lanka)</name>
     <name xml:lang="cy">Cynhaliaeth Sinhala</name>
     <name xml:lang="da">Understøttelse for sinhala</name>
     <name xml:lang="de">Unterstützung für Sinhala</name>
@@ -9440,7 +9540,7 @@
     <name xml:lang="te">సింహళా మద్దతు</name>
     <name xml:lang="th">Sinhala Support</name>
     <name xml:lang="tr">Sinhala Desteği</name>
-    <name xml:lang="uk">Підтримка  мови сінхала</name>
+    <name xml:lang="uk">Підтримка мови сінхала</name>
     <name xml:lang="zh_CN">新哈拉语支持</name>
     <name xml:lang="zh_TW">僧伽羅語支援</name>
     <description/>
@@ -9468,7 +9568,7 @@
     <name xml:lang="bn">স্লোভাক ব্যবহারের সহায়ক</name>
     <name xml:lang="bn_IN">স্লোভাক ভাষা ব্যবহারের সহায়তা</name>
     <name xml:lang="ca">Suport per a l'eslovac</name>
-    <name xml:lang="cs">Podpora pro slovenštinu</name>
+    <name xml:lang="cs">Slovenština</name>
     <name xml:lang="cy">Cynhaliaeth Slofaceg</name>
     <name xml:lang="da">Understøttelse for slovakisk</name>
     <name xml:lang="de">Unterstützung für Slowakisch</name>
@@ -9548,7 +9648,7 @@
     <name xml:lang="bn">স্লোভেনিয় ব্যবহারের সহায়ক</name>
     <name xml:lang="bn_IN">স্লোভেনিয়ান ভাষা ব্যবহারের সহায়তা</name>
     <name xml:lang="ca">Suport per a l'eslovè</name>
-    <name xml:lang="cs">Podpora pro slovinštinu</name>
+    <name xml:lang="cs">Slovinština</name>
     <name xml:lang="cy">Cynhaliaeth Slofeneg</name>
     <name xml:lang="da">Understøttelse for slovensk</name>
     <name xml:lang="de">Unterstützung für Slowenisch</name>
@@ -9628,7 +9728,7 @@
     <name xml:lang="bn">উইন্ডোজ ফাইল সার্ভার</name>
     <name xml:lang="bn_IN">Windows ফাইল সার্ভার</name>
     <name xml:lang="ca">Servidor de fitxers Windows</name>
-    <name xml:lang="cs">Souborový server pro Windows</name>
+    <name xml:lang="cs">Sdílení souborů pro Windows</name>
     <name xml:lang="cy">Gweinydd Ffeiliau Windows</name>
     <name xml:lang="da">Windows-filserver</name>
     <name xml:lang="de">Windows Datei-Server</name>
@@ -9694,7 +9794,7 @@
     <description xml:lang="bn">এই প্যাকেজগুলোর সাহায্যে লিনাক্স ও এম.এস. উইন্ডোস (tm) ব্যবহারকারী কম্পিউটারসমূহ পরস্পরের সাথে ফাইল শেয়ার করতে পারবে।</description>
     <description xml:lang="bn_IN">এই প্যাকেজগুলির সাহায্যে Linux ও MS Windows (tm) ব্যবহারকারী কম্পিউটারের মধ্যে ফাইল শেয়ার করা যাবে।</description>
     <description xml:lang="ca">Aquest grup de paquets us permet compartir fitxers entre el Linux i el Windows (tm).</description>
-    <description xml:lang="cs">Tato skupina balíčků vám umožní sdílet soubory mezi systémy Linux a MS Windows™.</description>
+    <description xml:lang="cs">Tato skupina balíčků vám umožní sdílet soubory mezi systémy Linux a MS Windows(tm).</description>
     <description xml:lang="cy">Mae'r grŵp pecynnau yma'n caniatáu i chi rannu ffeiliau rhwng systemau Linux ac MS Windows(tm).</description>
     <description xml:lang="da">Denne pakkegruppe lader dig dele filer mellem Linux og system med MS Windows(tm).</description>
     <description xml:lang="de">Mit dieser Paketgruppe können Sie Dateien in Linux und MS Windows (tm) gemeinsam nutzen.</description>
@@ -9896,6 +9996,7 @@
       <packagereq type="default">cdda2wav</packagereq>
       <packagereq type="default">cdparanoia</packagereq>
       <packagereq type="default">cdrecord</packagereq>
+      <packagereq type="default">gstreamer-plugins-good</packagereq>
       <packagereq type="default">mkisofs</packagereq>
       <packagereq type="default">rhythmbox</packagereq>
       <packagereq type="default">sound-juicer</packagereq>
@@ -9926,9 +10027,12 @@
       <packagereq type="optional">graveman</packagereq>
       <packagereq type="optional">grip</packagereq>
       <packagereq type="optional">id3v2</packagereq>
+      <packagereq type="optional">isomaster</packagereq>
       <packagereq type="optional">jack-audio-connection-kit</packagereq>
       <packagereq type="optional">k3b</packagereq>
+      <packagereq type="optional">kaffeine</packagereq>
       <packagereq type="optional">kdemultimedia</packagereq>
+      <packagereq type="optional">kdemultimedia-extras</packagereq>
       <packagereq type="optional">kid3</packagereq>
       <packagereq type="optional">kover</packagereq>
       <packagereq type="optional">mikmod</packagereq>
@@ -9964,6 +10068,7 @@
     <name xml:lang="as">দক্ষীণ ডেবেলেৰ সমৰ্থন</name>
     <name xml:lang="bn_IN">দক্ষিণ এনডেবিলি ভাষা ব্যবহারের সহায়তা</name>
     <name xml:lang="ca">Suport per al ndebele del sud</name>
+    <name xml:lang="cs">Ndebele jižní (jižní Afrika)</name>
     <name xml:lang="da">Understøttelse for sydlig ndebele</name>
     <name xml:lang="de">Unterstützung für Süd-Ndebele</name>
     <name xml:lang="el">Υποστήριξη Southern Ndebele</name>
@@ -10018,6 +10123,7 @@
     <name xml:lang="as">দক্ষিণ ছ'ঠ' ভাষাৰ সমৰ্থন</name>
     <name xml:lang="bn_IN">দক্ষিণ সোথো ভাষা ব্যবহারের সহায়তা</name>
     <name xml:lang="ca">Suport per al sotho del sud</name>
+    <name xml:lang="cs">Sotho jižní (jižní Afrika)</name>
     <name xml:lang="da">Understøttelse for sydlig sotho</name>
     <name xml:lang="de">Unterstützung für Süd-Sotho</name>
     <name xml:lang="el">Υποστήριξη Southern Sotho</name>
@@ -10076,7 +10182,7 @@
     <name xml:lang="bn">স্প্যানিশ ব্যবহারের সহায়ক</name>
     <name xml:lang="bn_IN">স্প্যানিশ ভাষা ব্যবহারের সহায়তা</name>
     <name xml:lang="ca">Suport per a l'espanyol</name>
-    <name xml:lang="cs">Podpora pro španělštinu</name>
+    <name xml:lang="cs">Španělština</name>
     <name xml:lang="cy">Cynhaliaeth Sbaeneg</name>
     <name xml:lang="da">Understøttelse for spansk</name>
     <name xml:lang="de">Unterstützung für Spanisch</name>
@@ -10154,7 +10260,7 @@
     <name xml:lang="bn">পোস্ট-গ্রেস.কিউ.এল. ডেটাবেস</name>
     <name xml:lang="bn_IN">PostgreSQL ডাটাবেস</name>
     <name xml:lang="ca">Base de dades PostgreSQL</name>
-    <name xml:lang="cs">Databáze PostgreSQL</name>
+    <name xml:lang="cs">PostgreSQL databáze</name>
     <name xml:lang="cy">Cronfa Ddata PostgreSQL</name>
     <name xml:lang="da">PostgreSQL-database</name>
     <name xml:lang="de">PostgreSQL Datenbank</name>
@@ -10276,12 +10382,12 @@
     <uservisible>true</uservisible>
     <packagelist>
       <packagereq type="mandatory">postgresql</packagereq>
+      <packagereq type="default">libdbi-dbd-pgsql</packagereq>
       <packagereq type="default">perl-DBD-Pg</packagereq>
       <packagereq type="default">postgresql-python</packagereq>
       <packagereq type="default">postgresql-server</packagereq>
       <packagereq type="default">rhdb-utils</packagereq>
       <packagereq type="default">unixODBC</packagereq>
-      <packagereq type="optional">libdbi-dbd-pgsql</packagereq>
       <packagereq type="optional">postgresql-contrib</packagereq>
       <packagereq type="optional">postgresql-docs</packagereq>
       <packagereq type="optional">postgresql-jdbc</packagereq>
@@ -10299,6 +10405,7 @@
     <name xml:lang="as">চ্বাটি ভাষাৰ সমৰ্থন</name>
     <name xml:lang="bn_IN">সোয়াতি ভাষা ব্যবহারের সহায়তা</name>
     <name xml:lang="ca">Suport per al swati</name>
+    <name xml:lang="cs">Swati (Pákistán)</name>
     <name xml:lang="da">Understøttelse for swati</name>
     <name xml:lang="de">Unterstützung für Swati</name>
     <name xml:lang="el">Υποστήριξη Swati</name>
@@ -10359,7 +10466,7 @@
     <name xml:lang="bn">সুইডিশ ব্যবহারের সহায়ক</name>
     <name xml:lang="bn_IN">সুইডিশ ভাষা ব্যবহারের সহায়তা</name>
     <name xml:lang="ca">Suport per al suec</name>
-    <name xml:lang="cs">Podpora pro švédštinu</name>
+    <name xml:lang="cs">Švédština</name>
     <name xml:lang="cy">Cynhaliaeth Swedeg</name>
     <name xml:lang="da">Understøttelse for svensk</name>
     <name xml:lang="de">Unterstützung für Schwedisch</name>
@@ -10550,7 +10657,7 @@
     <description xml:lang="te">ఈ సమూహం SMB భాగస్వామ్య కక్ష్యదారునికోసం అనుసంధానం మరియూ monitor network traffic కొరకు ఉపకరణాలు మొదలైన కంప్యూటరు ఉపకరణాలను కలిగి ఉంది.</description>
     <description xml:lang="th">กลุ่มนี้ประกอบด้วยเครื่องมือเกี่ยวกับระบบมากมาย เช่น โปรแกรมลูกข่ายสำหรับติดต่อกับ SMB share และเครื่องมือเฝ้าติดตามการจราจรในเครือข่าย</description>
     <description xml:lang="tr">Bu grup, ağ trafiğini izlemek ve SMB paylaşımlarına bağlanmak gibi işlemler için gereken çeşitli sistem araçlarını içerir.</description>
-    <description xml:lang="uk">Ця група містить різні системні утиліти, такі як програми для доступу до ресурсів SMB та програми моніторингу мережного трафіку.</description>
+    <description xml:lang="uk">Ця група містить різні системні утиліти, такі як програми для доступу до ресурсів SMB та програми контролю мережного трафіку.</description>
     <description xml:lang="ur">س مجموعہ میں بہت سارے  نظامی الات یں جسیے کلينٹ کو SMB کے ساتھ لگانا اور نیٹ ورک کی ٹراففک  کو دیکھنے کے لےالات ہں</description>
     <description xml:lang="vi">Nhóm này là tập hợp các công cụ hệ thống, như client để kết nối chia sẽ SMB và các công cụ theo dõi mạng.</description>
     <description xml:lang="zh_CN">这组软件包是各类系统工具的集合，如：连接 SMB 共享的客户；监控网络交通的工具。</description>
@@ -10712,7 +10819,7 @@
     <name xml:lang="bn">তামিল ব্যবহারের সহায়ক</name>
     <name xml:lang="bn_IN">তামিল ভাষা ব্যবহারের সহায়তা</name>
     <name xml:lang="ca">Suport per al tàmil</name>
-    <name xml:lang="cs">Podpora pro tamilštinu</name>
+    <name xml:lang="cs">Tamil (jižní Asie)</name>
     <name xml:lang="cy">Cynhaliaeth Tamil</name>
     <name xml:lang="da">Understøttelse for tamil</name>
     <name xml:lang="de">Unterstützung für Tamil</name>
@@ -10786,7 +10893,7 @@
     <name xml:lang="bn">তেলেগু সাপোর্ট</name>
     <name xml:lang="bn_IN">তেলুগু ভাষা ব্যবহারের সহায়তা</name>
     <name xml:lang="ca">Suport per al telugu</name>
-    <name xml:lang="cs">Podpora pro telugu</name>
+    <name xml:lang="cs">Telugu (Indie)</name>
     <name xml:lang="cy">Cynhaliaeth Telwgw</name>
     <name xml:lang="da">Understøttelse for telugu</name>
     <name xml:lang="de">Unterstützung für Telugu</name>
@@ -10853,7 +10960,7 @@
     <name xml:lang="bn">টেক্সটভিত্তিক ইন্টারনেট ব্যবহার</name>
     <name xml:lang="bn_IN">টেক্সট-ভিত্তিক ইন্টারনেট ব্যবহার</name>
     <name xml:lang="ca">Internet amb interfície de text</name>
-    <name xml:lang="cs">Textový Internet</name>
+    <name xml:lang="cs">Internet - textové programy</name>
     <name xml:lang="cy">Rhyngrwyd sail Testun</name>
     <name xml:lang="da">Tekstbaseret internet</name>
     <name xml:lang="de">Textbasiertes Internet</name>
@@ -11016,7 +11123,7 @@
     <name xml:lang="bn">থাই ব্যবহারের সহায়ক</name>
     <name xml:lang="bn_IN">থাই ভাষা ব্যবহারের সহায়তা</name>
     <name xml:lang="ca">Suport per al tai</name>
-    <name xml:lang="cs">Podpora pro thajštinu</name>
+    <name xml:lang="cs">Thajština</name>
     <name xml:lang="cy">Cynhaliaeth Thai</name>
     <name xml:lang="da">Understøttelse for thailansk</name>
     <name xml:lang="de">Unterstützung für Thai</name>
@@ -11086,7 +11193,7 @@
     <name xml:lang="bn">টোঙ্গা সাপের্ট</name>
     <name xml:lang="bn_IN">সোঙ্গা ভাষা ব্যবহারের সহায়তা</name>
     <name xml:lang="ca">Suport per al tsonga</name>
-    <name xml:lang="cs">Podpora pro tsonga</name>
+    <name xml:lang="cs">tsonga</name>
     <name xml:lang="cy">Cynhaliaeth Tsonga</name>
     <name xml:lang="da">Understøttelse for tsonga</name>
     <name xml:lang="de">Unterstützung für Tsonga</name>
@@ -11143,7 +11250,7 @@
     <name xml:lang="bn">সোয়ানা সাপের্ট</name>
     <name xml:lang="bn_IN">সোয়ানা ভাষা ব্যবহারের সহায়তা</name>
     <name xml:lang="ca">Suport per al tswana</name>
-    <name xml:lang="cs">Podpora pro tswana</name>
+    <name xml:lang="cs">tswana</name>
     <name xml:lang="cy">Cynhaliaeth Tswana</name>
     <name xml:lang="da">Understøttelse for tswana</name>
     <name xml:lang="de">Unterstützung für Tswana</name>
@@ -11207,7 +11314,7 @@
     <name xml:lang="bn">তুর্কি ব্যবহারের সহায়ক</name>
     <name xml:lang="bn_IN">তুর্কি ভাষা ব্যবহারের সমর্থন</name>
     <name xml:lang="ca">Suport per al turc</name>
-    <name xml:lang="cs">Podpora pro turečtinu</name>
+    <name xml:lang="cs">Turečtina</name>
     <name xml:lang="cy">Cynhaliaeth Twrceg</name>
     <name xml:lang="da">Understøttelse for tyrkisk</name>
     <name xml:lang="de">Unterstützung für Türkisch</name>
@@ -11268,7 +11375,6 @@
     <uservisible>false</uservisible>
     <langonly>tr</langonly>
     <packagelist>
-      <packagereq type="conditional" requires="xorg-x11-server-Xorg">fonts-ISO8859-9-75dpi</packagereq>
       <packagereq type="conditional" requires="kdelibs">kde-i18n-Turkish</packagereq>
       <packagereq type="conditional" requires="openoffice.org-core">openoffice.org-langpack-tr_TR</packagereq>
       <packagereq type="conditional" requires="xorg-x11-server-Xorg">xorg-x11-fonts-ISO8859-9-100dpi</packagereq>
@@ -11287,7 +11393,7 @@
     <name xml:lang="bn">ইউক্রেইনিয় ব্যবহারের সহায়ক</name>
     <name xml:lang="bn_IN">ইউক্রেইনিয়ান ভাষা ব্যবহারের সমর্থন</name>
     <name xml:lang="ca">Suport per a l'ucraïnès</name>
-    <name xml:lang="cs">Podpora pro ukrajinštinu</name>
+    <name xml:lang="cs">Ukrajinština</name>
     <name xml:lang="cy">Cynhaliaeth Wcraineg</name>
     <name xml:lang="da">Understøttelse for ukrainsk</name>
     <name xml:lang="de">Unterstützung für Ukrainisch</name>
@@ -11377,6 +11483,7 @@
     <name xml:lang="as">ভেণ্ডা ভাষাৰ সমৰ্থন</name>
     <name xml:lang="bn_IN">ভেন্ডা ভাষা ব্যবহারের সহায়তা</name>
     <name xml:lang="ca">Suport per al venda</name>
+    <name xml:lang="cs">Venda (jižní Afrika)</name>
     <name xml:lang="da">Understøttelse for venda</name>
     <name xml:lang="de">Unterstützung für Venda</name>
     <name xml:lang="el">Υποστήριξη Venda</name>
@@ -11469,7 +11576,7 @@
     <name xml:lang="sr@Latn">Virtualizacija</name>
     <name xml:lang="sv">Virtualisering</name>
     <name xml:lang="ta">மெய்நிகராக்கம்</name>
-    <name xml:lang="te">Virtualization</name>
+    <name xml:lang="te">వాస్తవీకరణ</name>
     <name xml:lang="th">Virtualization</name>
     <name xml:lang="tr">Sanallaştırma</name>
     <name xml:lang="uk">Віртуалізація</name>
@@ -11479,6 +11586,7 @@
     <description xml:lang="as">এই সৰঞ্জাম সমূহে ভাৰ্চুৱেলাইজেছ্‌ন পৰিবেশৰ যোগান ধৰে ।</description>
     <description xml:lang="bn_IN">এই প্যাকেজগুলির দ্বারা ভার্চুয়ালাইজেশনের পরিবেশ উপলব্ধ করা হয়।</description>
     <description xml:lang="ca">Aquests paquets proporcionen un entorn de virtualitzat.</description>
+    <description xml:lang="cs">Tyto balíčky poskytují podporu virtualizace.</description>
     <description xml:lang="de">Diese Pakete liefern eine Virtualisierungsumgebung.</description>
     <description xml:lang="es">Estos paquetes proporcionan un entorno de virtualización.</description>
     <description xml:lang="fi">Nämä paketit tarjoavat virtualisointiympäristön.</description>
@@ -11506,7 +11614,9 @@
     <description xml:lang="sr@Latn">Ovi paketi pružaju okruženje za virtualizaciju.</description>
     <description xml:lang="sv">Dessa paket tillhandahåller en virtualiseringsmiljö.</description>
     <description xml:lang="ta">இந்த தொகுப்புகள் ஒரு மெய்நிகராக்க சூழலை கொடுக்கிறது.</description>
-    <description xml:lang="te">ఈ packageలు వాస్తవిక వాతావరణాన్ని సమాకూర్చుతాయి</description>
+    <description xml:lang="te">ఈ పాకేజీలు వాస్తవిక వాతావరణాన్ని సమాకూర్చుతాయి</description>
+    <description xml:lang="tr">Bu paketler sanal makine ortamı sağlar.</description>
+    <description xml:lang="uk">Ці пакети забезпечують середовище для віртуалізації.</description>
     <description xml:lang="zh_CN">这些软件包提供一个虚拟环境。</description>
     <description xml:lang="zh_TW">這些套件提供了虛擬化環境。</description>
     <default>false</default>
@@ -11516,13 +11626,33 @@
       <packagereq type="mandatory">python-virtinst</packagereq>
       <packagereq type="mandatory">xen</packagereq>
       <packagereq type="default">gnome-applet-vm</packagereq>
+      <packagereq type="default">kvm</packagereq>
+      <packagereq type="default">qemu</packagereq>
       <packagereq type="default">virt-manager</packagereq>
     </packagelist>
   </group>
   <group>
     <id>web-development</id>
     <name>Web Development</name>
+    <name xml:lang="ca">Desenvolupament web</name>
+    <name xml:lang="fi">Web-kehitys</name>
+    <name xml:lang="hr">Web-razvoj</name>
+    <name xml:lang="nb">Web-utvikling</name>
+    <name xml:lang="nl">Webontwikkeling</name>
+    <name xml:lang="pa">ਵੈੱਬ ਡੀਵੈਲਪਮਿੰਟ</name>
+    <name xml:lang="sv">Webbutveckling</name>
+    <name xml:lang="te">వెబ్ అభివృద్ధి</name>
+    <name xml:lang="tr">Web Geliştirme</name>
     <description>These packages are helpful when developing web applications or web pages.</description>
+    <description xml:lang="ca">Aquests paquets són útils per a desenvolupar aplicacions o pàgines web.</description>
+    <description xml:lang="fi">Nämä paketit ovat hyödyllisiä kehitettäessä web-sovelluksia tai web-sivuja.</description>
+    <description xml:lang="hr">Ovi vam paketi olakšavaju razvoj web-aplikacija ili web-stranica.</description>
+    <description xml:lang="nb">Disse pakkene er til hjelp, hvis du utvikler web-applikasjoner eller web-sider.</description>
+    <description xml:lang="nl">Deze pakketten zijn handig bij het ontwikkelen van webapplicaties of webpagina's.</description>
+    <description xml:lang="pa">ਇਹ ਪੈਕੇਜ, ਤੁਹਾਡੇ ਲਈ ਵੈੱਬ ਕਾਰਜ ਜਾਂ ਵੈੱਬ ਸਫ਼ੇ ਬਣਾਉਣ ਲਈ ਸਹਾਇਕ ਹਨ।</description>
+    <description xml:lang="sv">Dessa paket är till hjälp när du utvecklar webbapplikationer eller webbsidor.</description>
+    <description xml:lang="te">వెబ్ అనువర్తనాలనూ లేదా వెబ్ పుటలను అభివృద్ధి చేయటానికి ఈ పాకేజీలు సహకరిస్తాయి.</description>
+    <description xml:lang="tr">Bu paketler web uygulamaları veya web sayfaları geliştirmenize yardımcıdır.</description>
     <default>false</default>
     <uservisible>true</uservisible>
     <packagelist>
@@ -11725,7 +11855,7 @@
     <name xml:lang="bn">ওয়েলস ভাষা ব্যবহারের সহায়ক</name>
     <name xml:lang="bn_IN">ওয়েলশ ভাষা ব্যবহারের সহায়তা</name>
     <name xml:lang="ca">Suport per al gal·lès</name>
-    <name xml:lang="cs">Podpora pro velštinu</name>
+    <name xml:lang="cs">Velština (Anglie)</name>
     <name xml:lang="cy">Cynhaliaeth Gymraeg</name>
     <name xml:lang="da">Understøttelse for walisisk</name>
     <name xml:lang="de">Unterstützung für Walisisch</name>
@@ -11790,7 +11920,25 @@
   <group>
     <id>window-managers</id>
     <name>Window Managers</name>
+    <name xml:lang="ca">Gestors de finestres</name>
+    <name xml:lang="fi">Ikkunankäsittelijät</name>
+    <name xml:lang="hr">Upravitelji prozorima</name>
+    <name xml:lang="ms">Pengurus Tetingkap</name>
+    <name xml:lang="nb">Vindusbehandlere</name>
+    <name xml:lang="nl">Window managers</name>
+    <name xml:lang="pa">ਝਰੋਖਾ ਮੈਨੇਜਰ</name>
+    <name xml:lang="sv">Fönsterhanterare</name>
+    <name xml:lang="te">విండోస్ మేనేజరులు</name>
+    <name xml:lang="tr">Pencere Yöneticileri</name>
     <description>Simple window managers that aren't part of a larger desktop environment.</description>
+    <description xml:lang="ca">Gestors de finestres simples que no són part de cap entorn d'escriptori major.</description>
+    <description xml:lang="fi">Yksinkertaiset ikkunankäsittelijät, jotka eivät ole osa suurempaa työpöytäympäristöä</description>
+    <description xml:lang="hr">Jednostavni upravitelji prozorima koji nisu dijelom većih okruženja radne površine.</description>
+    <description xml:lang="nb">Enkle vindusbehandlere som ikke er en del av større skrivebordsmiljøer.</description>
+    <description xml:lang="nl">Eenvoudige window managers die geen deel uitmaken van een grotere werkomgeving.</description>
+    <description xml:lang="pa">ਸਧਾਰਨ ਝਰੋਖਾ ਮੈਨੇਜਰ, ਜੋ ਕਿ ਵੱਡੇ ਵੇਹੜਾ ਵਾਤਾਵਰਨ ਦੇ ਭਾਗ ਨਹੀਂ ਹਨ।</description>
+    <description xml:lang="sv">Enklare fönsterhanterare som inte är en del av en större skrivbordsmiljö.</description>
+    <description xml:lang="te">దీర్ఘడెస్కుటాప్ వాతావరణంలో భాగం కాని సాధారణ విండో మేనేజరు.</description>
     <default>false</default>
     <uservisible>true</uservisible>
     <packagelist>
@@ -11896,7 +12044,7 @@
     <description xml:lang="fr">Ces paquetages vous permettent de développer des applications pour le système X Window.</description>
     <description xml:lang="gu">આ પેકેજો તમને X વિન્ડો સિસ્ટમના કાર્યક્રમો વિકસાવવા માટેની પરવાનગી આપે છે.</description>
     <description xml:lang="hi">इन संकुलों से आप X विन्डो सिस्टम के लिए अनुप्रयोगों का विकास कर सकते हैं.</description>
-    <description xml:lang="hr">Ovi vam paket omogućuju razvoj aplikacija za X sustav prozora.</description>
+    <description xml:lang="hr">Ovi vam paketi omogućuju razvoj aplikacija za X sustav prozora.</description>
     <description xml:lang="hu">Ezek a csomagok X Window System-alapú alkalmazások fejlesztéséhez szükségesek.</description>
     <description xml:lang="id">Paket-paket ini membolehkan anda untuk mengembangkan aplikasi untuk Sistem X Windows.</description>
     <description xml:lang="is">Þessir pakkar gera þér kleyft að þróa hugbúnað fyrir X gluggakerfið.</description>
@@ -12144,7 +12292,41 @@
   <group>
     <id>xfce-desktop</id>
     <name>XFCE</name>
+    <name xml:lang="af">XFCE</name>
+    <name xml:lang="am">XFCE</name>
+    <name xml:lang="ca">XFCE</name>
+    <name xml:lang="et">XFCE</name>
+    <name xml:lang="fa">XFCE</name>
+    <name xml:lang="fi">XFCE</name>
+    <name xml:lang="hr">XFCE</name>
+    <name xml:lang="id">XFCE</name>
+    <name xml:lang="mk">XFCE</name>
+    <name xml:lang="ms">XFCE</name>
+    <name xml:lang="nb">XFCE</name>
+    <name xml:lang="nl">XFCE</name>
+    <name xml:lang="nso">XFCE</name>
+    <name xml:lang="pa">XFCE</name>
+    <name xml:lang="sk">XFCE</name>
+    <name xml:lang="sv">XFCE</name>
+    <name xml:lang="te">XFCE</name>
+    <name xml:lang="tr">XFCE</name>
     <description>A lightweight desktop environment that works well on low end machines.</description>
+    <description xml:lang="af">'n Liggewig werkskermomgewing wat goed werk op stadige rekenaars.</description>
+    <description xml:lang="am">የቀላል ክብደት ያለው ሠሌዳ አካባኪ በዝቅተኛው ጫፍ የማሽን ክፍል የሚሰራ።</description>
+    <description xml:lang="ca">Un entorn d'escriptori lleuger que funciona en ordinadors senzills.</description>
+    <description xml:lang="et">Kergekaaluline töölaua keskkond, mis töötab hästi low end masinates.</description>
+    <description xml:lang="fa">یک محیط رومیزی سبک وزن که روی دستگاه‌های ضعیف خوب کار می‌کند.</description>
+    <description xml:lang="fi">Kevyt työpöytäympäristö, joka toimii hyvin tehottomillakin koneilla.</description>
+    <description xml:lang="hr">Jednostavno okruženje radne površine koje dobro funkcionira na slabijim računalima.</description>
+    <description xml:lang="id">Lingkungan dekstop yang ringan yang dapat bekerja dengan baik pada mesin yang rendah.</description>
+    <description xml:lang="mk">Едноставна работна околина што работи одлично на поспори машини.</description>
+    <description xml:lang="nb">Et lettvektig skrivebordsmiljø som fungerer bra på eldre og tregere maskiner.</description>
+    <description xml:lang="nl">Een lichte werkomgeving die zeer geschikt is voor minder krachtige machines.</description>
+    <description xml:lang="nso">Tikologo ya teseke e bohwefo yeo e šomago gabotse kudu metšheneng ya tlase.</description>
+    <description xml:lang="pa">ਇੱਕ ਹਲਕਾ ਵੇਹੜਾ ਵਾਤਾਵਰਨ, ਜੋ ਕਿ ਘੱਟ ਸੰਰਚਨਾ ਵਾਲੀਆਂ ਮਸ਼ੀਨਾਂ ਉੱਤੇ ਕੰਮ ਕਰਦਾ ਹੈ।</description>
+    <description xml:lang="sk">Jednoduché pracovné prostredie, ktoré dobre pracuje na lacných počítačoch.</description>
+    <description xml:lang="sv">En lättviktig skrivbordmiljö som fungerar bra på långsammare maskiner.</description>
+    <description xml:lang="te">తక్కువ బరువున్న డెస్కుటాప్ వాతావరణం అది తక్కువ సమాప్తిగల కంప్యూటర్లలో పనిచేస్తుంది.</description>
     <default>false</default>
     <uservisible>true</uservisible>
     <packagelist>
@@ -12203,7 +12385,42 @@
   <group>
     <id>xfce-software-development</id>
     <name>XFCE Software Development</name>
+    <name xml:lang="af">Sagtewareontwikkeling: XFCE</name>
+    <name xml:lang="am">የXFCE ሶፍትዌር እድገት</name>
+    <name xml:lang="ca">Desenvolupament de programari per a XFCE</name>
+    <name xml:lang="et">XFCE tarkvara arendus</name>
+    <name xml:lang="fa">برنامه‌سازی XFCE</name>
+    <name xml:lang="fi">XFCE-ohjelmistokehitys</name>
+    <name xml:lang="hr">Razvoj softvera za XFCE</name>
+    <name xml:lang="id">XFCE Software Development</name>
+    <name xml:lang="mk">Развој на софтвер за XFCE</name>
+    <name xml:lang="ms">Pembangunan Perisian XFCE</name>
+    <name xml:lang="nb">Programvareutvikling for XFCE</name>
+    <name xml:lang="nl">XFCE-softwareontwikkeling</name>
+    <name xml:lang="nso">Tšwetšopele ya Lenaneo la Khomphuthara la XFCE</name>
+    <name xml:lang="pa">XFCE ਸਾਫਟਵੇਅਰ ਡੀਵੈਲਪਮਿੰਟ</name>
+    <name xml:lang="sk">Softvérový vývoj XFCE</name>
+    <name xml:lang="sv">XFCE-programvaruutveckling</name>
+    <name xml:lang="te">XFCE సాఫ్టువేరు అభివృద్ధి</name>
+    <name xml:lang="tr">XFCE Yazılım Geliştirme</name>
     <description>Install these packages in order to develop GTK+ and XFCE graphical applications.</description>
+    <description xml:lang="af">Installeer hierdie pakkette om GTK+- en XFCE- grafiese toepassings te ontwikkel.</description>
+    <description xml:lang="am">GTK+ እና XFCEን የንድፍ መጠቀሚያ ፕሮግራሞችን ለማሳደግ እነዚህን ጥቅሎች አስገባ።</description>
+    <description xml:lang="ca">Instal·leu aquests paquets per desenvolupar aplicacions gràfiques GTK+ i XFCE.</description>
+    <description xml:lang="et">Installeeri need paketid arendamaks GTK+ ja XFCE graafilisi rakendusi.</description>
+    <description xml:lang="fa">برای تولید برنامه‌های گرافیکی +GTK و XFCE این بسته‌ها را نصب کنید.</description>
+    <description xml:lang="fi">Asenna nämä paketit GTK+- ja XFCE-sovellusten kehittämiseksi.</description>
+    <description xml:lang="hr">Instalirajte ove pakete ukoliko želite razvijati grafičke aplikacije za GTK+ i XFCE.</description>
+    <description xml:lang="id">Install paket ini untuk develop GTK+ dan aplikasi grafis XFCE.</description>
+    <description xml:lang="mk">Инсталирајте ги овие пакети доколку сакате да развивате апликации за XFce и ГТК+ апликации.</description>
+    <description xml:lang="nb">Installer disse pakkene for utvikling av GTK+- og XFCE-programmer.</description>
+    <description xml:lang="nl">Installeer deze pakketten om grafische toepassingen voor GTK+ en XFCE te ontwikkelen.</description>
+    <description xml:lang="nso">Tsenya diphuthelwana tše bakeng sa go tšweletša ditirišo tša diswantšho tša GTK+ le XFCE.</description>
+    <description xml:lang="pa">GTK+ ਅਤੇ XFCE ਗਰਾਫੀਕਲ ਕਾਰਜਾਂ ਦੇ ਵਿਕਾਸ ਲਈ ਇਹ ਪੈਕੇਜ ਇੰਸਟਾਲ ਕਰੋ।</description>
+    <description xml:lang="sk">Nainštalujte si tieto balíky, ak potrebujete vyvíjať grafické aplikácie GTK+ a XFCE.</description>
+    <description xml:lang="sv">Installera dessa paket för att kunna utveckla grafiska program som använder GTK+ och XFCE.</description>
+    <description xml:lang="te">GTK+ మరియూ XFCE చిత్ర అనువర్తనాల క్రమంలో ఈ పాకేజీలను సంస్థాపించు </description>
+    <description xml:lang="tr">GTK+ ve XFCE grafik uygulamaları geliştirmek için bu paketleri kurun.</description>
     <default>false</default>
     <uservisible>true</uservisible>
     <grouplist>
@@ -12225,6 +12442,7 @@
     <name xml:lang="as">ক্জোচা ভাষাৰ সমৰ্থন</name>
     <name xml:lang="bn_IN">জোসা ভাষা ব্যবহারের সহায়তা</name>
     <name xml:lang="ca">Suport per al xhosa</name>
+    <name xml:lang="cs">Xhosa (jižní Afrika)</name>
     <name xml:lang="da">Understøttelse for xhosa</name>
     <name xml:lang="de">Unterstützung für Xhosa</name>
     <name xml:lang="el">Υποστήριξη Xhosa</name>
@@ -12282,7 +12500,7 @@
     <name xml:lang="bn">জুলু ভাষা ব্যবহারের সহায়ক</name>
     <name xml:lang="bn_IN">জুলু ভাষা ব্যবহারের সহায়তা</name>
     <name xml:lang="ca">Suport per al zulu</name>
-    <name xml:lang="cs">Podpora pro zulu</name>
+    <name xml:lang="cs">Zulu (jižní Afrika)</name>
     <name xml:lang="cy">Cynhaliaeth Zwlweg</name>
     <name xml:lang="da">Understøttelse for zulu</name>
     <name xml:lang="de">Unterstützung für Zulu (Südafrika)</name>
@@ -12349,7 +12567,7 @@
     <name xml:lang="as">ভাষা</name>
     <name xml:lang="bn">ভাষা</name>
     <name xml:lang="bn_IN">ভাষা</name>
-    <name xml:lang="ca">Idiomes</name>
+    <name xml:lang="ca">Llengües</name>
     <name xml:lang="cs">Jazyky</name>
     <name xml:lang="cy">Ieithoedd</name>
     <name xml:lang="da">Sprogunderstøttelse</name>
@@ -12527,7 +12745,7 @@
     <name xml:lang="bn">ডেস্কটপ এনভায়রণমেন্ট</name>
     <name xml:lang="bn_IN">ডেস্কটপ পরিবেশ</name>
     <name xml:lang="ca">Entorns d'escriptori</name>
-    <name xml:lang="cs">Desktopová prostředí</name>
+    <name xml:lang="cs">Grafická uživatelská prostředí</name>
     <name xml:lang="cy">Amgylcheddau Penbwrdd</name>
     <name xml:lang="da">Skrivebordsmiljøer</name>
     <name xml:lang="de">Desktopumgebungen</name>
@@ -12575,7 +12793,7 @@
     <description xml:lang="bn">ডেস্কটপ এনভায়রনমেন্ট</description>
     <description xml:lang="bn_IN">ডেস্কটপ পরিবেশ</description>
     <description xml:lang="ca">Entorns d'escriptori</description>
-    <description xml:lang="cs">Desktopová prostředí</description>
+    <description xml:lang="cs">Grafická uživatelská prostředí</description>
     <description xml:lang="cy">Amgylcheddau penbwrdd</description>
     <description xml:lang="da">Skrivebordsmiljøer</description>
     <description xml:lang="de">Desktopumgebungen</description>
@@ -12700,6 +12918,7 @@
     <description xml:lang="as">বিভিন্ন কাৰ্য্যৰ বাবে অনুপ্ৰয়োগ</description>
     <description xml:lang="bn_IN">বিবিধ কর্মে ব্যবহৃত অ্যাপ্লিকেশন</description>
     <description xml:lang="ca">Aplicacions per a realitzar diverses tasques</description>
+    <description xml:lang="cs">Aplikace pro nejrůznější účely</description>
     <description xml:lang="da">Programmer til at lave en række opgaver</description>
     <description xml:lang="de">Anwendungen zur Durchführung einer Vielzahl von Aufgaben</description>
     <description xml:lang="el">Εφαρμογές για μια ποικιλία εργασιών</description>
@@ -12848,6 +13067,7 @@
     <description xml:lang="lv">Pakotnes, kas nodrošina programmu izstrādes procesu.</description>
     <description xml:lang="ml">പ്രയോഗങ്ങളുടെ പുരോഗതിയ്ക്കും നിര്‍മ്മാണത്തിനും ആവശ്യമായ പ്രവര്‍ത്തനങ്ങള്‍ക്കുളള പാക്കേജുകള്‍.</description>
     <description xml:lang="mr">संकुले जी अनुप्रयोग विकसन आणि बांधणीसाठी कार्यक्षमता पुरवतात.</description>
+    <description xml:lang="ms">Pakej yang menyediakan fungsi untuk membangun dan membina aplikasi.</description>
     <description xml:lang="nb">Pakker som gir funksjonalitet for utvikling og bygging av programmer.</description>
     <description xml:lang="nl">Pakketten die functionaliteit bieden voor het ontwikkelen en bouwen van toepassingen.</description>
     <description xml:lang="or">ପ୍ରୟୋଗ ମାନଙ୍କୁ ବିକାଶ ଏବଂ ନିର୍ମାଣ କରିବା ପାଇଁ ଏହି ପ୍ଯାକେଜ ଗୁଡିକ କାର୍ଯ୍ଯ ପ୍ରଦାନ କରିଥାଏ।</description>
@@ -13025,7 +13245,7 @@
     <name xml:lang="bn">বেজ সিস্টেম</name>
     <name xml:lang="bn_IN">মৌলিক সিস্টেম</name>
     <name xml:lang="ca">Sistema bàsic</name>
-    <name xml:lang="cs">Základní Systém</name>
+    <name xml:lang="cs">Základní programy</name>
     <name xml:lang="cy">Cysawd Sail</name>
     <name xml:lang="da">Basesystem</name>
     <name xml:lang="de">Grundsystem</name>

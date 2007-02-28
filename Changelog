@@ -1,3 +1,7 @@
+* Wed Feb 28 2007 Jesse Keating <jkeating@redhat.com>
+- Update Fedora 7 comps file.
+- Tag for F7 Test2
+
 * Mon Feb 26 2007 Jesse Keating <jkeating@redhat.com>
 - Fix gathering of srpms (thanks skvidal)
 
