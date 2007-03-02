@@ -222,6 +222,9 @@ class Gather(yum.YumBase):
             for x in range(searchlist.count(exclude)): # why is there no list.removeall?
                 searchlist.remove(exclude)
 
+        # Make the search list unique
+        searchlist = yum.misc.unique(searchlist)
+
         # Search repos for things in our searchlist, supports globs
         (exactmatched, matched, unmatched) = yum.packages.parsePackages(self.pkgSack.returnPackages(), searchlist, casematch=1)
         matches = exactmatched + matched
