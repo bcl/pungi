@@ -50,6 +50,9 @@ class Gather(yum.YumBase):
         self.polist = []
         self.srpmlist = []
         self.resolved_deps = {} # list the deps we've already resolved, short circuit.
+        # Create a comps object and add our comps file for group definitions
+        self.comps = yum.comps.comps()
+        self.comps.add(self.config.get('default', 'comps'))
 
     def doLoggingSetup(self, debuglevel, errorlevel):
         """Setup the logging facility."""
@@ -129,6 +132,46 @@ class Gather(yum.YumBase):
 
         return pkgresults.keys()
 
+    def getPackagesFromGroup(self, group)
+        """Get a list of package names from a comps object
+
+            Returns a list of package names"""
+
+        packages = []
+        optional = None
+        nodefaults = None
+
+        # Check for an option regarding default/optional packages
+        last = group.split()[-1]
+        if last == '--optional':
+            optional = True
+            group = group.split(' --optional')[0]
+
+        if last == '--nodefaults':
+            nodefaults = True
+            group = group.split(' --nodefaults')[0]
+
+        # Check if we have the group
+        if not self.comps.has_group(group)
+            self.logger.error("Group %s not found in comps!" % group)
+            return packages
+
+        # Get the group object to work with
+        groupobj = self.comps.return_group(group)
+
+        # Add the mandatory packages
+        packages.extend(groupobj.mandatory_packages.keys())
+
+        # Add the default packages unless we don't want them
+        if not nodefaults:
+            packages.extend(groupobj.default_packages.keys())
+
+        # Add the optional packages if we want them
+        if optional:
+            packages.extend(groupobj.optional_packages.keys())
+
+        return packages
+
     def getPackageObjects(self):
         """Cycle through the list of packages, get package object
            matches, and resolve deps.
@@ -138,16 +181,47 @@ class Gather(yum.YumBase):
 
         unprocessed_pkgs = {} # list of packages yet to depsolve ## Use dicts for speed
         final_pkgobjs = {} # The final list of package objects
+        searchlist = [] # The list of package names/globs to search for
 
-        # Search repos for things in our manifest, supports globs
+        grouplist = []
+        excludelist = []
+        addlist = []
+
+        # Cycle through the package list and pull out the groups
+        for line in self.pkglist:
+            if line.strip().startswith('#'):
+                continue
+            if line.startswith('@'):
+                grouplist.append(line.strip('@'))
+                continue
+            if line.startswith('-'):
+                excludelist.append(line.strip('-'))
+                continue
+            else:
+                addlist.append(line)
+
+        # First, get a list of packages from groups
+        for group in grouplist:
+            searchlist.extend(getPackagesFromGroup(group))
+
+        # Add the adds
+        searchlist.extend(addlist)
+
+        # Remove the excludes
+        for exclude in excludelist:
+            for x in range(searchlist.count(exclude)): # why is there no list.removeall?
+                searchlist.remove(exclude)
+
+        # Search repos for things in our searchlist, supports globs
         (exactmatched, matched, unmatched) = yum.packages.parsePackages(self.pkgSack.returnPackages(), self.pkglist, casematch=1)
         matches = exactmatched + matched
 
-        # Get the newest results from the search
+        # Get the newest results from the search, if not "excluded" (catches things added by globs)
         mysack = yum.packageSack.ListPackageSack(matches)
         for match in mysack.returnNewestByNameArch():
-            unprocessed_pkgs[match] = None
-            self.tsInfo.addInstall(match)
+            if not match.name in excludelist:
+                unprocessed_pkgs[match] = None
+                self.tsInfo.addInstall(match)
 
         if not self.config.has_option('default', 'quiet'):
             for pkg in unprocessed_pkgs.keys():
