@@ -1,3 +1,6 @@
+* Fri Mar 02 2007 Jesse Keating <jkeating@redhat.com>
+- Add kickstart %packages syntax support to package manifest
+
 * Wed Feb 28 2007 Jesse Keating <jkeating@redhat.com>
 - Update Fedora 7 comps file.
 - Tag for F7 Test2

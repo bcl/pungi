@@ -43,7 +43,8 @@ class Gather(yum.YumBase):
         else:
             arches = yum.rpmUtils.arch.getArchList(config.get('default', 'arch'))
             self.compatarch = config.get('default', 'arch')
-        self.doSackSetup(arches)
+        #self.doSackSetup(arches)
+        self.doSackSetup(archlist=arches) # work around temp break in yum api
         self.doSackFilelistPopulate()
         self.logger = yum.logging.getLogger("yum.verbose.pungi")
         self.pkglist = pkglist
@@ -51,8 +52,8 @@ class Gather(yum.YumBase):
         self.srpmlist = []
         self.resolved_deps = {} # list the deps we've already resolved, short circuit.
         # Create a comps object and add our comps file for group definitions
-        self.comps = yum.comps.comps()
-        self.comps.add(self.config.get('default', 'comps'))
+        self.compsobj = yum.comps.Comps()
+        self.compsobj.add(self.config.get('default', 'comps'))
 
     def doLoggingSetup(self, debuglevel, errorlevel):
         """Setup the logging facility."""
@@ -132,7 +133,7 @@ class Gather(yum.YumBase):
 
         return pkgresults.keys()
 
-    def getPackagesFromGroup(self, group)
+    def getPackagesFromGroup(self, group):
         """Get a list of package names from a comps object
 
             Returns a list of package names"""
@@ -152,12 +153,12 @@ class Gather(yum.YumBase):
             group = group.split(' --nodefaults')[0]
 
         # Check if we have the group
-        if not self.comps.has_group(group)
+        if not self.compsobj.has_group(group):
             self.logger.error("Group %s not found in comps!" % group)
             return packages
 
         # Get the group object to work with
-        groupobj = self.comps.return_group(group)
+        groupobj = self.compsobj.return_group(group)
 
         # Add the mandatory packages
         packages.extend(groupobj.mandatory_packages.keys())
@@ -189,20 +190,29 @@ class Gather(yum.YumBase):
 
         # Cycle through the package list and pull out the groups
         for line in self.pkglist:
-            if line.strip().startswith('#'):
+            line = line.strip()
+            if line.startswith('#'):
+                if not self.config.has_option('default', 'quiet'):
+                    self.logger.info('Skipping comment: %s' % line)
                 continue
             if line.startswith('@'):
+                if not self.config.has_option('default', 'quiet'):
+                    self.logger.info('Adding group: %s' % line)
                 grouplist.append(line.strip('@'))
                 continue
             if line.startswith('-'):
+                if not self.config.has_option('default', 'quiet'):
+                    self.logger.info('Adding exclude: %s' % line)
                 excludelist.append(line.strip('-'))
                 continue
             else:
+                if not self.config.has_option('default', 'quiet'):
+                    self.logger.info('Adding package: %s' % line)
                 addlist.append(line)
 
         # First, get a list of packages from groups
         for group in grouplist:
-            searchlist.extend(getPackagesFromGroup(group))
+            searchlist.extend(self.getPackagesFromGroup(group))
 
         # Add the adds
         searchlist.extend(addlist)
@@ -213,7 +223,7 @@ class Gather(yum.YumBase):
                 searchlist.remove(exclude)
 
         # Search repos for things in our searchlist, supports globs
-        (exactmatched, matched, unmatched) = yum.packages.parsePackages(self.pkgSack.returnPackages(), self.pkglist, casematch=1)
+        (exactmatched, matched, unmatched) = yum.packages.parsePackages(self.pkgSack.returnPackages(), searchlist, casematch=1)
         matches = exactmatched + matched
 
         # Get the newest results from the search, if not "excluded" (catches things added by globs)
