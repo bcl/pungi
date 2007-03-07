@@ -1,3 +1,6 @@
+* Tue Mar 06 2007 Jesse Keating <jkeating@redhat.com>
+- Convert from commands to subprocess for things we call out
+
 * Fri Mar 02 2007 Jesse Keating <jkeating@redhat.com>
 - Add kickstart %packages syntax support to package manifest
 - Make the list we hand off to yum to search for as unique as we can

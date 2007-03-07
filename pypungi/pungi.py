@@ -12,7 +12,7 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
-import commands
+import subprocess
 import logging
 import os
 import sys
@@ -71,27 +71,52 @@ class Pungi:
         os.makedirs(os.path.join(self.topdir, self.config.get('default', 'product_path'), 'base'))
         shutil.copy(self.config.get('default', 'comps'), os.path.join(self.topdir, 
             self.config.get('default', 'product_path'), 'base', 'comps.xml'))
-        bugurl = ""
+
+        # setup the buildinstall call
+        buildinstall = ['/usr/lib/anaconda-runtime/buildinstall']
+        #buildinstall.append('TMPDIR=%s' % self.workdir) # TMPDIR broken in buildinstall
+
+        buildinstall.append('--product')
+        buildinstall.append(self.config.get('default', 'product_name'))
+
+        buildinstall.append('--version')
+        buildinstall.append(self.config.get('default', 'version'))
+
+        buildinstall.append('--release')
+        buildinstall.append('"%s %s"' % (self.config.get('default', 'product_name'), self.config.get('default', 'version')))
+
+        buildinstall.append('--prodpath')
+        buildinstall.append(self.config.get('default', 'product_path'))
+
         if self.config.has_option('default', 'bugurl'):
-            bugurl = "--bugurl %s" % self.config.get('default', 'bugurl')
-        args = '--product "%s" --version %s --release "%s" --prodpath %s %s %s' % (self.config.get('default', 'product_name'),
-            self.config.get('default', 'version'), '%s %s' % (self.config.get('default', 'product_name'), 
-            self.config.get('default', 'version')), self.config.get('default', 'product_path'), 
-            bugurl, self.topdir)
-        #res = commands.getoutput('TMPDIR=%s /usr/lib/anaconda-runtime/buildinstall %s' % (self.workdir, args))
-        # TMPDIR is broken in buildinstall + friends right now
-        res = commands.getoutput('/usr/lib/anaconda-runtime/buildinstall %s' % args)
-        log.info("Result from buildinstall %s: %s" % (args, res))
+            buildinstall.append('--bugurl')
+            buildinstall.append(self.config.get('default', 'bugurl'))
+
+        buildinstall.append(self.topdir)
+
+        # run the command
+        subprocess.check_call(buildinstall)
+        #log.info("Result from buildinstall %s: %s" % (args, res))
+
+        # write out the tree data for snake
         self.writeinfo('tree: %s' % self.mkrelative(self.topdir))
 
     def doPackageorder(self):
         """Run anaconda-runtime's pkgorder on the tree, used for splitting media."""
 
 
-        res = commands.getoutput('TMPDIR=%s /usr/lib/anaconda-runtime/pkgorder %s %s %s > %s' % (self.workdir, 
-                                 self.topdir, self.config.get('default', 'arch'), self.config.get('default', 
-                                 'product_path'), os.path.join(self.workdir, 'pkgorder-%s' % self.config.get('default', 'arch'))))
-        log.info("Result from pkgorder: %s" % res)
+        pkgorderfile = open(os.path.join(self.workdir, 'pkgorder-%s' % self.config.get('default', 'arch')), 'w')
+        # setup the command
+        pkgorder = ['/usr/lib/anaconda-runtime/pkgorder']
+        #pkgorder.append('TMPDIR=%s' % self.workdir)
+        pkgorder.append(self.topdir)
+        pkgorder.append(self.config.get('default', 'arch'))
+        pkgorder.append(self.config.get('default', 'product_path'))
+
+        # run the command
+        subprocess.check_call(pkgorder, stdout=pkgorderfile)
+        pkgorderfile.close()
+        #log.info("Result from pkgorder: %s" % res)
 
     def doGetRelnotes(self):
         """Get extra files from packages in the tree to put in the topdir of
@@ -114,14 +139,17 @@ class Pungi:
         # Expload the packages we list as relnote packages
         pkgs = os.listdir(os.path.join(self.topdir, self.config.get('default', 'product_path')))
 
+        rpm2cpio = ['/usr/bin/rpm2cpio']
+        cpio = ['cpio', '-imud']
+
         for pkg in pkgs:
             pkgname = pkg.rsplit('-', 2)[0]
             for relnoterpm in relnoterpms:
                 if pkgname == relnoterpm:
-                    res = commands.getoutput("pushd %s; rpm2cpio %s |cpio -imud; popd" % 
-                                       (docsdir, 
-                                        os.path.join(self.topdir, self.config.get('default', 'product_path'), pkg)))
-                    log.info("Result from rpm2cpio: %s" % res)
+                    extraargs = [os.path.join(self.topdir, self.config.get('default', 'product_path'), pkg)]
+                    p1 = subprocess.Popen(rpm2cpio + extraargs, cwd=docsdir, stdout=PIPE)
+                    p2 = subprocess.Popen(cpio, cwd=docsdir, stdin=p1.stdout)
+                    #log.info("Result from rpm2cpio: %s" % res)
         # Walk the tree for our files
         for dirpath, dirname, filelist in os.walk(docsdir):
             for filename in filelist:
@@ -133,11 +161,11 @@ class Pungi:
 
         # Walk the tree for our dirs
         for dirpath, dirname, filelist in os.walk(docsdir):
-            for dir in dirname:
+            for directory in dirname:
                 for regex in dirres:
-                    if regex.match(dir) and not os.path.exists(os.path.join(self.topdir, dir)):
-                        print "Copying release note dir %s" % dir
-                        shutil.copytree(os.path.join(dirpath, dir), os.path.join(self.topdir, dir))
+                    if regex.match(directory) and not os.path.exists(os.path.join(self.topdir, directory)):
+                        print "Copying release note dir %s" % directory
+                        shutil.copytree(os.path.join(dirpath, directory), os.path.join(self.topdir, directory))
         
 
     def doSplittree(self):
@@ -202,104 +230,167 @@ class Pungi:
 
         discinfo = open('%s-disc1/.discinfo' % self.topdir, 'r').readlines()
         mediaid = discinfo[0].rstrip('\n')
-        args = '-d -g %s --baseurl=media://%s --outputdir=%s-disc1 --basedir=%s-disc1 --split %s-disc?' % \
-                (os.path.join(self.topdir, 'repodata', 'comps.xml'), mediaid, self.topdir, self.topdir, self.topdir) 
-        res = commands.getoutput('/usr/bin/createrepo %s' % args)
-        log.info("Result from createrepo %s: %s" %(args, res))
+
+        # set up the process
+        createrepo = ['/usr/bin/createrepo']
+        createrepo.append('--database')
+
+        createrepo.append('--groupfile')
+        createrepo.append(os.path.join(self.topdir, 'repodata', 'comps.xml'))
+
+        createrepo.append('--baseurl')
+        createrepo.append('media://%s' % mediaid)
+
+        createrepo.append('--outputdir')
+        createrepo.append('%s-disc1' % self.topdir)
+
+        createrepo.append('--basedir')
+        createrepo.append('%s-disc1' % self.topdir)
+
+        createrepo.append('--split')
+
+        for disc in range(1, self.config.getint('default', 'discs') + 1):
+            createrepo.append('%s-disc%s' % (self.topdir, disc))
+
+        # run the command
+        subprocess.check_call(createrepo)
+        #log.info("Result from createrepo %s: %s" %(args, res))
 
     def doCreateIsos(self):
         """Create isos from the various split directories."""
 
 
+        isolist=[]
         anaruntime = '/usr/lib/anaconda-runtime/boot'
         discinfofile = os.path.join(self.topdir, '.discinfo') # we use this a fair amount
-        mkisofsargs = '-v -U -J -R -T -V' # common mkisofs flags
-        bootargs = ''
-        x86bootargs = '-b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table'
-        ia64bootargs = '-b images/boot.img -no-emul-boot'
-        ppcbootargs = '-part -hfs -r -l -sysid PPC -map %s -magic %s -no-desktop -allow-multidot -chrp-boot -hfs-bless' % (os.path.join(anaruntime, 'mapping'), os.path.join(anaruntime, 'magic'))
+
         os.makedirs(self.isodir)
-        isolist=[]
+
+        # setup the base command
+        mkisofs = ['/usr/bin/mkisofs']
+        mkisofs.extend(['-v', '-U', '-J', '-R', '-T']) # common mkisofs flags
+
+        x86bootargs = ['-b', 'isolinux/isolinux.bin', '-c', 'isolinux/boot.cat', 
+            '-no-emul-boot', '-boot-load-size', '4', '-boot-info-table']
+
+        ia64bootargs = ['-b', 'images/boot.img', '-no-emul-boot']
+
+        ppcbootargs = ['-part', '-hfs', '-r', '-l', '-sysid', 'PPC', '-no-desktop', '-allow-multidot', '-chrp-boot']
+
+        ppcbootargs.append('-map')
+        ppcbootargs.append(os.path.join(anaruntime, 'mapping'))
+
+        ppcbootargs.append('-magic')
+        ppcbootargs.append(os.path.join(anaruntime, 'magic'))
+
+        ppcbootargs.append('-hfs-bless') # must be last
+
         for disc in range(1, self.config.getint('default', 'discs') + 1): # cycle through the CD isos
-            volname = '"%s %s %s Disc %s"' % (self.config.get('default', 'product_name'), self.config.get('default', 'version'), 
-                self.config.get('default', 'arch'), disc) # hacky :/
             isoname = '%s-%s-%s-disc%s.iso' % (self.config.get('default', 'iso_basename'), self.config.get('default', 'version'), 
                 self.config.get('default', 'arch'), disc)
+            isofile = os.path.join(self.isodir, isoname)
+
+            extraargs = []
+
             if disc == 1: # if this is the first disc, we want to set boot flags
                 if self.config.get('default', 'arch') == 'i386' or self.config.get('default', 'arch') == 'x86_64':
-                    bootargs = x86bootargs
+                    extraargs.extend(x86bootargs)
                 elif self.config.get('default', 'arch') == 'ia64':
-                    bootargs = ia64bootargs
+                    extraargs.extend(ia64bootargs)
                 elif self.config.get('default', 'arch') == 'ppc':
-                    bootargs = "%s %s" % (ppcbootargs, os.path.join('%s-disc%s' % (self.topdir, disc), "ppc/mac"))
-            else:
-                bootargs = '' # clear out any existing bootargs
+                    extraargs.extend(ppcbootargs)
+                    extraargs.append(os.path.join('%s-disc%s' % (self.topdir, disc), "ppc/mac"))
 
-            isofile = os.path.join(self.isodir, isoname)
-            res = commands.getoutput('mkisofs %s %s %s -o %s %s' % (mkisofsargs,
-                                                        volname,
-                                                        bootargs,
-                                                        isofile,
-                                                        os.path.join('%s-disc%s' % (self.topdir, disc))))
-            log.info("Result from mkisofs: %s" % res)
+            extraargs.append('-V')
+            extraargs.append('"%s %s %s Disc %s"' % (self.config.get('default', 'product_name'),
+                self.config.get('default', 'version'), self.config.get('default', 'arch'), disc))
+
+            extraargs.append('-o')
+            extraargs.append(isofile)
+
+            extraargs.append(os.path.join('%s-disc%s' % (self.topdir, disc)))
+
+            # run the command
+            subprocess.check_call(mkisofs + extraargs)
+            #log.info("Result from mkisofs: %s" % res)
+
             # implant md5 for mediacheck on all but source arches
             if not self.config.get('default', 'arch') == 'source':
-                res = commands.getoutput('/usr/lib/anaconda-runtime/implantisomd5 %s' % isofile)
-                log.info("Result from implantisomd5: %s" % res)
+                subprocess.check_call(['/usr/lib/anaconda-runtime/implantisomd5', isofile])
+                #log.info("Result from implantisomd5: %s" % res)
+
             # shove the sha1sum into a file
-            res = commands.getoutput('cd %s; sha1sum %s >> SHA1SUM' % (self.isodir, isoname))
-            log.info("Result from sha1sum: %s" % res)
+            sha1file = open(os.path.join(self.isodir, 'SHA1SUM'), 'a')
+            subprocess.check_call(['/usr/bin/sha1sum', isoname], cwd=self.isodir, stdout=sha1file)
+            sha1file.close()
+            #log.info("Result from sha1sum: %s" % res)
+
             # keep track of the CD images we've written
             isolist.append(self.mkrelative(isofile))
+
         # Write out a line describing the CD set
         self.writeinfo('cdset: %s' % ' '.join(isolist))
 
         isolist=[]
         # We've asked for more than one disc, and we're not srpms, so make a DVD image
         if self.config.getint('default', 'discs') > 1 and not self.config.get('default', 'arch') == 'source':
+            isoname = '%s-%s-%s-DVD.iso' % (self.config.get('default', 'iso_basename'), self.config.get('default', 'version'), 
+                self.config.get('default', 'arch'))
+            isofile = os.path.join(self.isodir, isoname)
+
             # backup the main .discinfo to use a split one.  This is an ugly hack :/
             content = open(discinfofile, 'r').readlines()
             shutil.move(discinfofile, os.path.join(self.config.get('default', 'destdir'), 
                 '.discinfo-%s' % self.config.get('default', 'arch')))
             content[content.index('ALL\n')] = ','.join([str(x) for x in range(1, self.config.getint('default', 'discs') + 1)]) + '\n'
             open(discinfofile, 'w').writelines(content)
-            
 
             # move the main repodata out of the way to use the split repodata
             shutil.move(os.path.join(self.topdir, 'repodata'), os.path.join(self.config.get('default', 'destdir'), 
                 'repodata-%s' % self.config.get('default', 'arch')))
             shutil.copytree('%s-disc1/repodata' % self.topdir, os.path.join(self.topdir, 'repodata'))
 
-            volname = '"%s %s %s DVD"' % (self.config.get('default', 'product_name'), self.config.get('default', 'version'), 
-                self.config.get('default', 'arch'))
-            isoname = '%s-%s-%s-DVD.iso' % (self.config.get('default', 'iso_basename'), self.config.get('default', 'version'), 
-                self.config.get('default', 'arch'))
-            if self.config.get('default', 'arch') == 'i386' or self.config.get('default', 'arch') == 'x86_64':
-                bootargs = x86bootargs
-            elif self.config.get('default', 'arch') == 'ia64':
-                bootargs = ia64bootargs
-            elif self.config.get('default', 'arch') == 'ppc':
-                bootargs = "%s %s" % (ppcbootargs, os.path.join(self.topdir, "ppc/mac"))
-            else:
-                bootargs = '' # clear out any existing bootargs
-            
-            isofile = os.path.join(self.isodir, isoname)
-            res = commands.getoutput('mkisofs %s %s %s -o %s %s' % (mkisofsargs,
-                                                     volname,
-                                                     bootargs,
-                                                     isofile,
-                                                     self.topdir))
-            log.info("Result from DVD mkisofs: %s" % res)
-            res = commands.getoutput('cd %s; sha1sum %s >> SHA1SUM' % (self.isodir, isoname))
-            log.info("Result from sha1sum: %s" % res)
-            res = commands.getoutput('/usr/lib/anaconda-runtime/implantisomd5 %s' % isofile)
-            log.info("Result from implantisomd5: %s" % res)
+            # setup the extra mkisofs args
+            extraargs = []
 
+            if self.config.get('default', 'arch') == 'i386' or self.config.get('default', 'arch') == 'x86_64':
+                extraargs.extend(x86bootargs)
+            elif self.config.get('default', 'arch') == 'ia64':
+                extraargs.extend(ia64bootargs)
+            elif self.config.get('default', 'arch') == 'ppc':
+                extraargs.extend(ppcbootargs)
+                extraargs.append(os.path.join('%s-disc%s' % (self.topdir, disc), "ppc/mac"))
+
+            extraargs.append('-V')
+            extraargs.append('"%s %s %s DVD"' % (self.config.get('default', 'product_name'),
+                self.config.get('default', 'version'), self.config.get('default', 'arch')))
+
+            extraargs.append('-o')
+            extraargs.append(isofile)
+            
+            extraargs.append(self.topdir)
+
+            # run the command
+            subprocess.check_call(mkisofs + extraargs)
+            #log.info("Result from DVD mkisofs: %s" % res)
+
+            # implant md5 for mediacheck on all but source arches
+            subprocess.check_call(['/usr/lib/anaconda-runtime/implantisomd5', isofile])
+            #log.info("Result from implantisomd5: %s" % res)
+
+            # shove the sha1sum into a file
+            sha1file = open(os.path.join(self.isodir, 'SHA1SUM'), 'a')
+            subprocess.check_call(['/usr/bin/sha1sum', isoname], cwd=self.isodir, stdout=sha1file)
+            sha1file.close()
+            #log.info("Result from sha1sum: %s" % res)
+
+            # return the .discinfo file
             shutil.move(os.path.join(self.config.get('default', 'destdir'), '.discinfo-%s' % self.config.get('default', 'arch')), discinfofile)
 
             shutil.rmtree(os.path.join(self.topdir, 'repodata')) # remove our copied repodata
             shutil.move(os.path.join(self.config.get('default', 'destdir'), 
                 'repodata-%s' % self.config.get('default', 'arch')), os.path.join(self.topdir, 'repodata'))
+
             # keep track of the DVD images we've written 
             isolist.append(self.mkrelative(isofile))
 
@@ -308,43 +399,56 @@ class Pungi:
 
         # Now make rescue images
         if not self.config.get('default', 'arch') == 'source':
-            res = commands.getoutput('/usr/lib/anaconda-runtime/mk-rescueimage.%s %s %s %s %s' % (
-                self.config.get('default', 'arch'),
-                self.topdir,
-                self.workdir,
-                self.config.get('default', 'iso_basename'),
-                self.config.get('default', 'product_path')))
-            log.info("Result from mk-resueimage: %s" % res)
+            isoname = '%s-%s-%s-rescuecd.iso' % (self.config.get('default', 'iso_basename'),
+                self.config.get('default', 'version'), self.config.get('default', 'arch'))
+            isofile = os.path.join(self.isodir, isoname)
+
+            # make the rescue tree
+            rescue = ['/usr/lib/anaconda-runtime/mk-rescueimage.%s' % self.config.get('default', 'arch')]
+            rescue.append(self.topdir)
+            rescue.append(self.workdir)
+            rescue.append(self.config.get('default', 'iso_basename'))
+            rescue.append(self.config.get('default', 'product_path'))
+
+            # run the command
+            subprocess.check_call(rescue)
+            #log.info("Result from mk-resueimage: %s" % res)
 
             # write the iso
-            volname = '"%s %s %s Rescue"' % (self.config.get('default', 'product_name'), self.config.get('default', 'version'), 
-                    self.config.get('default', 'arch')) # hacky :/
-            isoname = '%s-%s-%s-rescuecd.iso' % (self.config.get('default', 'iso_basename'), self.config.get('default', 'version'), 
-                self.config.get('default', 'arch'))
+            extraargs = []
+
             if self.config.get('default', 'arch') == 'i386' or self.config.get('default', 'arch') == 'x86_64':
-                bootargs = x86bootargs
+                extraargs.extend(x86bootargs)
             elif self.config.get('default', 'arch') == 'ia64':
-                bootargs = ia64bootargs
+                extraargs.extend(ia64bootargs)
             elif self.config.get('default', 'arch') == 'ppc':
-                bootargs = "%s %s" % (ppcbootargs, os.path.join(self.workdir, "%s-rescueimage" % self.config.get('default', 'arch'), "ppc/mac"))
-            else:
-                bootargs = '' # clear out any existing bootargs
+                extraargs.extend(ppcbootargs)
+                extraargs.append(os.path.join(self.workdir, "%s-rescueimage" % self.config.get('default', 'arch'), "ppc/mac"))
 
-            res = commands.getoutput('mkisofs %s %s %s -o %s/%s %s'
-                    % (mkisofsargs, volname, bootargs, self.isodir, isoname,
-                       os.path.join(self.workdir, "%s-rescueimage" 
-                           % self.config.get('default', 'arch'))))
-            log.info("Result from Rescue mkisofs: %s" % res)
+            extraargs.append('-V')
+            extraargs.append('"%s %s %s Rescue"' % (self.config.get('default', 'product_name'),
+                    self.config.get('default', 'version'), self.config.get('default', 'arch')))
 
-            res = commands.getoutput('cd %s; sha1sum %s >> SHA1SUM'
-                    % (self.isodir, isoname))
-            log.info("Result from sha1sum: %s" % res)
+            extraargs.append('-o')
+            extraargs.append(isofile)
+
+            extraargs.append(os.path.join(self.workdir, "%s-rescueimage" % self.config.get('default', 'arch')))
+
+            # run the command
+            subprocess.check_call(mkisofs + extraargs)
+            #log.info("Result from Rescue mkisofs: %s" % res)
+
+            # shove the sha1sum into a file
+            sha1file = open(os.path.join(self.isodir, 'SHA1SUM'), 'a')
+            subprocess.check_call(['/usr/bin/sha1sum', isoname], cwd=self.isodir, stdout=sha1file)
+            sha1file.close()
+            #log.info("Result from sha1sum: %s" % res)
 
         # Do some clean up
         dirs = os.listdir(self.archdir)
 
-        for dir in dirs:
-            if dir.startswith('os-disc') or dir.startswith('SRPM-disc'):
-                shutil.move(os.path.join(self.archdir, dir), os.path.join(self.workdir, dir))
+        for directory in dirs:
+            if directory.startswith('os-disc') or directory.startswith('SRPM-disc'):
+                shutil.move(os.path.join(self.archdir, directory), os.path.join(self.workdir, directory))
 
         log.info("CreateIsos is done.")
