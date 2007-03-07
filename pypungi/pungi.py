@@ -67,10 +67,19 @@ class Pungi:
         """Run anaconda-runtime's buildinstall on the tree."""
 
 
-        # buildinstall looks for a comps file in base/ for now, copy it into place
-        os.makedirs(os.path.join(self.topdir, self.config.get('default', 'product_path'), 'base'))
-        shutil.copy(self.config.get('default', 'comps'), os.path.join(self.topdir, 
-            self.config.get('default', 'product_path'), 'base', 'comps.xml'))
+        # create repodata for the tree
+        createrepo = ['/usr/bin/createrepo']
+        createrepo.append('--database')
+
+        createrepo.append('--groupfile')
+        createrepo.append(self.config.get('default', 'comps'))
+
+        createrepo.append(self.topdir)
+
+        # run the command
+        subprocess.check_call(createrepo, cwd=self.topdir)
+        # log something here
+
 
         # setup the buildinstall call
         buildinstall = ['/usr/lib/anaconda-runtime/buildinstall']

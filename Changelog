@@ -1,3 +1,6 @@
+* Wed Mar 07 2007 Jesse Keating <jkeating@redhat.com>
+- Call createrepo ourselves for the tree, not buildinstall's job
+
 * Tue Mar 06 2007 Jesse Keating <jkeating@redhat.com>
 - Convert from commands to subprocess for things we call out
 
