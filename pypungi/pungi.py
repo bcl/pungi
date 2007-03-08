@@ -63,6 +63,21 @@ class Pungi:
         if subfile.startswith(self.destdir):
             return subfile.replace(self.destdir + os.path.sep, '')
 
+    def _doRunCommand(self, command, rundir='/tmp', output=subprocess.PIPE, error=subprocess.PIPE):
+        """Run a command and log the output.  Error out if we get something on stderr"""
+
+
+        log.info("Running %s" % ' '.join(command))
+
+        try:
+            (out, err) = subprocess.Popen(command, cwd=rundir, stdout=output, stderr=error).communicate()
+        except:
+            log.error("Got an error from %s" % command[0])
+            log.error(err)
+            raise
+
+        log.info(out)
+
     def doBuildinstall(self):
         """Run anaconda-runtime's buildinstall on the tree."""
 
@@ -77,9 +92,7 @@ class Pungi:
         createrepo.append(self.topdir)
 
         # run the command
-        subprocess.check_call(createrepo, cwd=self.topdir)
-        # log something here
-
+        self._doRunCommand(createrepo, rundir=self.topdir)
 
         # setup the buildinstall call
         buildinstall = ['/usr/lib/anaconda-runtime/buildinstall']
@@ -104,8 +117,7 @@ class Pungi:
         buildinstall.append(self.topdir)
 
         # run the command
-        subprocess.check_call(buildinstall)
-        #log.info("Result from buildinstall %s: %s" % (args, res))
+        self._doRunCommand(buildinstall)
 
         # write out the tree data for snake
         self.writeinfo('tree: %s' % self.mkrelative(self.topdir))
@@ -123,9 +135,8 @@ class Pungi:
         pkgorder.append(self.config.get('default', 'product_path'))
 
         # run the command
-        subprocess.check_call(pkgorder, stdout=pkgorderfile)
+        self._doRunCommand(pkgorder, output=pkgorderfile)
         pkgorderfile.close()
-        #log.info("Result from pkgorder: %s" % res)
 
     def doGetRelnotes(self):
         """Get extra files from packages in the tree to put in the topdir of
@@ -157,8 +168,7 @@ class Pungi:
                 if pkgname == relnoterpm:
                     extraargs = [os.path.join(self.topdir, self.config.get('default', 'product_path'), pkg)]
                     p1 = subprocess.Popen(rpm2cpio + extraargs, cwd=docsdir, stdout=subprocess.PIPE)
-                    p2 = subprocess.Popen(cpio, cwd=docsdir, stdin=p1.stdout)
-                    #log.info("Result from rpm2cpio: %s" % res)
+                    subprocess.Popen(cpio, cwd=docsdir, stdin=p1.stdout)
         # Walk the tree for our files
         for dirpath, dirname, filelist in os.walk(docsdir):
             for filename in filelist:
@@ -262,8 +272,7 @@ class Pungi:
             createrepo.append('%s-disc%s' % (self.topdir, disc))
 
         # run the command
-        subprocess.check_call(createrepo)
-        #log.info("Result from createrepo %s: %s" %(args, res))
+        self._doRunCommand(createrepo)
 
     def doCreateIsos(self):
         """Create isos from the various split directories."""
@@ -320,19 +329,16 @@ class Pungi:
             extraargs.append(os.path.join('%s-disc%s' % (self.topdir, disc)))
 
             # run the command
-            subprocess.check_call(mkisofs + extraargs)
-            #log.info("Result from mkisofs: %s" % res)
+            self._doRunCommand(mkisofs + extraargs)
 
             # implant md5 for mediacheck on all but source arches
             if not self.config.get('default', 'arch') == 'source':
-                subprocess.check_call(['/usr/lib/anaconda-runtime/implantisomd5', isofile])
-                #log.info("Result from implantisomd5: %s" % res)
+                self._doRunCommand(['/usr/lib/anaconda-runtime/implantisomd5', isofile])
 
             # shove the sha1sum into a file
             sha1file = open(os.path.join(self.isodir, 'SHA1SUM'), 'a')
-            subprocess.check_call(['/usr/bin/sha1sum', isoname], cwd=self.isodir, stdout=sha1file)
+            self._doRunCommand(['/usr/bin/sha1sum', isoname], rundir=self.isodir, output=sha1file)
             sha1file.close()
-            #log.info("Result from sha1sum: %s" % res)
 
             # keep track of the CD images we've written
             isolist.append(self.mkrelative(isofile))
@@ -380,18 +386,15 @@ class Pungi:
             extraargs.append(self.topdir)
 
             # run the command
-            subprocess.check_call(mkisofs + extraargs)
-            #log.info("Result from DVD mkisofs: %s" % res)
+            self._doRunCommand(mkisofs + extraargs)
 
             # implant md5 for mediacheck on all but source arches
-            subprocess.check_call(['/usr/lib/anaconda-runtime/implantisomd5', isofile])
-            #log.info("Result from implantisomd5: %s" % res)
+            self._doRunCommand(['/usr/lib/anaconda-runtime/implantisomd5', isofile])
 
             # shove the sha1sum into a file
             sha1file = open(os.path.join(self.isodir, 'SHA1SUM'), 'a')
-            subprocess.check_call(['/usr/bin/sha1sum', isoname], cwd=self.isodir, stdout=sha1file)
+            self._doRunCommand(['/usr/bin/sha1sum', isoname], rundir=self.isodir, output=sha1file)
             sha1file.close()
-            #log.info("Result from sha1sum: %s" % res)
 
             # return the .discinfo file
             shutil.move(os.path.join(self.config.get('default', 'destdir'), '.discinfo-%s' % self.config.get('default', 'arch')), discinfofile)
@@ -420,8 +423,7 @@ class Pungi:
             rescue.append(self.config.get('default', 'product_path'))
 
             # run the command
-            subprocess.check_call(rescue)
-            #log.info("Result from mk-resueimage: %s" % res)
+            self._doRunCommand(rescue)
 
             # write the iso
             extraargs = []
@@ -444,14 +446,13 @@ class Pungi:
             extraargs.append(os.path.join(self.workdir, "%s-rescueimage" % self.config.get('default', 'arch')))
 
             # run the command
-            subprocess.check_call(mkisofs + extraargs)
+            self._doRunCommand(mkisofs + extraargs)
             #log.info("Result from Rescue mkisofs: %s" % res)
 
             # shove the sha1sum into a file
             sha1file = open(os.path.join(self.isodir, 'SHA1SUM'), 'a')
-            subprocess.check_call(['/usr/bin/sha1sum', isoname], cwd=self.isodir, stdout=sha1file)
+            self._doRunCommand(['/usr/bin/sha1sum', isoname], rundir=self.isodir, output=sha1file)
             sha1file.close()
-            #log.info("Result from sha1sum: %s" % res)
 
         # Do some clean up
         dirs = os.listdir(self.archdir)
