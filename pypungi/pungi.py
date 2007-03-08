@@ -156,7 +156,7 @@ class Pungi:
             for relnoterpm in relnoterpms:
                 if pkgname == relnoterpm:
                     extraargs = [os.path.join(self.topdir, self.config.get('default', 'product_path'), pkg)]
-                    p1 = subprocess.Popen(rpm2cpio + extraargs, cwd=docsdir, stdout=PIPE)
+                    p1 = subprocess.Popen(rpm2cpio + extraargs, cwd=docsdir, stdout=subprocess.PIPE)
                     p2 = subprocess.Popen(cpio, cwd=docsdir, stdin=p1.stdout)
                     #log.info("Result from rpm2cpio: %s" % res)
         # Walk the tree for our files
@@ -245,7 +245,7 @@ class Pungi:
         createrepo.append('--database')
 
         createrepo.append('--groupfile')
-        createrepo.append(os.path.join(self.topdir, 'repodata', 'comps.xml'))
+        createrepo.append(self.config.get('default', 'comps'))
 
         createrepo.append('--baseurl')
         createrepo.append('media://%s' % mediaid)
