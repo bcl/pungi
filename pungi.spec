@@ -1,7 +1,7 @@
 %{!?python_sitelib: %define python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")}
 
 Name:           pungi
-Version:        0.2.7
+Version:        0.2.8
 Release:        1%{?dist}
 Summary:        Distribution compose tool
 
@@ -46,6 +46,12 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Fri Mar 09 2007 Jesse Keating <jkeating@redhat.com> - 0.2.8-1
+- Call createrepo ourselves for the tree, not buildinstall's job
+- Convert from commands to subprocess for things we call out
+- Add kickstart %packages syntax support to package manifest
+- Make the list we hand off to yum to search for as unique as we can
+
 * Wed Feb 28 2007 Jesse Keating <jkeating@redhat.com> - 0.2.7-1
 - Fix gathering of srpms (thanks skvidal)
 - Update comps from F7 Test2
