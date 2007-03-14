@@ -1,3 +1,6 @@
+* Tue Mar 13 2007 Jesse Keating <jkeating@redhat.com>
+- log the rpm2cpio stuff for release notes
+
 * Wed Mar 07 2007 Jesse Keating <jkeating@redhat.com>
 - Call createrepo ourselves for the tree, not buildinstall's job
 

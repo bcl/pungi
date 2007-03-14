@@ -167,14 +167,23 @@ class Pungi:
             for relnoterpm in relnoterpms:
                 if pkgname == relnoterpm:
                     extraargs = [os.path.join(self.topdir, self.config.get('default', 'product_path'), pkg)]
-                    p1 = subprocess.Popen(rpm2cpio + extraargs, cwd=docsdir, stdout=subprocess.PIPE)
-                    subprocess.Popen(cpio, cwd=docsdir, stdin=p1.stdout)
+                    try:
+                        p1 = subprocess.Popen(rpm2cpio + extraargs, cwd=docsdir, stdout=subprocess.PIPE)
+                        (out, err) = subprocess.Popen(cpio, cwd=docsdir, stdin=p1.stdout, stdout=subprocess.PIPE, 
+                            stderr=subprocess.PIPE).communicate()
+                    except:
+                        log.error("Got an error from rpm2cpio")
+                        log.error(err)
+                        raise
+
+                    log.info(out)
+
         # Walk the tree for our files
         for dirpath, dirname, filelist in os.walk(docsdir):
             for filename in filelist:
                 for regex in fileres:
                     if regex.match(filename) and not os.path.exists(os.path.join(self.topdir, filename)):
-                        print "Copying release note file %s" % filename
+                        log.info("Copying release note file %s" % filename)
                         shutil.copy(os.path.join(dirpath, filename), os.path.join(self.topdir, filename))
                         self.common_files.append(filename)
 
@@ -183,7 +192,7 @@ class Pungi:
             for directory in dirname:
                 for regex in dirres:
                     if regex.match(directory) and not os.path.exists(os.path.join(self.topdir, directory)):
-                        print "Copying release note dir %s" % directory
+                        log.info("Copying release note dir %s" % directory)
                         shutil.copytree(os.path.join(dirpath, directory), os.path.join(self.topdir, directory))
         
 
