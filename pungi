@@ -109,13 +109,14 @@ def main():
 
         if opts.do_all or opts.do_buildinstall:
            mypungi.doBuildinstall()
+           mypungi.doGetRelnotes()
 
         if opts.do_all or opts.do_packageorder:
            mypungi.doPackageorder()
-           mypungi.doGetRelnotes()
 
         if opts.do_all or opts.do_splittree:
              mypungi.doSplittree()
+
         if opts.do_all or opts.do_createiso:
            mypungi.doCreateSplitrepo()
            mypungi.doCreateIsos()
