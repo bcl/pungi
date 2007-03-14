@@ -69,12 +69,12 @@ class Pungi:
 
         log.info("Running %s" % ' '.join(command))
 
-        try:
-            (out, err) = subprocess.Popen(command, cwd=rundir, stdout=output, stderr=error).communicate()
-        except:
+        p1 = subprocess.Popen(command, cwd=rundir, stdout=output, stderr=error)
+        (out, err) = p1.communicate()
+        if p1.returncode != 0:
             log.error("Got an error from %s" % command[0])
             log.error(err)
-            raise
+            raise OSError, "Got an error from %s" % command[0]
 
         log.info(out)
 
