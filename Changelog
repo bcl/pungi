@@ -1,3 +1,6 @@
+* Tue Mar 14 2007 Jesse Keating <jkeating@redhat.com>
+- Do things faster/smarter if we've only asked for one disc
+
 * Tue Mar 13 2007 Jesse Keating <jkeating@redhat.com>
 - log the rpm2cpio stuff for release notes
 - correctly capture errors from subprocess

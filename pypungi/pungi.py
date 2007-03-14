@@ -126,6 +126,10 @@ class Pungi:
         """Run anaconda-runtime's pkgorder on the tree, used for splitting media."""
 
 
+        # non-op for only one disc
+        if self.config.getint('default', 'discs') == 1:
+            return
+
         pkgorderfile = open(os.path.join(self.workdir, 'pkgorder-%s' % self.config.get('default', 'arch')), 'w')
         # setup the command
         pkgorder = ['/usr/lib/anaconda-runtime/pkgorder']
@@ -201,6 +205,10 @@ class Pungi:
            sized chunks."""
 
 
+        # non-op for only one disc
+        if self.config.getint('default', 'discs') == 1:
+            return
+
         timber = splittree.Timber()
         timber.arch = self.config.get('default', 'arch')
         timber.target_size = float(self.config.get('default', 'cdsize')) * 1024 * 1024
@@ -256,7 +264,10 @@ class Pungi:
         """Create the split metadata for the isos"""
 
 
-        discinfo = open('%s-disc1/.discinfo' % self.topdir, 'r').readlines()
+        if self.config.getint('default', 'discs') > 1:
+            discinfo = open('%s-disc1/.discinfo' % self.topdir, 'r').readlines()
+        else:
+            discinfo = open(os.path.join(self.topdir, '.discinfo'), 'r').readlines()
         mediaid = discinfo[0].rstrip('\n')
 
         # set up the process
@@ -270,15 +281,22 @@ class Pungi:
         createrepo.append('media://%s' % mediaid)
 
         createrepo.append('--outputdir')
+        if self.config.getint('default', 'discs') == 1:
+            os.makedirs('%s-disc1' % self.topdir)
         createrepo.append('%s-disc1' % self.topdir)
 
         createrepo.append('--basedir')
-        createrepo.append('%s-disc1' % self.topdir)
+        if self.config.getint('default', 'discs') == 1:
+            createrepo.append(self.topdir)
+            createrepo.append(self.topdir)
+        else:
+            createrepo.append('%s-disc1' % self.topdir)
 
-        createrepo.append('--split')
+        if self.config.getint('default', 'discs') > 1:
+            createrepo.append('--split')
 
-        for disc in range(1, self.config.getint('default', 'discs') + 1):
-            createrepo.append('%s-disc%s' % (self.topdir, disc))
+            for disc in range(1, self.config.getint('default', 'discs') + 1):
+                createrepo.append('%s-disc%s' % (self.topdir, disc))
 
         # run the command
         self._doRunCommand(createrepo)
@@ -312,52 +330,53 @@ class Pungi:
 
         ppcbootargs.append('-hfs-bless') # must be last
 
-        for disc in range(1, self.config.getint('default', 'discs') + 1): # cycle through the CD isos
-            isoname = '%s-%s-%s-disc%s.iso' % (self.config.get('default', 'iso_basename'), self.config.get('default', 'version'), 
-                self.config.get('default', 'arch'), disc)
-            isofile = os.path.join(self.isodir, isoname)
+        if self.config.getint('default', 'discs') > 1:
+            for disc in range(1, self.config.getint('default', 'discs') + 1): # cycle through the CD isos
+                isoname = '%s-%s-%s-disc%s.iso' % (self.config.get('default', 'iso_basename'), self.config.get('default', 'version'), 
+                    self.config.get('default', 'arch'), disc)
+                isofile = os.path.join(self.isodir, isoname)
 
-            extraargs = []
+                extraargs = []
 
-            if disc == 1: # if this is the first disc, we want to set boot flags
-                if self.config.get('default', 'arch') == 'i386' or self.config.get('default', 'arch') == 'x86_64':
-                    extraargs.extend(x86bootargs)
-                elif self.config.get('default', 'arch') == 'ia64':
-                    extraargs.extend(ia64bootargs)
-                elif self.config.get('default', 'arch') == 'ppc':
-                    extraargs.extend(ppcbootargs)
-                    extraargs.append(os.path.join('%s-disc%s' % (self.topdir, disc), "ppc/mac"))
+                if disc == 1: # if this is the first disc, we want to set boot flags
+                    if self.config.get('default', 'arch') == 'i386' or self.config.get('default', 'arch') == 'x86_64':
+                        extraargs.extend(x86bootargs)
+                    elif self.config.get('default', 'arch') == 'ia64':
+                        extraargs.extend(ia64bootargs)
+                    elif self.config.get('default', 'arch') == 'ppc':
+                        extraargs.extend(ppcbootargs)
+                        extraargs.append(os.path.join('%s-disc%s' % (self.topdir, disc), "ppc/mac"))
 
-            extraargs.append('-V')
-            extraargs.append('"%s %s %s Disc %s"' % (self.config.get('default', 'product_name'),
-                self.config.get('default', 'version'), self.config.get('default', 'arch'), disc))
+                extraargs.append('-V')
+                extraargs.append('"%s %s %s Disc %s"' % (self.config.get('default', 'product_name'),
+                    self.config.get('default', 'version'), self.config.get('default', 'arch'), disc))
 
-            extraargs.append('-o')
-            extraargs.append(isofile)
+                extraargs.append('-o')
+                extraargs.append(isofile)
 
-            extraargs.append(os.path.join('%s-disc%s' % (self.topdir, disc)))
+                extraargs.append(os.path.join('%s-disc%s' % (self.topdir, disc)))
 
-            # run the command
-            self._doRunCommand(mkisofs + extraargs)
+                # run the command
+                self._doRunCommand(mkisofs + extraargs)
 
-            # implant md5 for mediacheck on all but source arches
-            if not self.config.get('default', 'arch') == 'source':
-                self._doRunCommand(['/usr/lib/anaconda-runtime/implantisomd5', isofile])
+                # implant md5 for mediacheck on all but source arches
+                if not self.config.get('default', 'arch') == 'source':
+                    self._doRunCommand(['/usr/lib/anaconda-runtime/implantisomd5', isofile])
 
-            # shove the sha1sum into a file
-            sha1file = open(os.path.join(self.isodir, 'SHA1SUM'), 'a')
-            self._doRunCommand(['/usr/bin/sha1sum', isoname], rundir=self.isodir, output=sha1file)
-            sha1file.close()
+                # shove the sha1sum into a file
+                sha1file = open(os.path.join(self.isodir, 'SHA1SUM'), 'a')
+                self._doRunCommand(['/usr/bin/sha1sum', isoname], rundir=self.isodir, output=sha1file)
+                sha1file.close()
 
-            # keep track of the CD images we've written
-            isolist.append(self.mkrelative(isofile))
+                # keep track of the CD images we've written
+                isolist.append(self.mkrelative(isofile))
 
-        # Write out a line describing the CD set
-        self.writeinfo('cdset: %s' % ' '.join(isolist))
+            # Write out a line describing the CD set
+            self.writeinfo('cdset: %s' % ' '.join(isolist))
 
         isolist=[]
         # We've asked for more than one disc, and we're not srpms, so make a DVD image
-        if self.config.getint('default', 'discs') > 1 and not self.config.get('default', 'arch') == 'source':
+        if self.config.getint('default', 'discs') >= 1 and not self.config.get('default', 'arch') == 'source':
             isoname = '%s-%s-%s-DVD.iso' % (self.config.get('default', 'iso_basename'), self.config.get('default', 'version'), 
                 self.config.get('default', 'arch'))
             isofile = os.path.join(self.isodir, isoname)
@@ -383,7 +402,10 @@ class Pungi:
                 extraargs.extend(ia64bootargs)
             elif self.config.get('default', 'arch') == 'ppc':
                 extraargs.extend(ppcbootargs)
-                extraargs.append(os.path.join('%s-disc%s' % (self.topdir, disc), "ppc/mac"))
+                if self.config.getint('default', 'discs') == 1:
+                    extraargs.append(os.path.join(self.topdir, "ppc/mac")) # this may work for both cases.. test
+                else:
+                    extraargs.append(os.path.join('%s-disc%s' % (self.topdir, disc), "ppc/mac"))
 
             extraargs.append('-V')
             extraargs.append('"%s %s %s DVD"' % (self.config.get('default', 'product_name'),
