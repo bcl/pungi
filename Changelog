@@ -1,5 +1,7 @@
 * Thu Mar 15 2007 Jesse Keating <jkeating@redhat.com>
 - Use yum's built in exclude handling
+- Use yum's built in conditional handling for things from comps
+- Do excludes before group handling.
 
 * Tue Mar 14 2007 Jesse Keating <jkeating@redhat.com>
 - Do things faster/smarter if we've only asked for one disc

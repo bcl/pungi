@@ -171,6 +171,19 @@ class Gather(yum.YumBase):
         if optional:
             packages.extend(groupobj.optional_packages.keys())
 
+        # Deal with conditional packages
+        # Populate a dict with the name of the required package and value
+        # of the package objects it would bring in.  To be used later if
+        # we match the conditional.
+        for condreq, cond in groupobj.conditional_packages.iteritems():
+            pkgs = self.pkgSack.searchNevra(name=condreq)
+            if pkgs:
+                pkgs = self.bestPackagesFromList(pkgs)
+            if self.tsInfo.conditionals.has_key(cond):
+                self.tsInfo.conditionals[cond].extend(pkgs)
+            else:
+                self.tsInfo.conditionals[cond] = pkgs
+
         return packages
 
     def getPackageObjects(self):
@@ -210,16 +223,16 @@ class Gather(yum.YumBase):
                     self.logger.info('Adding package: %s' % line)
                 addlist.append(line)
 
-        # First, get a list of packages from groups
+        # First remove the excludes
+        self.conf.exclude.extend(excludelist)
+        self.excludePackages()
+
+        # Get a list of packages from groups
         for group in grouplist:
             searchlist.extend(self.getPackagesFromGroup(group))
 
         # Add the adds
         searchlist.extend(addlist)
-
-        # Remove the excludes
-        self.conf.exclude.extend(excludelist)
-        self.excludePackages()
 
         # Make the search list unique
         searchlist = yum.misc.unique(searchlist)
