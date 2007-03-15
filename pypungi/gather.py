@@ -218,9 +218,8 @@ class Gather(yum.YumBase):
         searchlist.extend(addlist)
 
         # Remove the excludes
-        for exclude in excludelist:
-            for x in range(searchlist.count(exclude)): # why is there no list.removeall?
-                searchlist.remove(exclude)
+        self.conf.exclude.extend(excludelist)
+        self.excludePackages()
 
         # Make the search list unique
         searchlist = yum.misc.unique(searchlist)
