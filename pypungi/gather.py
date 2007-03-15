@@ -97,9 +97,9 @@ class Gather(yum.YumBase):
                 continue
 
             for dep in deps:
-                    self.tsInfo.addInstall(dep)
-                    if not self.config.has_option('default', 'quiet'):
-                        self.logger.info('Added %s.%s for %s.%s' % (dep.name, dep.arch, po.name, po.arch))
+                self.tsInfo.addInstall(dep)
+                if not self.config.has_option('default', 'quiet'):
+                    self.logger.info('Added %s.%s for %s.%s' % (dep.name, dep.arch, po.name, po.arch))
            
             self.resolved_deps[req] = None
 
