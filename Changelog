@@ -4,6 +4,7 @@
 - Do excludes before group handling.
 - Get all potential matches for deps, let install time figure
   the best one to use.
+- Work around false positive 'unmatched' packages (globs are fun)
 
 * Tue Mar 14 2007 Jesse Keating <jkeating@redhat.com>
 - Do things faster/smarter if we've only asked for one disc

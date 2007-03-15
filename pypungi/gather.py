@@ -216,19 +216,19 @@ class Gather(yum.YumBase):
         (exactmatched, matched, unmatched) = yum.packages.parsePackages(self.pkgSack.returnPackages(), searchlist, casematch=1)
         matches = exactmatched + matched
 
-        # Get the newest results from the search, if not "excluded" (catches things added by globs)
+        # Get the newest results from the search
         mysack = yum.packageSack.ListPackageSack(matches)
         for match in mysack.returnNewestByNameArch():
-            if not match.name in excludelist:
-                unprocessed_pkgs[match] = None
-                self.tsInfo.addInstall(match)
+            unprocessed_pkgs[match] = None
+            self.tsInfo.addInstall(match)
 
         if not self.config.has_option('default', 'quiet'):
             for pkg in unprocessed_pkgs.keys():
                 self.logger.info('Found %s.%s' % (pkg.name, pkg.arch))
 
         for pkg in unmatched:
-            self.logger.warn('Could not find a match for %s' % pkg)
+            if not pkg in matches:
+                self.logger.warn('Could not find a match for %s' % pkg)
 
         if len(unprocessed_pkgs) == 0:
             raise yum.Errors.MiscError, 'No packages found to download.'
