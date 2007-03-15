@@ -5,6 +5,13 @@
 - Get all potential matches for deps, let install time figure
   the best one to use.
 - Work around false positive 'unmatched' packages (globs are fun)
+- Change how depsolving is done
+  - Get all potential matches for a dep, instead of our 'best'
+    our 'best' may not be the same as install time best.
+  - Remove anaconda code, use direct yum functions to get deps
+  - Use a True/False flag to depsolve instead of iterating over
+    a dict.
+  - Log what packages are being added for which reasons.
 
 * Tue Mar 14 2007 Jesse Keating <jkeating@redhat.com>
 - Do things faster/smarter if we've only asked for one disc

@@ -72,10 +72,8 @@ class Gather(yum.YumBase):
         pass
 
     def getPackageDeps(self, po):
-        """Return the dependencies for a given package, as well
-           possible solutions for those dependencies.
-           
-           Returns the deps as a list"""
+        """Add the dependencies for a given package to the
+           transaction info"""
 
 
         if not self.config.has_option('default', 'quiet'):
@@ -83,7 +81,6 @@ class Gather(yum.YumBase):
 
         reqs = po.requires
         provs = po.provides
-        pkgresults = {}
 
         for req in reqs:
             if self.resolved_deps.has_key(req):
@@ -96,17 +93,15 @@ class Gather(yum.YumBase):
 
             deps = self.whatProvides(r, f, v).returnPackages()
             if deps is None:
-                self.logger.warning("Unresolvable dependency %s in %s" % (r, po.name))
+                self.logger.warning("Unresolvable dependency %s in %s.%s" % (r, po.name, po.arch))
                 continue
 
             for dep in deps:
-                if not pkgresults.has_key(dep):
-                    pkgresults[dep] = None
                     self.tsInfo.addInstall(dep)
+                    if not self.config.has_option('default', 'quiet'):
+                        self.logger.info('Added %s.%s for %s.%s' % (dep.name, dep.arch, po.name, po.arch))
            
             self.resolved_deps[req] = None
-
-        return pkgresults.keys()
 
     def getPackagesFromGroup(self, group):
         """Get a list of package names from a comps object
@@ -168,9 +163,9 @@ class Gather(yum.YumBase):
            Returns a list of package objects"""
 
 
-        unprocessed_pkgs = {} # list of packages yet to depsolve ## Use dicts for speed
         final_pkgobjs = {} # The final list of package objects
         searchlist = [] # The list of package names/globs to search for
+        matchdict = {} # A dict of objects to names
 
         grouplist = []
         excludelist = []
@@ -216,34 +211,32 @@ class Gather(yum.YumBase):
         (exactmatched, matched, unmatched) = yum.packages.parsePackages(self.pkgSack.returnPackages(), searchlist, casematch=1)
         matches = exactmatched + matched
 
+        # Populate a dict of package objects to their names
+        for match in matches:
+            matchdict[match.name] = match
+            
         # Get the newest results from the search
         mysack = yum.packageSack.ListPackageSack(matches)
         for match in mysack.returnNewestByNameArch():
-            unprocessed_pkgs[match] = None
             self.tsInfo.addInstall(match)
-
-        if not self.config.has_option('default', 'quiet'):
-            for pkg in unprocessed_pkgs.keys():
-                self.logger.info('Found %s.%s' % (pkg.name, pkg.arch))
+            if not self.config.has_option('default', 'quiet'):
+                self.logger.info('Found %s.%s' % (match.name, match.arch))
 
         for pkg in unmatched:
-            if not pkg in matches:
+            if not pkg in matchdict.keys():
                 self.logger.warn('Could not find a match for %s' % pkg)
 
-        if len(unprocessed_pkgs) == 0:
+        if len(self.tsInfo) == 0:
             raise yum.Errors.MiscError, 'No packages found to download.'
 
-        while len(unprocessed_pkgs) > 0: # Our fun loop
-            for pkg in unprocessed_pkgs.keys():
-                if not final_pkgobjs.has_key(pkg):
-                    final_pkgobjs[pkg] = None # Add the pkg to our final list
-                deplist = self.getPackageDeps(pkg) # Get the deps of our package
-
-                for dep in deplist: # Cycle through deps, if we don't already have it, add it.
-                    if not unprocessed_pkgs.has_key(dep) and not final_pkgobjs.has_key(dep):
-                        unprocessed_pkgs[dep] = None
-
-                del unprocessed_pkgs[pkg] # Clear the package out of our todo list.
+        moretoprocess = True
+        while moretoprocess: # Our fun loop
+            for txmbr in self.tsInfo:
+                if not final_pkgobjs.has_key(txmbr.po):
+                    final_pkgobjs[txmbr.po] = None # Add the pkg to our final list
+                    self.getPackageDeps(txmbr.po) # Get the deps of our package
+                else:
+                    moretoprocess = False
 
         self.polist = final_pkgobjs.keys()
 
