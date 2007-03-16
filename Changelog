@@ -1,3 +1,6 @@
+* Fri Mar 16 2007 Jesse Keating <jkeating@redhat.com>
+- Fix a logic flaw in the depsolving loop
+
 * Thu Mar 15 2007 Jesse Keating <jkeating@redhat.com>
 - Use yum's built in exclude handling
 - Use yum's built in conditional handling for things from comps

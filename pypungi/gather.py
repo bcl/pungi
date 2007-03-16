@@ -231,12 +231,12 @@ class Gather(yum.YumBase):
 
         moretoprocess = True
         while moretoprocess: # Our fun loop
+            moretoprocess = False
             for txmbr in self.tsInfo:
                 if not final_pkgobjs.has_key(txmbr.po):
                     final_pkgobjs[txmbr.po] = None # Add the pkg to our final list
                     self.getPackageDeps(txmbr.po) # Get the deps of our package
-                else:
-                    moretoprocess = False
+                    moretoprocess = True
 
         self.polist = final_pkgobjs.keys()
 
