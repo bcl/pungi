@@ -445,7 +445,8 @@ class Pungi:
         self.writeinfo('dvdset: %s' % ' '.join(isolist))
 
         # Now make rescue images
-        if not self.config.get('default', 'arch') == 'source':
+        if not self.config.get('default', 'arch') == 'source' and 
+            os.path.exists('/usr/lib/anaconda-runtime/mk-rescueimage.%s' % self.config.get('default', 'arch')):
             isoname = '%s-%s-%s-rescuecd.iso' % (self.config.get('default', 'iso_basename'),
                 self.config.get('default', 'version'), self.config.get('default', 'arch'))
             isofile = os.path.join(self.isodir, isoname)
@@ -482,7 +483,6 @@ class Pungi:
 
             # run the command
             self._doRunCommand(mkisofs + extraargs)
-            #log.info("Result from Rescue mkisofs: %s" % res)
 
             # shove the sha1sum into a file
             sha1file = open(os.path.join(self.isodir, 'SHA1SUM'), 'a')

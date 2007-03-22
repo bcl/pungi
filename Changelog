@@ -1,5 +1,6 @@
 * Thu Mar 22 2007 Jesse Keating <jkeating@redhat.com>
 - Pass flavor off to buildinstall if it is set (wwoods)
+- Don't try a rescue if the script doesn't exist (prarit)
 
 * Fri Mar 16 2007 Jesse Keating <jkeating@redhat.com>
 - Fix a logic flaw in the depsolving loop
