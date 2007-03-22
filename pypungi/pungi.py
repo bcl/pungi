@@ -101,6 +101,10 @@ class Pungi:
         buildinstall.append('--product')
         buildinstall.append(self.config.get('default', 'product_name'))
 
+        if not self.config.get('default', 'flavor') == "":
+            buildinstall.append('--variant')
+            buildinstall.append(self.config.get('default', 'flavor'))
+
         buildinstall.append('--version')
         buildinstall.append(self.config.get('default', 'version'))
 
