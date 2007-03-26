@@ -234,6 +234,10 @@ class Pungi:
         """Use anaconda-runtime's splittree to split the srpms into appropriate
            sized chunks."""
 
+        # non-op for only one disc
+        if self.config.getint('default', 'discs') == 1:
+            return
+
         timber = splittree.Timber()
         timber.arch = self.config.get('default', 'arch')
         #timber.total_discs = self.config.getint('default', 'discs')
@@ -379,23 +383,24 @@ class Pungi:
             self.writeinfo('cdset: %s' % ' '.join(isolist))
 
         isolist=[]
-        # We've asked for more than one disc, and we're not srpms, so make a DVD image
-        if self.config.getint('default', 'discs') >= 1 and not self.config.get('default', 'arch') == 'source':
+        # We've asked for one or more discs, so make a DVD image
+        if self.config.getint('default', 'discs') >= 1:
             isoname = '%s-%s-%s-DVD.iso' % (self.config.get('default', 'iso_basename'), self.config.get('default', 'version'), 
                 self.config.get('default', 'arch'))
             isofile = os.path.join(self.isodir, isoname)
 
-            # backup the main .discinfo to use a split one.  This is an ugly hack :/
-            content = open(discinfofile, 'r').readlines()
-            shutil.move(discinfofile, os.path.join(self.config.get('default', 'destdir'), 
-                '.discinfo-%s' % self.config.get('default', 'arch')))
-            content[content.index('ALL\n')] = ','.join([str(x) for x in range(1, self.config.getint('default', 'discs') + 1)]) + '\n'
-            open(discinfofile, 'w').writelines(content)
+            if not self.config.get('default', 'arch') == 'source':
+                # backup the main .discinfo to use a split one.  This is an ugly hack :/
+                content = open(discinfofile, 'r').readlines()
+                shutil.move(discinfofile, os.path.join(self.config.get('default', 'destdir'), 
+                    '.discinfo-%s' % self.config.get('default', 'arch')))
+                content[content.index('ALL\n')] = ','.join([str(x) for x in range(1, self.config.getint('default', 'discs') + 1)]) + '\n'
+                open(discinfofile, 'w').writelines(content)
 
-            # move the main repodata out of the way to use the split repodata
-            shutil.move(os.path.join(self.topdir, 'repodata'), os.path.join(self.config.get('default', 'destdir'), 
-                'repodata-%s' % self.config.get('default', 'arch')))
-            shutil.copytree('%s-disc1/repodata' % self.topdir, os.path.join(self.topdir, 'repodata'))
+                # move the main repodata out of the way to use the split repodata
+                shutil.move(os.path.join(self.topdir, 'repodata'), os.path.join(self.config.get('default', 'destdir'), 
+                    'repodata-%s' % self.config.get('default', 'arch')))
+                shutil.copytree('%s-disc1/repodata' % self.topdir, os.path.join(self.topdir, 'repodata'))
 
             # setup the extra mkisofs args
             extraargs = []
@@ -418,13 +423,17 @@ class Pungi:
             extraargs.append('-o')
             extraargs.append(isofile)
             
-            extraargs.append(self.topdir)
+            if not self.config.get('default', 'arch') == 'source':
+                extraargs.append(self.topdir)
+            else:
+                extraargs.append(os.path.join(self.archdir, 'SRPMS'))
 
             # run the command
             self._doRunCommand(mkisofs + extraargs)
 
             # implant md5 for mediacheck on all but source arches
-            self._doRunCommand(['/usr/lib/anaconda-runtime/implantisomd5', isofile])
+            if not self.config.get('default', 'arch') == 'source':
+                self._doRunCommand(['/usr/lib/anaconda-runtime/implantisomd5', isofile])
 
             # shove the sha1sum into a file
             sha1file = open(os.path.join(self.isodir, 'SHA1SUM'), 'a')
@@ -432,11 +441,12 @@ class Pungi:
             sha1file.close()
 
             # return the .discinfo file
-            shutil.move(os.path.join(self.config.get('default', 'destdir'), '.discinfo-%s' % self.config.get('default', 'arch')), discinfofile)
+            if not self.config.get('default', 'arch') == 'source':
+                shutil.move(os.path.join(self.config.get('default', 'destdir'), '.discinfo-%s' % self.config.get('default', 'arch')), discinfofile)
 
-            shutil.rmtree(os.path.join(self.topdir, 'repodata')) # remove our copied repodata
-            shutil.move(os.path.join(self.config.get('default', 'destdir'), 
-                'repodata-%s' % self.config.get('default', 'arch')), os.path.join(self.topdir, 'repodata'))
+                shutil.rmtree(os.path.join(self.topdir, 'repodata')) # remove our copied repodata
+                shutil.move(os.path.join(self.config.get('default', 'destdir'), 
+                    'repodata-%s' % self.config.get('default', 'arch')), os.path.join(self.topdir, 'repodata'))
 
             # keep track of the DVD images we've written 
             isolist.append(self.mkrelative(isofile))
@@ -445,7 +455,7 @@ class Pungi:
         self.writeinfo('dvdset: %s' % ' '.join(isolist))
 
         # Now make rescue images
-        if not self.config.get('default', 'arch') == 'source' and 
+        if not self.config.get('default', 'arch') == 'source' and \
             os.path.exists('/usr/lib/anaconda-runtime/mk-rescueimage.%s' % self.config.get('default', 'arch')):
             isoname = '%s-%s-%s-rescuecd.iso' % (self.config.get('default', 'iso_basename'),
                 self.config.get('default', 'version'), self.config.get('default', 'arch'))
