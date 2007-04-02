@@ -2,12 +2,10 @@ kernel
 xorg-x11-fonts-ISO8859-1-75dpi
 busybox-anaconda
 dejavu-lgc-fonts
-xen
 xorg-x11-fonts-base
 memtest86+
 xorg-x11-drivers
 selinux-policy-targeted
-kernel-xen
 anaconda-runtime
 man
 joe

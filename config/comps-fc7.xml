@@ -713,7 +713,6 @@
       <packagereq type="default">ccid</packagereq>
       <packagereq type="default">coolkey</packagereq>
       <packagereq type="default">cpuspeed</packagereq>
-      <packagereq type="default">crash</packagereq>
       <packagereq type="default">cryptsetup-luks</packagereq>
       <packagereq type="default">device-mapper-multipath</packagereq>
       <packagereq type="default">dhclient</packagereq>
@@ -730,7 +729,6 @@
       <packagereq type="default">ftp</packagereq>
       <packagereq type="default">gnupg</packagereq>
       <packagereq type="default">gpm</packagereq>
-      <packagereq type="default">ipsec-tools</packagereq>
       <packagereq type="default">iptstate</packagereq>
       <packagereq type="default">irda-utils</packagereq>
       <packagereq type="default">irqbalance</packagereq>
@@ -974,7 +972,7 @@
       <packagereq type="mandatory">xorg-x11-xfs</packagereq>
       <packagereq type="mandatory">xorg-x11-xinit</packagereq>
       <packagereq type="default">authconfig-gtk</packagereq>
-      <packagereq type="default">bitstream-vera-fonts</packagereq>
+      <packagereq type="optional">bitstream-vera-fonts</packagereq>
       <packagereq type="default">bluez-pin</packagereq>
       <packagereq type="default">dejavu-lgc-fonts</packagereq>
       <packagereq type="default">firstboot</packagereq>
@@ -1714,7 +1712,7 @@
     <description xml:lang="zh_CN">集群支持</description>
     <description xml:lang="zh_TW">叢集（Clustering）支援</description>
     <default>false</default>
-    <uservisible>false</uservisible>
+    <uservisible>true</uservisible>
     <packagelist>
       <packagereq type="default">cman</packagereq>
       <packagereq type="default">gfs2-utils</packagereq>
@@ -4685,7 +4683,6 @@
       <packagereq type="optional">deskbar-applet</packagereq>
       <packagereq type="optional">gconf-editor</packagereq>
       <packagereq type="optional">gdesklets</packagereq>
-      <packagereq type="optional">gimp-print-utils</packagereq>
       <packagereq type="optional">glipper</packagereq>
       <packagereq type="optional">glunarclock</packagereq>
       <packagereq type="optional">gmpc</packagereq>
@@ -5263,7 +5260,7 @@
       <packagereq type="default">gutenprint</packagereq>
       <packagereq type="default">ImageMagick</packagereq>
       <packagereq type="default">netpbm-progs</packagereq>
-      <packagereq type="default">sane-frontends</packagereq>
+      <packagereq type="optional">sane-frontends</packagereq>
       <packagereq type="default">xsane</packagereq>
       <packagereq type="default">xsane-gimp</packagereq>
       <packagereq type="optional">agave</packagereq>
@@ -5276,10 +5273,10 @@
       <packagereq type="optional">fontforge</packagereq>
       <packagereq type="optional">fonttools</packagereq>
       <packagereq type="optional">fyre</packagereq>
-      <packagereq type="optional">gimp-print-plugin</packagereq>
       <packagereq type="optional">gpp</packagereq>
       <packagereq type="optional">gqview</packagereq>
       <packagereq type="optional">graphviz</packagereq>
+      <packagereq type="optional">gutenprint-plugin</packagereq>
       <packagereq type="optional">gv</packagereq>
       <packagereq type="optional">gwenview</packagereq>
       <packagereq type="optional">inkscape</packagereq>
@@ -6234,7 +6231,7 @@
     <default>true</default>
     <uservisible>false</uservisible>
     <packagelist>
-      <packagereq type="mandatory">java-1.4.2-gcj-compat</packagereq>
+      <packagereq type="mandatory">java-1.5.0-gcj</packagereq>
       <packagereq type="mandatory">libgcj</packagereq>
     </packagelist>
   </group>
@@ -6363,8 +6360,8 @@
       <packagereq type="mandatory">ant</packagereq>
       <packagereq type="mandatory">eclipse-ecj</packagereq>
       <packagereq type="mandatory" basearchonly="true">gcc-java</packagereq>
-      <packagereq type="mandatory">gjdoc</packagereq>
-      <packagereq type="mandatory">java-1.4.2-gcj-compat-devel</packagereq>
+      <packagereq type="mandatory">sinjdoc</packagereq>
+      <packagereq type="mandatory">java-1.5.0-gcj-devel</packagereq>
       <packagereq type="mandatory">libgcj-devel</packagereq>
       <packagereq type="default">ant-antlr</packagereq>
       <packagereq type="default">ant-apache-bcel</packagereq>
@@ -6398,8 +6395,6 @@
       <packagereq type="default">classpathx-mail-javadoc</packagereq>
       <packagereq type="default">cryptix-asn1-javadoc</packagereq>
       <packagereq type="default">cryptix-javadoc</packagereq>
-      <packagereq type="default">gnu-crypto</packagereq>
-      <packagereq type="default">gnu-crypto-javadoc</packagereq>
       <packagereq type="default">gnu-getopt</packagereq>
       <packagereq type="default">gnu-getopt-javadoc</packagereq>
       <packagereq type="default">jakarta-commons-beanutils</packagereq>
@@ -6432,14 +6427,14 @@
       <packagereq type="default">jakarta-oro-javadoc</packagereq>
       <packagereq type="default">jakarta-taglibs-standard</packagereq>
       <packagereq type="default">jakarta-taglibs-standard-javadoc</packagereq>
-      <packagereq type="default">java-1.4.2-gcj-compat-src</packagereq>
+      <packagereq type="default">java-1.5.0-gcj-javadoc</packagereq>
+      <packagereq type="default">java-1.5.0-gcj-src</packagereq>
       <packagereq type="default">java_cup</packagereq>
       <packagereq type="default">java_cup-javadoc</packagereq>
       <packagereq type="default">java_cup-manual</packagereq>
       <packagereq type="default">jdepend</packagereq>
       <packagereq type="default">jdepend-demo</packagereq>
       <packagereq type="default">jdepend-javadoc</packagereq>
-      <packagereq type="default">jessie</packagereq>
       <packagereq type="default">jlex</packagereq>
       <packagereq type="default">jlex-javadoc</packagereq>
       <packagereq type="default">junit</packagereq>
@@ -6470,7 +6465,6 @@
       <packagereq type="default">xerces-j2-javadoc-other</packagereq>
       <packagereq type="default">xerces-j2-javadoc-xni</packagereq>
       <packagereq type="default">xerces-j2-scripts</packagereq>
-      <packagereq type="default">xml-commons</packagereq>
       <packagereq type="default">xml-commons-apis</packagereq>
       <packagereq type="default">xml-commons-apis-javadoc</packagereq>
       <packagereq type="default">xml-commons-apis-manual</packagereq>
@@ -8027,12 +8021,10 @@
       <packagereq type="optional">l2tpd</packagereq>
       <packagereq type="optional">netatalk</packagereq>
       <packagereq type="optional">netdump-server</packagereq>
-      <packagereq type="optional">NetworkManager-vpnc</packagereq>
       <packagereq type="optional">nsd</packagereq>
       <packagereq type="optional">oidentd</packagereq>
       <packagereq type="optional">openldap-servers</packagereq>
       <packagereq type="optional">openswan</packagereq>
-      <packagereq type="optional">openvpn</packagereq>
       <packagereq type="optional">privoxy</packagereq>
       <packagereq type="optional">puppet-server</packagereq>
       <packagereq type="optional">quagga</packagereq>
@@ -10666,11 +10658,16 @@
     <default>false</default>
     <uservisible>true</uservisible>
     <packagelist>
+      <packagereq type="default">NetworkManager-openvpn</packagereq>
+      <packagereq type="default">NetworkManager-vpnc</packagereq>
+      <packagereq type="default">ipsec-tools</packagereq>
       <packagereq type="default">nmap</packagereq>
       <packagereq type="default">openldap-clients</packagereq>
+      <packagereq type="default">openvpn</packagereq>
       <packagereq type="default">samba-client</packagereq>
       <packagereq type="default">screen</packagereq>
       <packagereq type="default">vnc</packagereq>
+      <packagereq type="default">vpnc</packagereq>
       <packagereq type="default">xdelta</packagereq>
       <packagereq type="default">zisofs-tools</packagereq>
       <packagereq type="default">zsh</packagereq>
@@ -10695,6 +10692,7 @@
       <packagereq type="optional">connect-proxy</packagereq>
       <packagereq type="optional">convmv</packagereq>
       <packagereq type="optional">crack</packagereq>
+      <packagereq type="optional">crash</packagereq>
       <packagereq type="optional">createrepo</packagereq>
       <packagereq type="optional">dar</packagereq>
       <packagereq type="optional">denyhosts</packagereq>
@@ -10798,7 +10796,6 @@
       <packagereq type="optional">viaideinfo</packagereq>
       <packagereq type="optional">vlock</packagereq>
       <packagereq type="optional">vnstat</packagereq>
-      <packagereq type="optional">vpnc</packagereq>
       <packagereq type="optional">wifiroamd</packagereq>
       <packagereq type="optional">wine</packagereq>
       <packagereq type="optional">wireshark-gnome</packagereq>

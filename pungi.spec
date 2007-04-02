@@ -1,7 +1,7 @@
 %{!?python_sitelib: %define python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")}
 
 Name:           pungi
-Version:        0.2.8
+Version:        0.3.0
 Release:        1%{?dist}
 Summary:        Distribution compose tool
 
@@ -46,6 +46,31 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Mon Apr 02 2007 Jesse Keating <jkeating@redhat.com> - 0.3.0-1
+- Remove incompatible fc6 config files
+- Update default config file with comments / new options
+- Update comps file
+- Enable source iso building again.
+- Don't try a rescue if the script doesn't exist (prarit)
+- Pass flavor off to buildinstall if it is set (wwoods)
+- Fix a logic flaw in the depsolving loop
+- Use yum's built in exclude handling
+- Use yum's built in conditional handling for things from comps
+- Do excludes before group handling.
+- Get all potential matches for deps, let install time figure
+  the best one to use.
+- Work around false positive 'unmatched' packages (globs are fun)
+- Change how depsolving is done
+  - Get all potential matches for a dep, instead of our 'best'
+    our 'best' may not be the same as install time best.
+  - Remove anaconda code, use direct yum functions to get deps
+  - Use a True/False flag to depsolve instead of iterating over
+    a dict.
+  - Log what packages are being added for which reasons.
+- Do things faster/smarter if we've only asked for one disc
+- log the rpm2cpio stuff for release notes
+- correctly capture errors from subprocess
+
 * Fri Mar 09 2007 Jesse Keating <jkeating@redhat.com> - 0.2.8-1
 - Call createrepo ourselves for the tree, not buildinstall's job
 - Convert from commands to subprocess for things we call out
