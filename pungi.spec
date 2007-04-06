@@ -1,7 +1,7 @@
 %{!?python_sitelib: %define python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")}
 
 Name:           pungi
-Version:        0.3.0
+Version:        0.3.1
 Release:        1%{?dist}
 Summary:        Distribution compose tool
 
@@ -46,6 +46,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Fri Apr 06 2007 Jesse Keating <jkeating@redhat.com> - 0.3.1-1
+- Fix comments in default config file
+
 * Mon Apr 02 2007 Jesse Keating <jkeating@redhat.com> - 0.3.0-1
 - Remove incompatible fc6 config files
 - Update default config file with comments / new options

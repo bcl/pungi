@@ -140,7 +140,7 @@ if __name__ == '__main__':
     import sys
 
     def get_arguments():
-        parser = OptionParser(version="%prog 0.3.0")
+        parser = OptionParser(version="%prog 0.3.1")
         parser.add_option("--destdir", default="*CONFFILE*", dest="destdir",
           help='destination directory (defaults to current directory)')
         parser.add_option("-c", "--conf", default='/etc/pungi/pungi.conf', dest="config",
