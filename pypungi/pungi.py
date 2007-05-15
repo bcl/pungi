@@ -356,7 +356,7 @@ class Pungi:
                         extraargs.append(os.path.join('%s-disc%s' % (self.topdir, disc), "ppc/mac"))
 
                 extraargs.append('-V')
-                extraargs.append('"%s %s %s Disc %s"' % (self.config.get('default', 'product_name'),
+                extraargs.append('%s %s %s Disc %s' % (self.config.get('default', 'product_name'),
                     self.config.get('default', 'version'), self.config.get('default', 'arch'), disc))
 
                 extraargs.append('-o')
@@ -417,7 +417,7 @@ class Pungi:
                     extraargs.append(os.path.join('%s-disc%s' % (self.topdir, disc), "ppc/mac"))
 
             extraargs.append('-V')
-            extraargs.append('"%s %s %s DVD"' % (self.config.get('default', 'product_name'),
+            extraargs.append('%s %s %s DVD' % (self.config.get('default', 'product_name'),
                 self.config.get('default', 'version'), self.config.get('default', 'arch')))
 
             extraargs.append('-o')
@@ -483,7 +483,7 @@ class Pungi:
                 extraargs.append(os.path.join(self.workdir, "%s-rescueimage" % self.config.get('default', 'arch'), "ppc/mac"))
 
             extraargs.append('-V')
-            extraargs.append('"%s %s %s Rescue"' % (self.config.get('default', 'product_name'),
+            extraargs.append('%s %s %s Rescue' % (self.config.get('default', 'product_name'),
                     self.config.get('default', 'version'), self.config.get('default', 'arch')))
 
             extraargs.append('-o')
