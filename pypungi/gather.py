@@ -40,6 +40,9 @@ class Gather(yum.YumBase):
         elif config.get('default', 'arch') == 'ppc':
             arches = yum.rpmUtils.arch.getArchList('ppc64')
             self.compatarch = 'ppc64'
+        elif config.get('default', 'arch') == 'sparc':
+            arches = yum.rpmUtils.arch.getArchList('sparc64v')
+            self.compatarch = 'sparc64v'
         else:
             arches = yum.rpmUtils.arch.getArchList(config.get('default', 'arch'))
             self.compatarch = config.get('default', 'arch')

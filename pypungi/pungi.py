@@ -338,6 +338,8 @@ class Pungi:
 
         ppcbootargs.append('-hfs-bless') # must be last
 
+        sparcbootargs = ['-G', '/boot/isofs.b', '-B', '...', '-s', '/boot/silo.conf', '-sparc-label', '"sparc"']
+
         if self.config.getint('default', 'discs') > 1:
             for disc in range(1, self.config.getint('default', 'discs') + 1): # cycle through the CD isos
                 isoname = '%s-%s-%s-disc%s.iso' % (self.config.get('default', 'iso_basename'), self.config.get('default', 'version'), 
@@ -354,6 +356,8 @@ class Pungi:
                     elif self.config.get('default', 'arch') == 'ppc':
                         extraargs.extend(ppcbootargs)
                         extraargs.append(os.path.join('%s-disc%s' % (self.topdir, disc), "ppc/mac"))
+                    elif self.config.get('default', 'arch') == 'sparc':
+                        extraargs.extend(sparcbootargs)
 
                 extraargs.append('-V')
                 extraargs.append('%s %s %s Disc %s' % (self.config.get('default', 'product_name'),
@@ -415,6 +419,8 @@ class Pungi:
                     extraargs.append(os.path.join(self.topdir, "ppc/mac")) # this may work for both cases.. test
                 else:
                     extraargs.append(os.path.join('%s-disc%s' % (self.topdir, disc), "ppc/mac"))
+            elif self.config.get('default', 'arch') == 'sparc':
+                extraargs.extend(sparcbootargs)
 
             extraargs.append('-V')
             extraargs.append('%s %s %s DVD' % (self.config.get('default', 'product_name'),
@@ -481,6 +487,8 @@ class Pungi:
             elif self.config.get('default', 'arch') == 'ppc':
                 extraargs.extend(ppcbootargs)
                 extraargs.append(os.path.join(self.workdir, "%s-rescueimage" % self.config.get('default', 'arch'), "ppc/mac"))
+            elif self.config.get('default', 'arch') == 'sparc':
+                extraargs.extend(sparcbootargs)
 
             extraargs.append('-V')
             extraargs.append('%s %s %s Rescue' % (self.config.get('default', 'product_name'),
