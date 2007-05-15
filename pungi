@@ -38,6 +38,10 @@ def main():
     config = SafeConfigParser()
     config.read(opts.config)
 
+    if "default" not in config.sections():
+        print ("Check that the file %s exists and that it has a 'default' section" % opts.config)
+        sys.exit(1)
+
     if not config.has_option('default', 'flavor'):
         config.set('default', 'flavor', flavor)
 
