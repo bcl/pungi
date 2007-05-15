@@ -1,6 +1,7 @@
 * Tue May 15 2007 Jesse Keating <jkeating@redhat.com>
 - Don't quote ISO label, not running mkisofs in shell
 - Apply sparc patches (spot)
+- Fix cached downloads comparing correctly
 
 * Fri Apr 06 2007 Jesse Keating <jkeating@redhat.com>
 - Fix comments in config file

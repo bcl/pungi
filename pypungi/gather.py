@@ -283,7 +283,7 @@ class Gather(yum.YumBase):
             local = os.path.basename(remote)
             local = os.path.join(self.config.get('default', 'cachedir'), local)
             if (os.path.exists(local) and
-                str(os.path.getsize(local)) == pkg.packagesize):
+                os.path.getsize(local) == pkg.packagesize):
 
                 if not self.config.has_option('default', 'quiet'):
                     self.logger.info("%s already exists and appears to be complete" % local)
