@@ -1,7 +1,7 @@
 %{!?python_sitelib: %define python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")}
 
 Name:           pungi
-Version:        0.3.1
+Version:        0.3.2
 Release:        1%{?dist}
 Summary:        Distribution compose tool
 
@@ -46,6 +46,13 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Mon May 21 2007 Jesse Keating <jkeating@redhat.coM> - 0.3.2-1
+- Don't quote ISO label, not running mkisofs in shell
+- Apply sparc patches (spot)
+- Fix cached downloads comparing correctly
+- Shorten 'development' to 'devel' in default config, more space for mkisofs
+- Handle config file missing better (jgranado)
+
 * Fri Apr 06 2007 Jesse Keating <jkeating@redhat.com> - 0.3.1-1
 - Fix comments in default config file
 
