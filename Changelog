@@ -3,6 +3,7 @@
 - Apply sparc patches (spot)
 - Fix cached downloads comparing correctly
 - Shorten 'development' to 'devel' in default config, more space for mkisofs
+- Handle config file missing better (jgranado)
 
 * Fri Apr 06 2007 Jesse Keating <jkeating@redhat.com>
 - Fix comments in config file
