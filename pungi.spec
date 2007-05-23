@@ -1,7 +1,7 @@
 %{!?python_sitelib: %define python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")}
 
 Name:           pungi
-Version:        0.3.2
+Version:        0.3.3
 Release:        1%{?dist}
 Summary:        Distribution compose tool
 
@@ -46,6 +46,10 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Wed May 23 2007 Jesse Keating <jkeating@redhat.coM> - 0.3.3-1
+- Commit config files used for producing Fedora 7
+- Default pungi.conf file to using Fedora 7 stuff
+
 * Mon May 21 2007 Jesse Keating <jkeating@redhat.coM> - 0.3.2-1
 - Don't quote ISO label, not running mkisofs in shell
 - Apply sparc patches (spot)
