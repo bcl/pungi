@@ -21,6 +21,7 @@ emacs
 @sound-and-video
 @text-internet
 @system-tools
+wireshark-gnome
 # Devel packages
 @development-libs
 @development-tools
