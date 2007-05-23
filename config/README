@@ -1,0 +1,21 @@
+This is the configuration directory for pungi.  It holds a host of files that
+will be explained here. (See also 
+http://hosted.fedoraproject.org/projects/pungi/wiki/PungiDocs/ConfigDocs)
+
+pungi.conf; Top level config file for a minimal spin.  Good starting point.
+f7-fedora.i386; Top level config file used for Fedora 7 "Fedora" i386 spin.
+f7-fedora.x86_64; Top level config file used for Fedora 7 "Fedora" x86_64 spin.
+f7-fedora.ppc; Top level config file used for Fedora 7 "Fedora" ppc spin.
+f7-everything.i386; Top level config file used for Fedora 7 "Everything" i386 spin.
+f7-everything.x86_64; Top level config file used for Fedora 7 "Everything" x86_64 spin.
+f7-everything.ppc; Top level config file used for Fedora 7 "Everything" ppc spin.
+f7-fedora.manifest; A package manifest file used for the Fedora 7 "Fedora" spin.
+f7-everything.manifest; A package manifest file used for the Fedora 7 "Everything" spin.
+minimal.manifest; A package manifest with a good attempt at a minimal package set.
+comps-f7.xml; A grouping file used for various spins.
+yum.conf.f7.i386; A yum conf file for Fedora 7 i386.
+yum.conf.f7.x86_64; A yum conf file for Fedora 7 x86_64.
+yum.conf.f7.ppc; A yum conf file for Fedora 7 ppc.
+yum.conf.rawhide.i386; A yum conf file used for rawhide i386.
+yum.conf.rawhide.x86_64; A yum conf file used for rawhide x86_64.
+yum.conf.rawhide.ppc; A yum conf file used for rawhide ppc.
