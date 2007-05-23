@@ -1,3 +1,7 @@
+* Wed May 23 2007 Jesse Keating <jkeating@redhat.com>
+- Commit config files used for producing Fedora 7
+- Default pungi.conf file to using Fedora 7 stuff
+
 * Tue May 15 2007 Jesse Keating <jkeating@redhat.com>
 - Don't quote ISO label, not running mkisofs in shell
 - Apply sparc patches (spot)
