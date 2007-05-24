@@ -46,6 +46,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Thu May 24 2007 Jesse Keating <jkeating@redhat.coM> - 0.3.5-1
+- Use the right flavor in the Everything configs
+
 * Thu May 24 2007 Jesse Keating <jkeating@redhat.coM> - 0.3.4-1
 - Use a package checksum to verify cached download
 
