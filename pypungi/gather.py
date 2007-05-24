@@ -74,6 +74,22 @@ class Gather(yum.YumBase):
         # the logging.
         pass
 
+    def verifyCachePkg(self, po, path): # Stolen from yum
+        """check the package checksum vs the cache
+           return True if pkg is good, False if not"""
+
+        (csum_type, csum) = po.returnIdSum()
+
+        try:
+            filesum = yum.misc.checksum(csum_type, path)
+        except yum.Errors.MiscError:
+            return False
+
+        if filesum != csum:
+            return False
+
+        return True
+
     def getPackageDeps(self, po):
         """Add the dependencies for a given package to the
            transaction info"""
@@ -282,8 +298,7 @@ class Gather(yum.YumBase):
             remote = pkg.relativepath
             local = os.path.basename(remote)
             local = os.path.join(self.config.get('default', 'cachedir'), local)
-            if (os.path.exists(local) and
-                os.path.getsize(local) == pkg.packagesize):
+            if os.path.exists(local) and self.verifyCachePkg(pkg, local):
 
                 if not self.config.has_option('default', 'quiet'):
                     self.logger.info("%s already exists and appears to be complete" % local)
@@ -349,11 +364,11 @@ class Gather(yum.YumBase):
             remote = pkg.relativepath
             local = os.path.basename(remote)
             local = os.path.join(self.config.get('default', 'cachedir'), local)
-            if os.path.exists(local) and str(os.path.getsize(local)) == pkg.packagesize:
+            if os.path.exists(local) and self.verifyCachePkg(pkg, local):
 
                 if not self.config.has_option('default', 'quiet'):
                     self.logger.info("%s already exists and appears to be complete" % local)
-                if os.path.exists(os.path.join(pkgdir, os.path.basename(remote))) and str(os.path.getsize(os.path.join(pkgdir, os.path.basename(remote)))) == pkg.packagesize:
+                if os.path.exists(os.path.join(pkgdir, os.path.basename(remote))) and self.verifyCachePkg(pkg, os.path.join(pkgdir, os.path.basename(remote))) == pkg.packagesize:
                     if not self.config.has_option('default', 'quiet'):
                         self.logger.info("%s already exists in tree and appears to be complete" % local)
                 else:
