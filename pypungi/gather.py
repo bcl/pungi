@@ -368,7 +368,7 @@ class Gather(yum.YumBase):
 
                 if not self.config.has_option('default', 'quiet'):
                     self.logger.info("%s already exists and appears to be complete" % local)
-                if os.path.exists(os.path.join(pkgdir, os.path.basename(remote))) and self.verifyCachePkg(pkg, os.path.join(pkgdir, os.path.basename(remote))) == pkg.packagesize:
+                if os.path.exists(os.path.join(pkgdir, os.path.basename(remote))) and self.verifyCachePkg(pkg, os.path.join(pkgdir, os.path.basename(remote))):
                     if not self.config.has_option('default', 'quiet'):
                         self.logger.info("%s already exists in tree and appears to be complete" % local)
                 else:
