@@ -1,3 +1,6 @@
+* Fri May 25 2007 Jesse Keating <jkeating@redhat.com>
+- Handle the cdsize variable correctly
+
 * Thu May 24 2007 Jesse Keating <jkeating@redhat.com>
 - Use a package checksum to verify cached download
 - Use the right flavor in the Everything configs

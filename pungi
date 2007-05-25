@@ -28,7 +28,7 @@ def main():
     sourcedir = "source"
     debugdir = "debug"
     isodir = "iso"
-    cdsize = "685.0"
+    cdsize = 685.0
     relnotefilere = "eula.txt fedora.css GPL README-BURNING-ISOS-en_US.txt RELEASE-NOTES-en_US.html ^RPM-GPG"
     relnotedirre = "images stylesheet-images"
     relnotepkgs = "fedora-release fedora-release-notes"
@@ -144,7 +144,7 @@ if __name__ == '__main__':
     import sys
 
     def get_arguments():
-        parser = OptionParser(version="%prog 0.3.5")
+        parser = OptionParser(version="%prog 0.3.6")
         parser.add_option("--destdir", default="*CONFFILE*", dest="destdir",
           help='destination directory (defaults to current directory)')
         parser.add_option("-c", "--conf", default='/etc/pungi/pungi.conf', dest="config",
