@@ -15,5 +15,5 @@ arch = x86_64
 version = 7
 flavor = Fedora
 discs = 1
-#cdsize = 4608.0; not used with discs = 1
+#cdsize = 4608.0
 getsource = no

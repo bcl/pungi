@@ -15,5 +15,5 @@ arch = i386
 version = 7
 flavor = Everything
 discs = 2
-cdsize = 4608.0; DVD size
+cdsize = 4608.0
 getsource = no
