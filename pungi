@@ -28,7 +28,7 @@ def main():
     sourcedir = "source"
     debugdir = "debug"
     isodir = "iso"
-    cdsize = 685.0
+    cdsize = "685.0"
     relnotefilere = "eula.txt fedora.css GPL README-BURNING-ISOS-en_US.txt RELEASE-NOTES-en_US.html ^RPM-GPG"
     relnotedirre = "images stylesheet-images"
     relnotepkgs = "fedora-release fedora-release-notes"

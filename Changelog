@@ -1,6 +1,7 @@
 * Fri May 25 2007 Jesse Keating <jkeating@redhat.com>
 - Handle the cdsize variable correctly
 - More fixes for cached download stuff
+- Fix default CD size storing
 
 * Thu May 24 2007 Jesse Keating <jkeating@redhat.com>
 - Use a package checksum to verify cached download
