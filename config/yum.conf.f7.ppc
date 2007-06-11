@@ -25,5 +25,5 @@ gpgcheck=0
 name=Fedora 7 - Source
 #baseurl=http://download.fedora.redhat.com/pub/fedora/linux/releases/7/Everything/source/SRPMS/
 mirrorlist=http://mirrors.fedoraproject.org/mirrorlist?repo=fedora-source-7&arch=ppc
-enabled=0
+enabled=1
 gpgcheck=0
