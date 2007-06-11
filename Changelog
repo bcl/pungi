@@ -1,3 +1,6 @@
+* Mon Jun 11 2007 Jesse Keating <jkeating@redhat.com>
+- Add a install target to make (Trac #37)
+
 * Fri May 25 2007 Jesse Keating <jkeating@redhat.com>
 - Handle the cdsize variable correctly
 - More fixes for cached download stuff

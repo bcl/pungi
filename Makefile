@@ -36,6 +36,9 @@ rpminstall: rpm
 
 release: tag srpm
 
+install:
+	@python setup.py install
+
 clean:
 	@rm -f *.rpm 
 	@rm -rf noarch
