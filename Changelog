@@ -1,6 +1,7 @@
 * Mon Jun 11 2007 Jesse Keating <jkeating@redhat.com>
 - Add a install target to make (Trac #37)
 - Enable the source repo in yum configs (Trac #47)
+- Use universal newlines in getting process output (Trac #44)
 
 * Fri May 25 2007 Jesse Keating <jkeating@redhat.com>
 - Handle the cdsize variable correctly

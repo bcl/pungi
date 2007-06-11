@@ -69,7 +69,7 @@ class Pungi:
 
         log.info("Running %s" % ' '.join(command))
 
-        p1 = subprocess.Popen(command, cwd=rundir, stdout=output, stderr=error)
+        p1 = subprocess.Popen(command, cwd=rundir, stdout=output, stderr=error, universal_newlines=True)
         (out, err) = p1.communicate()
         if p1.returncode != 0:
             log.error("Got an error from %s" % command[0])
@@ -178,7 +178,7 @@ class Pungi:
                     try:
                         p1 = subprocess.Popen(rpm2cpio + extraargs, cwd=docsdir, stdout=subprocess.PIPE)
                         (out, err) = subprocess.Popen(cpio, cwd=docsdir, stdin=p1.stdout, stdout=subprocess.PIPE, 
-                            stderr=subprocess.PIPE).communicate()
+                            stderr=subprocess.PIPE, universal_newlines=True).communicate()
                     except:
                         log.error("Got an error from rpm2cpio")
                         log.error(err)
