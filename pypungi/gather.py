@@ -111,8 +111,8 @@ class Gather(yum.YumBase):
                 continue
 
             deps = self.whatProvides(r, f, v).returnPackages()
-            if deps is None:
-                self.logger.warning("Unresolvable dependency %s in %s.%s" % (r, po.name, po.arch))
+            if not deps:
+                self.logger.warn("Unresolvable dependency %s in %s.%s" % (r, po.name, po.arch))
                 continue
 
             for dep in deps:
