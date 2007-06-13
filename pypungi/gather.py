@@ -65,8 +65,12 @@ class Gather(yum.YumBase):
         logdir = os.path.join(self.config.get('default', 'destdir'), 'logs')
         if not os.path.exists(logdir):
             os.makedirs(logdir)
-        logfile = os.path.join(logdir, '%s.%s.log' % (self.config.get('default', 'flavor'),
-                                                      self.config.get('default', 'arch')))
+        if self.config.get('default', 'flavor'):
+            logfile = os.path.join(logdir, '%s.%s.log' % (self.config.get('default', 'flavor'),
+                                                          self.config.get('default', 'arch')))
+        else:
+            logfile = os.path.join(logdir, '%s.log' % (self.config.get('default', 'arch')))
+
         yum.logging.basicConfig(level=yum.logging.DEBUG, filename=logfile)
 
     def doFileLogSetup(self, uid, logfile):
