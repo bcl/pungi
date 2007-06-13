@@ -1,5 +1,6 @@
 * Wed Jun 13 2007 Jesse Keating <jkeating@redhat.com>
 - Don't use flavor for a log file if no flavor set (Trac #48)
+- Point to the right manifest file in pungi.conf
 
 * Mon Jun 11 2007 Jesse Keating <jkeating@redhat.com>
 - Add a install target to make (Trac #37)
