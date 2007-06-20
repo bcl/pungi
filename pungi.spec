@@ -1,7 +1,7 @@
 %{!?python_sitelib: %define python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")}
 
 Name:           pungi
-Version:        0.3.7
+Version:        0.3.8
 Release:        1%{?dist}
 Summary:        Distribution compose tool
 
@@ -46,6 +46,15 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Wed Jun 20 2007 Jesse Keating <jkeating@redhat.com> - 0.3.8-1
+- Only grab the newest of deps.
+- Don't use flavor for a log file if no flavor set (Trac #48)
+- Point to the right manifest file in pungi.conf
+- Add a install target to make (Trac #37)
+- Enable the source repo in yum configs (Trac #47)
+- Use universal newlines in getting process output (Trac #44)
+- Fix logging of broken deps (Trac #39)
+
 * Wed May 30 2007 Jesse Keating <jkeating@redhat.com> - 0.3.7-1
 - Handle the cdsize variable correctly
 - More fixes for cached download stuff
