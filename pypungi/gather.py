@@ -119,7 +119,9 @@ class Gather(yum.YumBase):
                 self.logger.warn("Unresolvable dependency %s in %s.%s" % (r, po.name, po.arch))
                 continue
 
-            for dep in deps:
+            depsack = yum.packageSack.ListPackageSack(deps)
+
+            for dep in depsack.returnNewestByNameArch():
                 self.tsInfo.addInstall(dep)
                 if not self.config.has_option('default', 'quiet'):
                     self.logger.info('Added %s.%s for %s.%s' % (dep.name, dep.arch, po.name, po.arch))
