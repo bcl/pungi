@@ -118,3 +118,4 @@ jfsutils
 # Compose Needs
 anaconda-runtime
 iscsi-initiator-utils
+memtest86+

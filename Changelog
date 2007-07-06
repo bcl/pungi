@@ -1,3 +1,6 @@
+* Fri Jul 06 2007 Jesse Keating <jkeating@redhat.com>
+- Include memtest86+ in the "Fedora" manifest
+
 * Tue Jun 19 2007 Jesse Keating <jkeating@redhat.com>
 - Only grab the newest of deps.
 
