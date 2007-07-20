@@ -71,12 +71,13 @@ class Pungi:
 
         p1 = subprocess.Popen(command, cwd=rundir, stdout=output, stderr=error, universal_newlines=True)
         (out, err) = p1.communicate()
+
+        log.info(out)
+
         if p1.returncode != 0:
             log.error("Got an error from %s" % command[0])
             log.error(err)
             raise OSError, "Got an error from %s" % command[0]
-
-        log.info(out)
 
     def doBuildinstall(self):
         """Run anaconda-runtime's buildinstall on the tree."""

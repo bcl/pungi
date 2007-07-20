@@ -1,5 +1,6 @@
 * Fri Jul 20 2007 Jesse Keating <jkeating@redhat.com>
 - Don't quote things passed to mkisofs, not a shell
+- Always log stdout before checking for stderr output
 
 * Fri Jul 06 2007 Jesse Keating <jkeating@redhat.com>
 - Include memtest86+ in the "Fedora" manifest
