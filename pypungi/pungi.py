@@ -109,7 +109,7 @@ class Pungi:
         buildinstall.append(self.config.get('default', 'version'))
 
         buildinstall.append('--release')
-        buildinstall.append('"%s %s"' % (self.config.get('default', 'product_name'), self.config.get('default', 'version')))
+        buildinstall.append('%s %s' % (self.config.get('default', 'product_name'), self.config.get('default', 'version')))
 
         buildinstall.append('--prodpath')
         buildinstall.append(self.config.get('default', 'product_path'))
