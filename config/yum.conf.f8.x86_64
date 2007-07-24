@@ -1,0 +1,29 @@
+[main]
+#keepcache=0
+#debuglevel=2
+pkgpolicy=newest
+distroverpkg=redhat-release
+tolerant=1
+exactarch=1
+obsoletes=1
+gpgcheck=1
+reposdir=./
+#plugins=1
+metadata_expire=1800
+#exclude=\*.i?86
+
+# PUT YOUR REPOS HERE OR IN separate files named file.repo
+# in /etc/yum.repos.d
+[fedora]
+name=Fedora - 7
+#baseurl=http://download.fedora.redhat.com/pub/fedora/linux/releases/7/Everything/x86_64/os/
+mirrorlist=http://mirrors.fedoraproject.org/mirrorlist?repo=fedora-7&arch=x86_64
+enabled=1
+gpgcheck=0
+
+[fedora-source]
+name=Fedora 7 - Source
+#baseurl=http://download.fedora.redhat.com/pub/fedora/linux/releases/7/Everything/source/SRPMS/
+mirrorlist=http://mirrors.fedoraproject.org/mirrorlist?repo=fedora-source-7&arch=x86_64
+enabled=1
+gpgcheck=0
