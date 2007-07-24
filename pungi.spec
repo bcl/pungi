@@ -1,7 +1,7 @@
 %{!?python_sitelib: %define python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")}
 
 Name:           pungi
-Version:        0.3.8
+Version:        0.3.9
 Release:        1%{?dist}
 Summary:        Distribution compose tool
 
@@ -46,6 +46,13 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Tue Jul 24 2007 Jesse Keating <jkeating@redhat.com> - 0.3.9-1
+- Add a few more desktopy things to manifest
+- Rename f7 files to f8; set up config files for f8test1
+- Don't quote things passed to mkisofs, not a shell
+- Always log stdout before checking for stderr output
+- Include memtest86+ in the "Fedora" manifest
+
 * Wed Jun 20 2007 Jesse Keating <jkeating@redhat.com> - 0.3.8-1
 - Only grab the newest of deps.
 - Don't use flavor for a log file if no flavor set (Trac #48)

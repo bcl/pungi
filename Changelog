@@ -1,5 +1,6 @@
 * Tue Jul 24 2007 Jesse Keating <jkeating@redhat.com>
 - Add a few more desktopy things to manifest
+- Rename f7 files to f8; set up config files for f8test1
 
 * Fri Jul 20 2007 Jesse Keating <jkeating@redhat.com>
 - Don't quote things passed to mkisofs, not a shell
