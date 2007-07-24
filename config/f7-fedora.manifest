@@ -10,6 +10,9 @@ kernel*
 @gnome-desktop
 @kde-desktop
 echo-icon-theme
+tracker
+gnash
+liferea
 # apps
 @authoring-and-publishing
 @editors

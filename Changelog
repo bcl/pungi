@@ -1,3 +1,6 @@
+* Tue Jul 24 2007 Jesse Keating <jkeating@redhat.com>
+- Add a few more desktopy things to manifest
+
 * Fri Jul 20 2007 Jesse Keating <jkeating@redhat.com>
 - Don't quote things passed to mkisofs, not a shell
 - Always log stdout before checking for stderr output
