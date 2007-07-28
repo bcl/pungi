@@ -1,5 +1,6 @@
 * Sat Jul 28 2007 Jesse Keating <jkeating@redhat.com>
 - Split the createrepo call into it's own function
+- When raising an error, print the error too.
 
 * Tue Jul 24 2007 Jesse Keating <jkeating@redhat.com>
 - Add a few more desktopy things to manifest

@@ -77,7 +77,7 @@ class Pungi:
         if p1.returncode != 0:
             log.error("Got an error from %s" % command[0])
             log.error(err)
-            raise OSError, "Got an error from %s" % command[0]
+            raise OSError, "Got an error from %s: %s" % (command[0], err)
 
     def doCreaterepo(self):
         """Run createrepo to generate repodata in the tree."""

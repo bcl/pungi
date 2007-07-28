@@ -1,7 +1,7 @@
 %{!?python_sitelib: %define python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")}
 
 Name:           pungi
-Version:        0.3.9
+Version:        0.4.0
 Release:        1%{?dist}
 Summary:        Distribution compose tool
 
@@ -46,6 +46,11 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Sat Jul 28 2007 Jesse Keating <jkeating@redhat.com> - 0.4.0-1
+- split createrepo call to it's own function.  This enables rawhide
+  composes to happen once again. Also breaks API.
+- When raising an error, print the error too
+
 * Tue Jul 24 2007 Jesse Keating <jkeating@redhat.com> - 0.3.9-1
 - Add a few more desktopy things to manifest
 - Rename f7 files to f8; set up config files for f8test1
