@@ -1,3 +1,6 @@
+* Sat Jul 28 2007 Jesse Keating <jkeating@redhat.com>
+- Split the createrepo call into it's own function
+
 * Tue Jul 24 2007 Jesse Keating <jkeating@redhat.com>
 - Add a few more desktopy things to manifest
 - Rename f7 files to f8; set up config files for f8test1

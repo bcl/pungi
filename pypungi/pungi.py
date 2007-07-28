@@ -79,11 +79,11 @@ class Pungi:
             log.error(err)
             raise OSError, "Got an error from %s" % command[0]
 
-    def doBuildinstall(self):
-        """Run anaconda-runtime's buildinstall on the tree."""
+    def doCreaterepo(self):
+        """Run createrepo to generate repodata in the tree."""
 
 
-        # create repodata for the tree
+        # setup the createrepo call
         createrepo = ['/usr/bin/createrepo']
         createrepo.append('--database')
 
@@ -94,6 +94,10 @@ class Pungi:
 
         # run the command
         self._doRunCommand(createrepo, rundir=self.topdir)
+
+    def doBuildinstall(self):
+        """Run anaconda-runtime's buildinstall on the tree."""
+
 
         # setup the buildinstall call
         buildinstall = ['/usr/lib/anaconda-runtime/buildinstall']

@@ -111,6 +111,9 @@ def main():
 
         mypungi = pypungi.pungi.Pungi(config)
 
+        if opts.do_all or opts.do_createrepo:
+           mypungi.doCreaterepo()
+
         if opts.do_all or opts.do_buildinstall:
            mypungi.doBuildinstall()
            mypungi.doGetRelnotes()
@@ -144,7 +147,7 @@ if __name__ == '__main__':
     import sys
 
     def get_arguments():
-        parser = OptionParser(version="%prog 0.3.9")
+        parser = OptionParser(version="%prog 0.4.0")
         parser.add_option("--destdir", default="*CONFFILE*", dest="destdir",
           help='destination directory (defaults to current directory)')
         parser.add_option("-c", "--conf", default='/etc/pungi/pungi.conf', dest="config",
@@ -153,6 +156,8 @@ if __name__ == '__main__':
           help="Enable ALL stages")
         parser.add_option("-G", action="store_true", default=False, dest="do_gather",
           help="Flag to enable processing the Gather stage")
+        parser.add_option("-C", action="store_true", default=False, dest="do_createrepo",
+          help="Flag to enable processing the Createrepo stage")
         parser.add_option("-B", action="store_true", default=False, dest="do_buildinstall",
           help="Flag to enable processing the BuildInstall stage")
         parser.add_option("-P", action="store_true", default=False, dest="do_packageorder",
@@ -164,7 +169,7 @@ if __name__ == '__main__':
 
 
         (opts, args) = parser.parse_args()
-        if opts.do_gather or opts.do_buildinstall or opts.do_packageorder or opts.do_splittree or opts.do_createiso:
+        if opts.do_gather or opts.do_createrepo or opts.do_buildinstall or opts.do_packageorder or opts.do_splittree or opts.do_createiso:
             opts.do_all = False
         if len(sys.argv) < 2:
             parser.print_help()
