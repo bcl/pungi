@@ -1,3 +1,6 @@
+* Wed Aug 01 2007 Jesse Keating <jkeating@redhat.com>
+- Create a new yum object for source downloads as yum
+
 * Sat Jul 28 2007 Jesse Keating <jkeating@redhat.com>
 - Split the createrepo call into it's own function
 - When raising an error, print the error too.
