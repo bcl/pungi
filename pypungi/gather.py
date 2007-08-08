@@ -17,46 +17,51 @@ import os
 import shutil
 import sys
 
-class Gather(yum.YumBase):
+class Gather():
     def __init__(self, config, pkglist):
         self.workdir = os.path.join(config.get('default', 'destdir'),
                                     'work',
                                     config.get('default', 'flavor'),
                                     config.get('default', 'arch'))
 
-        # Create a yum object to use
-        yum.YumBase.__init__(self)
         self.config = config
-        self.doConfigSetup(fn=config.get('default', 'yumconf'), debuglevel=6, errorlevel=6, root=os.path.join(self.workdir, 'yumroot'))
-        self.config.cachedir = os.path.join(self.workdir, 'yumcache')
-        self.cleanMetadata() # clean metadata that might be in the cache from previous runs
-        self.cleanSqlite() # clean metadata that might be in the cache from previous runs
-        self.doRepoSetup()
-        self.doTsSetup()
-        self.doRpmDBSetup()
-        if config.get('default', 'arch') == 'i386':
-            arches = yum.rpmUtils.arch.getArchList('i686')
-            self.compatarch = 'i686'
-        elif config.get('default', 'arch') == 'ppc':
-            arches = yum.rpmUtils.arch.getArchList('ppc64')
-            self.compatarch = 'ppc64'
-        elif config.get('default', 'arch') == 'sparc':
-            arches = yum.rpmUtils.arch.getArchList('sparc64v')
-            self.compatarch = 'sparc64v'
-        else:
-            arches = yum.rpmUtils.arch.getArchList(config.get('default', 'arch'))
-            self.compatarch = config.get('default', 'arch')
-        #self.doSackSetup(arches)
-        self.doSackSetup(archlist=arches) # work around temp break in yum api
-        self.doSackFilelistPopulate()
-        self.logger = yum.logging.getLogger("yum.verbose.pungi")
         self.pkglist = pkglist
+        self.config.cachedir = os.path.join(self.workdir, 'yumcache')
         self.polist = []
         self.srpmlist = []
         self.resolved_deps = {} # list the deps we've already resolved, short circuit.
+
         # Create a comps object and add our comps file for group definitions
         self.compsobj = yum.comps.Comps()
         self.compsobj.add(self.config.get('default', 'comps'))
+
+        # Create a yum object to use
+        self.ayum = yum.YumBase()
+        self.ayum.doConfigSetup(fn=config.get('default', 'yumconf'), debuglevel=6, errorlevel=6, root=os.path.join(self.workdir, 'yumroot'))
+        self.ayum.conf.debuglevel = 6
+        self.ayum.cleanMetadata() # clean metadata that might be in the cache from previous runs
+        self.ayum.cleanSqlite() # clean metadata that might be in the cache from previous runs
+        self.ayum.doRepoSetup()
+        self.ayum.doTsSetup()
+        self.ayum.doRpmDBSetup()
+        if config.get('default', 'arch') == 'i386':
+            arches = yum.rpmUtils.arch.getArchList('i686')
+            self.ayum.compatarch = 'i686'
+        elif config.get('default', 'arch') == 'ppc':
+            arches = yum.rpmUtils.arch.getArchList('ppc64')
+            self.ayum.compatarch = 'ppc64'
+        elif config.get('default', 'arch') == 'sparc':
+            arches = yum.rpmUtils.arch.getArchList('sparc64v')
+            self.ayum.compatarch = 'sparc64v'
+        else:
+            arches = yum.rpmUtils.arch.getArchList(config.get('default', 'arch'))
+            self.ayum.compatarch = config.get('default', 'arch')
+        #self.doSackSetup(arches)
+        #self.doSackSetup(archlist=arches) # work around temp break in yum api
+        #self.doSackFilelistPopulate()
+        self.ayum._getSacks(archlist=arches)
+        self.logger = yum.logging.getLogger("yum.verbose.pungi")
+        self.ayum.logger = yum.logging.getLogger("yum.verbose.pungi")
 
     def doLoggingSetup(self, debuglevel, errorlevel):
         """Setup the logging facility."""
@@ -114,7 +119,7 @@ class Gather(yum.YumBase):
             if req in provs:
                 continue
 
-            deps = self.whatProvides(r, f, v).returnPackages()
+            deps = self.ayum.whatProvides(r, f, v).returnPackages()
             if not deps:
                 self.logger.warn("Unresolvable dependency %s in %s.%s" % (r, po.name, po.arch))
                 continue
@@ -122,7 +127,7 @@ class Gather(yum.YumBase):
             depsack = yum.packageSack.ListPackageSack(deps)
 
             for dep in depsack.returnNewestByNameArch():
-                self.tsInfo.addInstall(dep)
+                self.ayum.tsInfo.addInstall(dep)
                 if not self.config.has_option('default', 'quiet'):
                     self.logger.info('Added %s.%s for %s.%s' % (dep.name, dep.arch, po.name, po.arch))
            
@@ -171,13 +176,13 @@ class Gather(yum.YumBase):
         # of the package objects it would bring in.  To be used later if
         # we match the conditional.
         for condreq, cond in groupobj.conditional_packages.iteritems():
-            pkgs = self.pkgSack.searchNevra(name=condreq)
+            pkgs = self.ayum.pkgSack.searchNevra(name=condreq)
             if pkgs:
-                pkgs = self.bestPackagesFromList(pkgs)
-            if self.tsInfo.conditionals.has_key(cond):
-                self.tsInfo.conditionals[cond].extend(pkgs)
+                pkgs = self.ayum.bestPackagesFromList(pkgs)
+            if self.ayum.tsInfo.conditionals.has_key(cond):
+                self.ayum.tsInfo.conditionals[cond].extend(pkgs)
             else:
-                self.tsInfo.conditionals[cond] = pkgs
+                self.ayum.tsInfo.conditionals[cond] = pkgs
 
         return packages
 
@@ -219,8 +224,8 @@ class Gather(yum.YumBase):
                 addlist.append(line)
 
         # First remove the excludes
-        self.conf.exclude.extend(excludelist)
-        self.excludePackages()
+        self.ayum.conf.exclude.extend(excludelist)
+        self.ayum.excludePackages()
 
         # Get a list of packages from groups
         for group in grouplist:
@@ -233,7 +238,7 @@ class Gather(yum.YumBase):
         searchlist = yum.misc.unique(searchlist)
 
         # Search repos for things in our searchlist, supports globs
-        (exactmatched, matched, unmatched) = yum.packages.parsePackages(self.pkgSack.returnPackages(), searchlist, casematch=1)
+        (exactmatched, matched, unmatched) = yum.packages.parsePackages(self.ayum.pkgSack.returnPackages(), searchlist, casematch=1)
         matches = exactmatched + matched
 
         # Populate a dict of package objects to their names
@@ -243,7 +248,7 @@ class Gather(yum.YumBase):
         # Get the newest results from the search
         mysack = yum.packageSack.ListPackageSack(matches)
         for match in mysack.returnNewestByNameArch():
-            self.tsInfo.addInstall(match)
+            self.ayum.tsInfo.addInstall(match)
             if not self.config.has_option('default', 'quiet'):
                 self.logger.info('Found %s.%s' % (match.name, match.arch))
 
@@ -251,13 +256,13 @@ class Gather(yum.YumBase):
             if not pkg in matchdict.keys():
                 self.logger.warn('Could not find a match for %s' % pkg)
 
-        if len(self.tsInfo) == 0:
+        if len(self.ayum.tsInfo) == 0:
             raise yum.Errors.MiscError, 'No packages found to download.'
 
         moretoprocess = True
         while moretoprocess: # Our fun loop
             moretoprocess = False
-            for txmbr in self.tsInfo:
+            for txmbr in self.ayum.tsInfo:
                 if not final_pkgobjs.has_key(txmbr.po):
                     final_pkgobjs[txmbr.po] = None # Add the pkg to our final list
                     self.getPackageDeps(txmbr.po) # Get the deps of our package
@@ -300,7 +305,7 @@ class Gather(yum.YumBase):
             os.makedirs(pkgdir)
 
         for pkg in self.polist:
-            repo = self.repos.getRepo(pkg.repoid)
+            repo = self.ayum.repos.getRepo(pkg.repoid)
             remote = pkg.relativepath
             local = os.path.basename(remote)
             local = os.path.join(self.config.get('default', 'cachedir'), local)
@@ -349,16 +354,16 @@ class Gather(yum.YumBase):
         #self.doSackSetup(archlist=['src'])
 
         # Make a new yum object
-        ayum = yum.YumBase()
-        ayum.doConfigSetup(fn=self.config.get('default', 'yumconf'), debuglevel=6, errorlevel=6, root=os.path.join(self.workdir, 'yumroot'))
-        ayum.doRepoSetup()
+        syum = yum.YumBase()
+        syum.doConfigSetup(fn=self.config.get('default', 'yumconf'), debuglevel=6, errorlevel=6, root=os.path.join(self.workdir, 'yumroot'))
+        syum.doRepoSetup()
 
-        ayum._getSacks(archlist=['src'])
+        syum._getSacks(archlist=['src'])
 
         for srpm in self.srpmlist:
             (sname, sver, srel) = srpm.rsplit('-', 2)
             try:
-                srpmpo = ayum.pkgSack.searchNevra(name=sname, ver=sver, rel=srel)[0]
+                srpmpo = syum.pkgSack.searchNevra(name=sname, ver=sver, rel=srel)[0]
                 if not srpmpo in srpmpolist:
                     srpmpolist.append(srpmpo)
             except IndexError:
@@ -373,7 +378,7 @@ class Gather(yum.YumBase):
             os.makedirs(pkgdir)
 
         for pkg in srpmpolist:
-            repo = ayum.repos.getRepo(pkg.repoid)
+            repo = syum.repos.getRepo(pkg.repoid)
             remote = pkg.relativepath
             local = os.path.basename(remote)
             local = os.path.join(self.config.get('default', 'cachedir'), local)
