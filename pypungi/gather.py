@@ -38,7 +38,6 @@ class Gather():
         # Create a yum object to use
         self.ayum = yum.YumBase()
         self.ayum.doConfigSetup(fn=config.get('default', 'yumconf'), debuglevel=6, errorlevel=6, root=os.path.join(self.workdir, 'yumroot'))
-        self.ayum.conf.debuglevel = 6
         self.ayum.cleanMetadata() # clean metadata that might be in the cache from previous runs
         self.ayum.cleanSqlite() # clean metadata that might be in the cache from previous runs
         self.ayum.doRepoSetup()
