@@ -17,6 +17,29 @@ import os
 import shutil
 import sys
 
+class PungiYum(yum.YumBase):
+    """Subclass of Yum"""
+
+    def __init__(self, config):
+        self.pungiconfig = config
+        yum.YumBase.__init__(self)
+
+    def doLoggingSetup(self, debuglevel, errorlevel):
+        """Setup the logging facility."""
+
+
+        logdir = os.path.join(self.pungiconfig.get('default', 'destdir'), 'logs')
+        if not os.path.exists(logdir):
+            os.makedirs(logdir)
+        if self.pungiconfig.get('default', 'flavor'):
+            logfile = os.path.join(logdir, '%s.%s.log' % (self.pungiconfig.get('default', 'flavor'),
+                                                          self.pungiconfig.get('default', 'arch')))
+        else:
+            logfile = os.path.join(logdir, '%s.log' % (self.pungiconfig.get('default', 'arch')))
+
+        yum.logging.basicConfig(level=yum.logging.DEBUG, filename=logfile)
+
+
 class Gather():
     def __init__(self, config, pkglist):
         self.workdir = os.path.join(config.get('default', 'destdir'),
@@ -36,7 +59,7 @@ class Gather():
         self.compsobj.add(self.config.get('default', 'comps'))
 
         # Create a yum object to use
-        self.ayum = yum.YumBase()
+        self.ayum = PungiYum(config)
         self.ayum.doConfigSetup(fn=config.get('default', 'yumconf'), debuglevel=6, errorlevel=6, root=os.path.join(self.workdir, 'yumroot'))
         self.ayum.cleanMetadata() # clean metadata that might be in the cache from previous runs
         self.ayum.cleanSqlite() # clean metadata that might be in the cache from previous runs
@@ -61,26 +84,6 @@ class Gather():
         self.ayum._getSacks(archlist=arches)
         self.logger = yum.logging.getLogger("yum.verbose.pungi")
         self.ayum.logger = yum.logging.getLogger("yum.verbose.pungi")
-
-    def doLoggingSetup(self, debuglevel, errorlevel):
-        """Setup the logging facility."""
-
-
-        logdir = os.path.join(self.config.get('default', 'destdir'), 'logs')
-        if not os.path.exists(logdir):
-            os.makedirs(logdir)
-        if self.config.get('default', 'flavor'):
-            logfile = os.path.join(logdir, '%s.%s.log' % (self.config.get('default', 'flavor'),
-                                                          self.config.get('default', 'arch')))
-        else:
-            logfile = os.path.join(logdir, '%s.log' % (self.config.get('default', 'arch')))
-
-        yum.logging.basicConfig(level=yum.logging.DEBUG, filename=logfile)
-
-    def doFileLogSetup(self, uid, logfile):
-        # This function overrides a yum function, allowing pungi to control
-        # the logging.
-        pass
 
     def verifyCachePkg(self, po, path): # Stolen from yum
         """check the package checksum vs the cache
