@@ -40,8 +40,8 @@ install:
 	@python setup.py install
 
 clean:
-	@rm -f *.rpm 
-	@rm -rf noarch
-	@rm -f *.tar.gz
-	@rm -rf dist
-	@rm -f MANIFEST
+	@rm -vf *.rpm 
+	@rm -vrf noarch
+	@rm -vf *.tar.gz
+	@rm -vrf dist
+	@rm -vf MANIFEST
