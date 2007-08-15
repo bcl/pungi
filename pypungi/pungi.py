@@ -20,12 +20,14 @@ sys.path.append('/usr/lib/anaconda-runtime')
 import splittree
 import shutil
 import re
+import pypungi
 
-log = logging.getLogger("pypungi.pungi")
-
-class Pungi:
+class Pungi(pypungi.PungiBase):
     def __init__(self, config):
-        self.config = config
+        pypungi.PungiBase.__init__(self, config)
+
+        self.logger = logging.getLogger('Pungi.Pungi')
+
         self.prodpath = 'Fedora' # Probably should be defined elsewhere
         self.destdir = self.config.get('default', 'destdir')
         self.archdir = os.path.join(self.destdir,
@@ -36,7 +38,7 @@ class Pungi:
         self.topdir = os.path.join(self.archdir, 'os')
         self.isodir = os.path.join(self.archdir, self.config.get('default','isodir'))
 
-        self.workdir = os.path.join(self.config.get('default', 'destdir'), 
+        self.workdir = os.path.join(self.config.get('default', 'destdir'),
                                     'work',
                                     self.config.get('default', 'flavor'),
                                     self.config.get('default', 'arch'))
@@ -67,16 +69,16 @@ class Pungi:
         """Run a command and log the output.  Error out if we get something on stderr"""
 
 
-        log.info("Running %s" % ' '.join(command))
+        self.logger.info("Running %s" % ' '.join(command))
 
         p1 = subprocess.Popen(command, cwd=rundir, stdout=output, stderr=error, universal_newlines=True)
         (out, err) = p1.communicate()
 
-        log.info(out)
+        self.logger.debug(out)
 
         if p1.returncode != 0:
-            log.error("Got an error from %s" % command[0])
-            log.error(err)
+            self.logger.error("Got an error from %s" % command[0])
+            self.logger.error(err)
             raise OSError, "Got an error from %s: %s" % (command[0], err)
 
     def doCreaterepo(self):
@@ -185,18 +187,18 @@ class Pungi:
                         (out, err) = subprocess.Popen(cpio, cwd=docsdir, stdin=p1.stdout, stdout=subprocess.PIPE, 
                             stderr=subprocess.PIPE, universal_newlines=True).communicate()
                     except:
-                        log.error("Got an error from rpm2cpio")
-                        log.error(err)
+                        self.logger.error("Got an error from rpm2cpio")
+                        self.logger.error(err)
                         raise
 
-                    log.info(out)
+                    self.logger.debug(out)
 
         # Walk the tree for our files
         for dirpath, dirname, filelist in os.walk(docsdir):
             for filename in filelist:
                 for regex in fileres:
                     if regex.match(filename) and not os.path.exists(os.path.join(self.topdir, filename)):
-                        log.info("Copying release note file %s" % filename)
+                        self.logger.info("Copying release note file %s" % filename)
                         shutil.copy(os.path.join(dirpath, filename), os.path.join(self.topdir, filename))
                         self.common_files.append(filename)
 
@@ -205,7 +207,7 @@ class Pungi:
             for directory in dirname:
                 for regex in dirres:
                     if regex.match(directory) and not os.path.exists(os.path.join(self.topdir, directory)):
-                        log.info("Copying release note dir %s" % directory)
+                        self.logger.info("Copying release note dir %s" % directory)
                         shutil.copytree(os.path.join(dirpath, directory), os.path.join(self.topdir, directory))
         
 
@@ -232,8 +234,10 @@ class Pungi:
         timber.common_files = self.common_files
         #timber.reserve_size =  
 
+        self.logger.info("Running splittree.")
+
         output = timber.main()
-        log.info("Output from splittree: %s" % '\n'.join(output))
+        self.logger.debug("Output from splittree: %s" % '\n'.join(output))
 
     def doSplitSRPMs(self):
         """Use anaconda-runtime's splittree to split the srpms into appropriate
@@ -270,8 +274,9 @@ class Pungi:
                                "%s-disc%d" %(timber.dist_dir, i),
                                timber.common_files)
 
+        self.logger.info("Splitting SRPMs")
         timber.splitSRPMS()
-        log.info("splitSRPMS complete")
+        self.logger.info("splitSRPMS complete")
 
     def doCreateSplitrepo(self):
         """Create the split metadata for the isos"""
@@ -519,4 +524,4 @@ class Pungi:
             if directory.startswith('os-disc') or directory.startswith('SRPM-disc'):
                 shutil.move(os.path.join(self.archdir, directory), os.path.join(self.workdir, directory))
 
-        log.info("CreateIsos is done.")
+        self.logger.info("CreateIsos is done.")

@@ -16,6 +16,8 @@ import yum
 import os
 import shutil
 import sys
+import pypungi
+import logging
 
 class PungiYum(yum.YumBase):
     """Subclass of Yum"""
@@ -39,15 +41,18 @@ class PungiYum(yum.YumBase):
 
         yum.logging.basicConfig(level=yum.logging.DEBUG, filename=logfile)
 
+    def doFileLogSetup(self, uid, logfile):
+        # This function overrides a yum function, allowing pungi to control
+        # the logging.
+        pass
 
-class Gather():
+class Gather(pypungi.PungiBase):
     def __init__(self, config, pkglist):
-        self.workdir = os.path.join(config.get('default', 'destdir'),
-                                    'work',
-                                    config.get('default', 'flavor'),
-                                    config.get('default', 'arch'))
+	pypungi.PungiBase.__init__(self, config)
 
-        self.config = config
+        # Set our own logging name space
+        self.logger = logging.getLogger('Pungi.Gather')
+
         self.pkglist = pkglist
         self.config.cachedir = os.path.join(self.workdir, 'yumcache')
         self.polist = []
@@ -82,8 +87,6 @@ class Gather():
         #self.doSackSetup(archlist=arches) # work around temp break in yum api
         #self.doSackFilelistPopulate()
         self.ayum._getSacks(archlist=arches)
-        self.logger = yum.logging.getLogger("yum.verbose.pungi")
-        self.ayum.logger = yum.logging.getLogger("yum.verbose.pungi")
 
     def verifyCachePkg(self, po, path): # Stolen from yum
         """check the package checksum vs the cache
@@ -106,8 +109,7 @@ class Gather():
            transaction info"""
 
 
-        if not self.config.has_option('default', 'quiet'):
-            self.logger.info('Checking deps of %s.%s' % (po.name, po.arch))
+        self.logger.info('Checking deps of %s.%s' % (po.name, po.arch))
 
         reqs = po.requires
         provs = po.provides
@@ -130,8 +132,7 @@ class Gather():
 
             for dep in depsack.returnNewestByNameArch():
                 self.ayum.tsInfo.addInstall(dep)
-                if not self.config.has_option('default', 'quiet'):
-                    self.logger.info('Added %s.%s for %s.%s' % (dep.name, dep.arch, po.name, po.arch))
+                self.logger.info('Added %s.%s for %s.%s' % (dep.name, dep.arch, po.name, po.arch))
            
             self.resolved_deps[req] = None
 
@@ -207,22 +208,18 @@ class Gather():
         for line in self.pkglist:
             line = line.strip()
             if line.startswith('#'):
-                if not self.config.has_option('default', 'quiet'):
-                    self.logger.info('Skipping comment: %s' % line)
+                self.logger.debug('Skipping comment: %s' % line)
                 continue
             if line.startswith('@'):
-                if not self.config.has_option('default', 'quiet'):
-                    self.logger.info('Adding group: %s' % line)
+                self.logger.info('Adding group: %s' % line)
                 grouplist.append(line.strip('@'))
                 continue
             if line.startswith('-'):
-                if not self.config.has_option('default', 'quiet'):
-                    self.logger.info('Adding exclude: %s' % line)
+                self.logger.info('Adding exclude: %s' % line)
                 excludelist.append(line.strip('-'))
                 continue
             else:
-                if not self.config.has_option('default', 'quiet'):
-                    self.logger.info('Adding package: %s' % line)
+                self.logger.info('Adding package: %s' % line)
                 addlist.append(line)
 
         # First remove the excludes
@@ -251,8 +248,7 @@ class Gather():
         mysack = yum.packageSack.ListPackageSack(matches)
         for match in mysack.returnNewestByNameArch():
             self.ayum.tsInfo.addInstall(match)
-            if not self.config.has_option('default', 'quiet'):
-                self.logger.info('Found %s.%s' % (match.name, match.arch))
+            self.logger.debug('Found %s.%s' % (match.name, match.arch))
 
         for pkg in unmatched:
             if not pkg in matchdict.keys():
@@ -289,12 +285,11 @@ class Gather():
            download them from their respective repos."""
 
 
-        if not self.config.has_option('default', 'quiet'):
-            downloads = []
-            for pkg in self.polist:
-                downloads.append('%s.%s' % (pkg.name, pkg.arch))
-                downloads.sort()
-            self.logger.info("Download list: %s" % downloads)
+        downloads = []
+        for pkg in self.polist:
+            downloads.append('%s.%s' % (pkg.name, pkg.arch))
+            downloads.sort()
+        self.logger.info("Download list: %s" % downloads)
 
         # Package location within destdir, name subject to change/config
         pkgdir = os.path.join(self.config.get('default', 'destdir'), self.config.get('default', 'version'), 
@@ -312,9 +307,7 @@ class Gather():
             local = os.path.basename(remote)
             local = os.path.join(self.config.get('default', 'cachedir'), local)
             if os.path.exists(local) and self.verifyCachePkg(pkg, local):
-
-                if not self.config.has_option('default', 'quiet'):
-                    self.logger.info("%s already exists and appears to be complete" % local)
+                self.logger.debug("%s already exists and appears to be complete" % local)
                 target = os.path.join(pkgdir, os.path.basename(remote))
                 if os.path.exists(target):
                     os.remove(target) # avoid traceback after interrupted download
@@ -323,8 +316,7 @@ class Gather():
 
             # Disable cache otherwise things won't download
             repo.cache = 0
-            if not self.config.has_option('default', 'quiet'):
-                self.logger.info('Downloading %s' % os.path.basename(remote))
+            self.logger.info('Downloading %s' % os.path.basename(remote))
             pkg.localpath = local # Hack: to set the localpath to what we want.
 
             # do a little dance for file:// repos...
@@ -385,20 +377,16 @@ class Gather():
             local = os.path.basename(remote)
             local = os.path.join(self.config.get('default', 'cachedir'), local)
             if os.path.exists(local) and self.verifyCachePkg(pkg, local):
-
-                if not self.config.has_option('default', 'quiet'):
-                    self.logger.info("%s already exists and appears to be complete" % local)
+                self.logger.debug("%s already exists and appears to be complete" % local)
                 if os.path.exists(os.path.join(pkgdir, os.path.basename(remote))) and self.verifyCachePkg(pkg, os.path.join(pkgdir, os.path.basename(remote))):
-                    if not self.config.has_option('default', 'quiet'):
-                        self.logger.info("%s already exists in tree and appears to be complete" % local)
+                    self.logger.debug("%s already exists in tree and appears to be complete" % local)
                 else:
                     os.link(local, os.path.join(pkgdir, os.path.basename(remote)))
                 continue
 
             # Disable cache otherwise things won't download
             repo.cache = 0
-            if not self.config.has_option('default', 'quiet'):
-                self.logger.info('Downloading %s' % os.path.basename(remote))
+            self.logger.info('Downloading %s' % os.path.basename(remote))
             pkg.localpath = local # Hack: to set the localpath to what we want.
 
             # do a little dance for file:// repos...

@@ -142,6 +142,8 @@ def main():
         if opts.do_all or opts.do_createiso:
             mypungi.doCreateIsos()
 
+    print "All done!"
+
 if __name__ == '__main__':
     from optparse import OptionParser
     import sys

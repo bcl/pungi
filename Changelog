@@ -1,3 +1,15 @@
+* Wed Aug 15 2007 Jesse Keating <jkeating@redhat.com>
+- Create a base pungi class that sets logging
+- Inherit this class in Gather and Pungi
+- Adjust logging to make use of new facility, use right levels
+- Drop a note when all done with composing
+
+* Wed Aug 08 2007 Jesse Keating <jkeating@redhat.com>
+- Make Gather() no longer a subclass of yum
+- We set debuglevel when creating the yum object.
+- Be verbose about what we clean
+- Create a subclass of yum to work around logging fun
+
 * Wed Aug 01 2007 Jesse Keating <jkeating@redhat.com>
 - Create a new yum object for source downloads as yum
 
