@@ -38,11 +38,6 @@ class Pungi(pypungi.PungiBase):
         self.topdir = os.path.join(self.archdir, 'os')
         self.isodir = os.path.join(self.archdir, self.config.get('default','isodir'))
 
-        self.workdir = os.path.join(self.config.get('default', 'destdir'),
-                                    'work',
-                                    self.config.get('default', 'flavor'),
-                                    self.config.get('default', 'arch'))
-
         if not os.path.exists(self.workdir):
             os.makedirs(self.workdir)
 
