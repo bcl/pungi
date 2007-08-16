@@ -326,7 +326,8 @@ class Gather(pypungi.PungiBase):
                 shutil.copy2(path, local)
  
             os.link(local, os.path.join(pkgdir, os.path.basename(remote)))
-            self.logger.info('Finished downloading packages.')
+
+        self.logger.info('Finished downloading packages.')
 
 
     def downloadSRPMs(self):
