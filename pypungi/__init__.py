@@ -49,6 +49,8 @@ class PungiBase():
                             filename=logfile)
 
         # Create the stdout/err streams and only send INFO+ stuff there
+        formatter = logging.Formatter('%(name)s:%(levelname)s: %(message)s')
         console = logging.StreamHandler()
+        console.setFormatter(formatter)
         console.setLevel(logging.INFO)
         logging.getLogger('').addHandler(console)
