@@ -74,7 +74,8 @@ class Pungi(pypungi.PungiBase):
         p1 = subprocess.Popen(command, cwd=rundir, stdout=output, stderr=error, universal_newlines=True)
         (out, err) = p1.communicate()
 
-        self.logger.debug(out)
+        if out:
+            self.logger.debug(out)
 
         if p1.returncode != 0:
             self.logger.error("Got an error from %s" % command[0])
@@ -191,7 +192,8 @@ class Pungi(pypungi.PungiBase):
                         self.logger.error(err)
                         raise
 
-                    self.logger.debug(out)
+                    if out:
+                        self.logger.debug(out)
 
         # Walk the tree for our files
         for dirpath, dirname, filelist in os.walk(docsdir):
@@ -237,7 +239,8 @@ class Pungi(pypungi.PungiBase):
         self.logger.info("Running splittree.")
 
         output = timber.main()
-        self.logger.debug("Output from splittree: %s" % '\n'.join(output))
+        if output:
+            self.logger.debug("Output from splittree: %s" % '\n'.join(output))
 
     def doSplitSRPMs(self):
         """Use anaconda-runtime's splittree to split the srpms into appropriate
