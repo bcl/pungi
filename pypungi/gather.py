@@ -267,6 +267,7 @@ class Gather(pypungi.PungiBase):
                     moretoprocess = True
 
         self.polist = final_pkgobjs.keys()
+        self.logger.info('Finished gathering package objects.')
 
     def getSRPMList(self):
         """Cycle through the list of package objects and
@@ -325,6 +326,7 @@ class Gather(pypungi.PungiBase):
                 shutil.copy2(path, local)
  
             os.link(local, os.path.join(pkgdir, os.path.basename(remote)))
+            self.logger.info('Finished downloading packages.')
 
 
     def downloadSRPMs(self):
