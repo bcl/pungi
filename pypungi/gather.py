@@ -53,6 +53,13 @@ class Gather(pypungi.PungiBase):
         # Set our own logging name space
         self.logger = logging.getLogger('Pungi.Gather')
 
+        # Create the stdout/err streams and only send INFO+ stuff there
+        formatter = logging.Formatter('%(name)s:%(levelname)s: %(message)s')
+        console = logging.StreamHandler()
+        console.setFormatter(formatter)
+        console.setLevel(logging.INFO)
+        self.logger.addHandler(console)
+
         self.pkglist = pkglist
         self.config.cachedir = os.path.join(self.workdir, 'yumcache')
         self.polist = []

@@ -28,6 +28,13 @@ class Pungi(pypungi.PungiBase):
 
         self.logger = logging.getLogger('Pungi.Pungi')
 
+        # Create the stdout/err streams and only send INFO+ stuff there
+        formatter = logging.Formatter('%(name)s:%(levelname)s: %(message)s')
+        console = logging.StreamHandler()
+        console.setFormatter(formatter)
+        console.setLevel(logging.INFO)
+        self.logger.addHandler(console)
+
         self.prodpath = 'Fedora' # Probably should be defined elsewhere
         self.destdir = self.config.get('default', 'destdir')
         self.archdir = os.path.join(self.destdir,
