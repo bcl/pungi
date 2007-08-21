@@ -3,6 +3,7 @@
   Always pull in 'src' arch packages, just filter them
   when not needed.  Saves having to reset or create new
   yum objects.
+
 * Wed Aug 15 2007 Jesse Keating <jkeating@redhat.com>
 - Create a base pungi class that sets logging
 - Inherit this class in Gather and Pungi
