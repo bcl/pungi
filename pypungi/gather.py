@@ -93,7 +93,16 @@ class Gather(pypungi.PungiBase):
         #self.doSackSetup(arches)
         #self.doSackSetup(archlist=arches) # work around temp break in yum api
         #self.doSackFilelistPopulate()
+        arches.append('src') # throw source in there, filter it later
         self.ayum._getSacks(archlist=arches)
+
+    def _filtersrc(self, po):
+        """Filter out package objects that are of 'src' arch."""
+
+        if po.arch == 'src':
+            return False
+
+        return True
 
     def verifyCachePkg(self, po, path): # Stolen from yum
         """check the package checksum vs the cache
@@ -188,7 +197,7 @@ class Gather(pypungi.PungiBase):
         for condreq, cond in groupobj.conditional_packages.iteritems():
             pkgs = self.ayum.pkgSack.searchNevra(name=condreq)
             if pkgs:
-                pkgs = self.ayum.bestPackagesFromList(pkgs)
+                pkgs = self.ayum.bestPackagesFromList(pkgs, arch=self.ayum.compatarch)
             if self.ayum.tsInfo.conditionals.has_key(cond):
                 self.ayum.tsInfo.conditionals[cond].extend(pkgs)
             else:
@@ -245,7 +254,7 @@ class Gather(pypungi.PungiBase):
 
         # Search repos for things in our searchlist, supports globs
         (exactmatched, matched, unmatched) = yum.packages.parsePackages(self.ayum.pkgSack.returnPackages(), searchlist, casematch=1)
-        matches = exactmatched + matched
+        matches = filter(self._filtersrc, exactmatched + matched)
 
         # Populate a dict of package objects to their names
         for match in matches:
@@ -358,16 +367,17 @@ class Gather(pypungi.PungiBase):
         #self.doSackSetup(archlist=['src'])
 
         # Make a new yum object
-        syum = yum.YumBase()
-        syum.doConfigSetup(fn=self.config.get('default', 'yumconf'), debuglevel=6, errorlevel=6, root=os.path.join(self.workdir, 'yumroot'))
-        syum.doRepoSetup()
+        #syum = yum.YumBase()
+        #syum.doConfigSetup(fn=self.config.get('default', 'yumconf'), debuglevel=6, errorlevel=6, root=os.path.join(self.workdir, 'yumroot'))
+        #syum.doRepoSetup()
 
-        syum._getSacks(archlist=['src'])
+        #syum._getSacks(archlist=['src'])
 
         for srpm in self.srpmlist:
             (sname, sver, srel) = srpm.rsplit('-', 2)
             try:
-                srpmpo = syum.pkgSack.searchNevra(name=sname, ver=sver, rel=srel)[0]
+                #srpmpo = syum.pkgSack.searchNevra(name=sname, ver=sver, rel=srel)[0]
+                srpmpo = self.ayum.pkgSack.searchNevra(name=sname, ver=sver, rel=srel, arch='src')[0]
                 if not srpmpo in srpmpolist:
                     srpmpolist.append(srpmpo)
             except IndexError:
@@ -382,7 +392,8 @@ class Gather(pypungi.PungiBase):
             os.makedirs(pkgdir)
 
         for pkg in srpmpolist:
-            repo = syum.repos.getRepo(pkg.repoid)
+            #repo = syum.repos.getRepo(pkg.repoid)
+            repo = self.ayum.repos.getRepo(pkg.repoid)
             remote = pkg.relativepath
             local = os.path.basename(remote)
             local = os.path.join(self.config.get('default', 'cachedir'), local)
