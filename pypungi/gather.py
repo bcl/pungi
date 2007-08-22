@@ -48,7 +48,7 @@ class PungiYum(yum.YumBase):
 
 class Gather(pypungi.PungiBase):
     def __init__(self, config, pkglist):
-	pypungi.PungiBase.__init__(self, config)
+        pypungi.PungiBase.__init__(self, config)
 
         # Set our own logging name space
         self.logger = logging.getLogger('Pungi.Gather')
