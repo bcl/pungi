@@ -1,7 +1,7 @@
 %{!?python_sitelib: %define python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")}
 
 Name:           pungi
-Version:        0.4.1
+Version:        0.5.0
 Release:        1%{?dist}
 Summary:        Distribution compose tool
 
@@ -46,6 +46,19 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Tue Aug 21 2007 Jesse Keating <jkeating@redhat.com> - 0.5.0-1
+- Rework how source rpms are pulled in
+  Always pull in 'src' arch packages, just filter them
+  when not needed.  Saves having to reset or create new
+  yum objects.
+- Create a base pungi class that sets logging
+- Inherit this class in Gather and Pungi
+- Adjust logging to make use of new facility, use right levels
+- Drop a note when all done with composing
+- Make Gather() no longer a subclass of yum
+- Be verbose about what we clean (makefile)
+- Create a subclass of yum to work around logging fun
+
 * Wed Aug 01 2007 Jesse Keating <jkeating@redhat.com> - 0.4.1-1
 - Create a new yum object for source downloads as yum
 

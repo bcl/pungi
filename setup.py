@@ -2,7 +2,7 @@ from distutils.core import setup
 import glob
 
 setup(name='pungi',
-      version='0.4.1',
+      version='0.5.1',
       description='Distribution compose tool',
       author='Jesse Keating',
       author_email='jkeating@redhat.com',
