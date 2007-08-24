@@ -26,10 +26,14 @@ DONE ^^
 DONE ^^
 
 * Make the following transitions
-  product_name -> name
-  product path == 'Packages/"
-  get comps data from repos
+  product_name -> name *DONE*
+  product path == 'Packages/" *DONE*
   cachedir == /var/cache/pungi ?
+
+* Get comps data from repos
+  Use ayum.comps.<whatever> to get comps information *DONE*
+  Snag each available comps file, cat them together, use xslt to make clean
+  Use this mutant comps for creating repodata in the destdirs.
 
 * From pykickstart
   manifest -> %packages
@@ -38,8 +42,5 @@ DONE ^^
 
 * Release notes stuff
   Drop all stuff but GPL, README, GPG keys, potentially README-BURNING-ISOS ?
-
-* fedora-release
-  Provides: system-release = %{version}-%{release}
 
 * Profit!

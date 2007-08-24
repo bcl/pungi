@@ -66,10 +66,6 @@ class Gather(pypungi.PungiBase):
         self.srpmlist = []
         self.resolved_deps = {} # list the deps we've already resolved, short circuit.
 
-        # Create a comps object and add our comps file for group definitions
-        self.compsobj = yum.comps.Comps()
-        self.compsobj.add(self.config.get('default', 'comps'))
-
         # Create a yum object to use
         self.ayum = PungiYum(config)
         self.ayum.doConfigSetup(fn=config.get('default', 'yumconf'), debuglevel=6, errorlevel=6, root=os.path.join(self.workdir, 'yumroot'))
@@ -169,12 +165,12 @@ class Gather(pypungi.PungiBase):
             group = group.split(' --nodefaults')[0]
 
         # Check if we have the group
-        if not self.compsobj.has_group(group):
+        if not self.ayum.comps.has_group(group):
             self.logger.error("Group %s not found in comps!" % group)
             return packages
 
         # Get the group object to work with
-        groupobj = self.compsobj.return_group(group)
+        groupobj = self.ayum.comps.return_group(group)
 
         # Add the mandatory packages
         packages.extend(groupobj.mandatory_packages.keys())
