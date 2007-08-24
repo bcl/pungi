@@ -1,6 +1,7 @@
 * Fri Aug 24 2007 Jesse Keating <jkeating@redhat.com>
 - Remove a lot of configurable items and hard set them
 - Move some items to cli flags only (part of moving to pykickstart)
+- make "product_name" "name" instead.  KISS
 
 * Thu Aug 23 2007 Jesse Keating <jkeating@redhat.com>
 - Add a source config for the Fedora spin

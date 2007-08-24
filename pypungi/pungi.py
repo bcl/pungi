@@ -109,7 +109,7 @@ class Pungi(pypungi.PungiBase):
         #buildinstall.append('TMPDIR=%s' % self.workdir) # TMPDIR broken in buildinstall
 
         buildinstall.append('--product')
-        buildinstall.append(self.config.get('default', 'product_name'))
+        buildinstall.append(self.config.get('default', 'name'))
 
         if not self.config.get('default', 'flavor') == "":
             buildinstall.append('--variant')
@@ -119,7 +119,7 @@ class Pungi(pypungi.PungiBase):
         buildinstall.append(self.config.get('default', 'version'))
 
         buildinstall.append('--release')
-        buildinstall.append('%s %s' % (self.config.get('default', 'product_name'), self.config.get('default', 'version')))
+        buildinstall.append('%s %s' % (self.config.get('default', 'name'), self.config.get('default', 'version')))
 
         buildinstall.append('--prodpath')
         buildinstall.append(self.config.get('default', 'product_path'))
@@ -230,7 +230,7 @@ class Pungi(pypungi.PungiBase):
         timber.total_discs = self.config.getint('default', 'discs')
         timber.bin_discs = self.config.getint('default', 'discs')
         timber.src_discs = 0
-        timber.release_str = '%s %s' % (self.config.get('default', 'product_name'), self.config.get('default', 'version'))
+        timber.release_str = '%s %s' % (self.config.get('default', 'name'), self.config.get('default', 'version'))
         timber.package_order_file = os.path.join(self.workdir, 'pkgorder-%s' % self.config.get('default', 'arch'))
         timber.dist_dir = self.topdir
         timber.src_dir = os.path.join(self.config.get('default', 'destdir'), self.config.get('default', 'version'), 'source', 'SRPMS')
@@ -257,7 +257,7 @@ class Pungi(pypungi.PungiBase):
         #timber.total_discs = self.config.getint('default', 'discs')
         #timber.bin_discs = self.config.getint('default', 'discs')
         timber.src_discs = self.config.getint('default', 'discs')
-        #timber.release_str = '%s %s' % (self.config.get('default', 'product_name'), self.config.get('default', 'version'))
+        #timber.release_str = '%s %s' % (self.config.get('default', 'name'), self.config.get('default', 'version'))
         #timber.package_order_file = os.path.join(self.config.get('default', 'destdir'), 'pkgorder-%s' % self.config.get('default', 'arch'))
         timber.dist_dir = os.path.join(self.config.get('default', 'destdir'),
                                        self.config.get('default', 'version'),
@@ -375,7 +375,7 @@ class Pungi(pypungi.PungiBase):
                         extraargs.extend(sparcbootargs)
 
                 extraargs.append('-V')
-                extraargs.append('%s %s %s Disc %s' % (self.config.get('default', 'product_name'),
+                extraargs.append('%s %s %s Disc %s' % (self.config.get('default', 'name'),
                     self.config.get('default', 'version'), self.config.get('default', 'arch'), disc))
 
                 extraargs.append('-o')
@@ -438,7 +438,7 @@ class Pungi(pypungi.PungiBase):
                 extraargs.extend(sparcbootargs)
 
             extraargs.append('-V')
-            extraargs.append('%s %s %s DVD' % (self.config.get('default', 'product_name'),
+            extraargs.append('%s %s %s DVD' % (self.config.get('default', 'name'),
                 self.config.get('default', 'version'), self.config.get('default', 'arch')))
 
             extraargs.append('-o')
@@ -506,7 +506,7 @@ class Pungi(pypungi.PungiBase):
                 extraargs.extend(sparcbootargs)
 
             extraargs.append('-V')
-            extraargs.append('%s %s %s Rescue' % (self.config.get('default', 'product_name'),
+            extraargs.append('%s %s %s Rescue' % (self.config.get('default', 'name'),
                     self.config.get('default', 'version'), self.config.get('default', 'arch')))
 
             extraargs.append('-o')

@@ -58,7 +58,7 @@ def main():
     config.set('default', 'relnotepkgs', relnotepkgs)
 
     # set configs from cli options
-    config.set('default', 'product_name', opts.name)
+    config.set('default', 'name', opts.name)
     config.set('default', 'version', opts.ver)
     config.set('default', 'flavor', opts.flavor)
     config.set('default', 'destdir', opts.destdir)
@@ -66,9 +66,9 @@ def main():
     config.set('default', 'discs', opts.discs)
 
     # set some other defaults
-    config.set('default', 'product_path', config.get('default', 'product_name'))
+    config.set('default', 'product_path', config.get('default', 'name'))
 
-    config.set('default', 'iso_basename', config.get('default', 'product_name'))
+    config.set('default', 'iso_basename', config.get('default', 'name'))
 
     pkglist = get_packagelist(config.get('default', 'manifest'))
 
