@@ -12,6 +12,8 @@ Working with Kickstart
   relnotedirre
   relnotepkgs
 
+DONE ^^
+
 * Move to CLI only:
   name
   version
@@ -21,9 +23,13 @@ Working with Kickstart
   discs (optional)
   nosource (optional/debug)
 
+DONE ^^
+
 * Make the following transitions
+  product_name -> name
   product path == 'Packages/"
   get comps data from repos
+  cachedir == /var/cache/pungi ?
 
 * From pykickstart
   manifest -> %packages
