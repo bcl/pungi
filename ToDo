@@ -1,5 +1,39 @@
-Drop release notes files in the tree
-Make pungi use the Fedora layout, composedir/topdir/os/<arch>/Fedora, composedir/topdir/<arch>/iso/, composedir/topdir/<arch>/debug/
-  Get debuginfo packages?
-Put working items in composedir/work
-Create a logging system, log to composedir/logs/
+Working with Kickstart
+
+* Remove config options for:
+  osdir
+  sourcedir
+  debugdir
+  isodir
+  iso_basename
+  destdir
+  cachedir
+  arch
+  relnotefilere
+  relnotedirre
+  relnotepkgs
+
+* Move to CLI only:
+  name
+  version
+  flavor (optional)
+  bugurl (optional)
+  discs (optional)
+  nosource (optional/debug)
+
+* Make the following transitions
+  product path == 'Packages/"
+  get comps data from repos
+
+* From pykickstart
+  manifest -> %packages
+  yum-repos -> repo
+  isosize -> part iso size <size> (optional)
+
+* Release notes stuff
+  Drop all stuff but GPL, README, GPG keys, potentially README-BURNING-ISOS ?
+
+* fedora-release
+  Provides: system-release = %{version}-%{release}
+
+* Profit!
