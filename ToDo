@@ -6,7 +6,6 @@ Working with Kickstart
   debugdir
   isodir
   iso_basename
-  destdir
   cachedir
   arch
   relnotefilere
@@ -16,6 +15,7 @@ Working with Kickstart
 * Move to CLI only:
   name
   version
+  destdir
   flavor (optional)
   bugurl (optional)
   discs (optional)
