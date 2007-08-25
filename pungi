@@ -70,16 +70,6 @@ def main():
         if part.mountpoint == 'iso':
             config.set('default', 'cdsize', part.size)
 
-    # Build up a package dict.
-    pkgdict = {'groups': [], 'packages': [], 'excludes': [])
-    for group in ksparser.handler.packages.groupList:
-        if group.include == 1:
-            pkgdict['groups'].append(group.name)
-
-    pkgdict['packages'].extend(ksparser.handler.packages.packageList)
-
-    pkgdict['excludes'].extend(ksparser.handler.packages.excludedList)
-
     # Set up our directories
     if not os.path.exists(config.get('default', 'destdir')):
         try:
@@ -100,7 +90,7 @@ def main():
     # Actually do work.
     if not config.get('default', 'arch') == 'source':
         if opts.do_all or opts.do_gather:
-            mygather = pypungi.gather.Gather(config, pkgdict)
+            mygather = pypungi.gather.Gather(config, ksparser)
             mygather.getPackageObjects()
             mygather.downloadPackages()
             mygather.makeCompsFile()

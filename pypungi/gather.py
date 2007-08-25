@@ -47,7 +47,7 @@ class PungiYum(yum.YumBase):
         pass
 
 class Gather(pypungi.PungiBase):
-    def __init__(self, config, pkgdict):
+    def __init__(self, config, ksparser):
         pypungi.PungiBase.__init__(self, config)
 
         # Set our own logging name space
@@ -60,7 +60,7 @@ class Gather(pypungi.PungiBase):
         console.setLevel(logging.INFO)
         self.logger.addHandler(console)
 
-        self.pkgdict = pkgdict
+        self.ksparser = ksparser
         self.config.cachedir = os.path.join(self.workdir, 'yumcache')
         self.polist = []
         self.srpmlist = []
@@ -209,16 +209,26 @@ class Gather(pypungi.PungiBase):
         searchlist = [] # The list of package names/globs to search for
         matchdict = {} # A dict of objects to names
 
+        # Build up a package dict.
+        pkgdict = {'groups': [], 'packages': [], 'excludes': [])
+        for group in self.ksparser.handler.packages.groupList:
+            if group.include == 1:
+                pkgdict['groups'].append(group.name)
+
+        pkgdict['packages'].extend(self.ksparser.handler.packages.packageList)
+
+        pkgdict['excludes'].extend(self.ksparser.handler.packages.excludedList)
+
         # First remove the excludes
-        self.ayum.conf.exclude.extend(self.pkgdict['excludes'])
+        self.ayum.conf.exclude.extend(pkgdict['excludes'])
         self.ayum.excludePackages()
 
         # Get a list of packages from groups
-        for group in self.pkgdict['groups']:
+        for group in pkgdict['groups']:
             searchlist.extend(self.getPackagesFromGroup(group))
 
         # Add the adds
-        searchlist.extend(self.pkgdict['packages'])
+        searchlist.extend(pkgdict['packages'])
 
         # Make the search list unique
         searchlist = yum.misc.unique(searchlist)
