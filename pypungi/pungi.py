@@ -508,7 +508,7 @@ class Pungi(pypungi.PungiBase):
 
             # shove the sha1sum into a file
             sha1file = open(os.path.join(self.isodir, 'SHA1SUM'), 'a')
-            pypungi._doRunCommand(['/usr/bin/sha1sum', isoname], self.logger, self.logger, rundir=self.isodir, output=sha1file)
+            pypungi._doRunCommand(['/usr/bin/sha1sum', isoname], self.logger, rundir=self.isodir, output=sha1file)
             sha1file.close()
 
         # Do some clean up
