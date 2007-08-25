@@ -32,8 +32,10 @@ DONE ^^
 
 * Get comps data from repos
   Use ayum.comps.<whatever> to get comps information *DONE*
-  Snag each available comps file, cat them together, use xslt to make clean
-  Use this mutant comps for creating repodata in the destdirs.
+  Snag each available comps file, cat them together, use xslt to make clean *DONE*
+  Use this mutant comps for creating repodata in the destdirs. *DONE*
+
+DONE ^^
 
 * From pykickstart
   manifest -> %packages
