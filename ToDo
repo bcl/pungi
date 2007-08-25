@@ -38,11 +38,15 @@ DONE ^^
 DONE ^^
 
 * From pykickstart
-  manifest -> %packages
+  manifest -> %packages *DONE*
   yum-repos -> repo
-  isosize -> part iso size <size> (optional)
+  isosize -> part iso size <size> (optional) *DONE*
 
 * Release notes stuff
   Drop all stuff but GPL, README, GPG keys, potentially README-BURNING-ISOS ?
+
+* From livecd-creator
+  Steal root check
+  Use same cli syntax if possible (conf -> config, etc..)
 
 * Profit!
