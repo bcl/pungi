@@ -1,3 +1,9 @@
+* Sat Aug 25 2007 Jesse Keating <jkeating@redhat.com>
+- Use a kickstart file as input now (for cdsize and package manifest)
+- Turn pkglist into a pre-parsed package dictionary
+- Arrange config setting logically
+- Error out on usage if no config file passed
+
 * Fri Aug 24 2007 Jesse Keating <jkeating@redhat.com>
 - Remove a lot of configurable items and hard set them
 - Move some items to cli flags only (part of moving to pykickstart)

@@ -47,7 +47,7 @@ class PungiYum(yum.YumBase):
         pass
 
 class Gather(pypungi.PungiBase):
-    def __init__(self, config, pkglist):
+    def __init__(self, config, pkgdict):
         pypungi.PungiBase.__init__(self, config)
 
         # Set our own logging name space
@@ -60,7 +60,7 @@ class Gather(pypungi.PungiBase):
         console.setLevel(logging.INFO)
         self.logger.addHandler(console)
 
-        self.pkglist = pkglist
+        self.pkgdict = pkgdict
         self.config.cachedir = os.path.join(self.workdir, 'yumcache')
         self.polist = []
         self.srpmlist = []
@@ -209,38 +209,16 @@ class Gather(pypungi.PungiBase):
         searchlist = [] # The list of package names/globs to search for
         matchdict = {} # A dict of objects to names
 
-        grouplist = []
-        excludelist = []
-        addlist = []
-
-        # Cycle through the package list and pull out the groups
-        for line in self.pkglist:
-            line = line.strip()
-            if line.startswith('#'):
-                self.logger.debug('Skipping comment: %s' % line)
-                continue
-            if line.startswith('@'):
-                self.logger.info('Adding group: %s' % line)
-                grouplist.append(line.strip('@'))
-                continue
-            if line.startswith('-'):
-                self.logger.info('Adding exclude: %s' % line)
-                excludelist.append(line.strip('-'))
-                continue
-            else:
-                self.logger.info('Adding package: %s' % line)
-                addlist.append(line)
-
         # First remove the excludes
-        self.ayum.conf.exclude.extend(excludelist)
+        self.ayum.conf.exclude.extend(self.pkgdict['excludes'])
         self.ayum.excludePackages()
 
         # Get a list of packages from groups
-        for group in grouplist:
+        for group in self.pkgdict['groups']:
             searchlist.extend(self.getPackagesFromGroup(group))
 
         # Add the adds
-        searchlist.extend(addlist)
+        searchlist.extend(self.pkgdict['packages'])
 
         # Make the search list unique
         searchlist = yum.misc.unique(searchlist)
