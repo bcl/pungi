@@ -94,6 +94,7 @@ def main():
             mygather = pypungi.gather.Gather(config, pkglist)
             mygather.getPackageObjects()
             mygather.downloadPackages()
+            mygather.makeCompsFile()
             if not opts.nosource:
                 mygather.getSRPMList()
                 mygather.downloadSRPMs()

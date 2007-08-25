@@ -10,6 +10,6 @@ setup(name='pungi',
       license='GPL',
       packages = ['pypungi'],
       scripts = ['pungi'],
-      data_files=[('/etc/pungi', glob.glob('config/*'))]
+      data_files=[('/etc/pungi', glob.glob('config/*')), ('/usr/share/pungi', glob.glob('share/*'))]
       )
 

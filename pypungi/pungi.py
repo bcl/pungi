@@ -67,38 +67,24 @@ class Pungi(pypungi.PungiBase):
         if subfile.startswith(self.destdir):
             return subfile.replace(self.destdir + os.path.sep, '')
 
-    def _doRunCommand(self, command, rundir='/tmp', output=subprocess.PIPE, error=subprocess.PIPE):
-        """Run a command and log the output.  Error out if we get something on stderr"""
-
-
-        self.logger.info("Running %s" % ' '.join(command))
-
-        p1 = subprocess.Popen(command, cwd=rundir, stdout=output, stderr=error, universal_newlines=True)
-        (out, err) = p1.communicate()
-
-        if out:
-            self.logger.debug(out)
-
-        if p1.returncode != 0:
-            self.logger.error("Got an error from %s" % command[0])
-            self.logger.error(err)
-            raise OSError, "Got an error from %s: %s" % (command[0], err)
-
     def doCreaterepo(self):
         """Run createrepo to generate repodata in the tree."""
 
 
+        compsfile = os.path.join(self.workdir, '%s-%s-comps.xml' % (self.config.get('default', 'name'), self.config.get('default', 'version')))
+
         # setup the createrepo call
         createrepo = ['/usr/bin/createrepo']
+        createrepo.append('--quiet')
         createrepo.append('--database')
 
         createrepo.append('--groupfile')
-        createrepo.append(self.config.get('default', 'comps'))
+        createrepo.append(compsfile)
 
         createrepo.append(self.topdir)
 
         # run the command
-        self._doRunCommand(createrepo, rundir=self.topdir)
+        pypungi._doRunCommand(createrepo, self.logger, rundir=self.topdir)
 
     def doBuildinstall(self):
         """Run anaconda-runtime's buildinstall on the tree."""
@@ -131,7 +117,7 @@ class Pungi(pypungi.PungiBase):
         buildinstall.append(self.topdir)
 
         # run the command
-        self._doRunCommand(buildinstall)
+        pypungi._doRunCommand(buildinstall, self.logger)
 
         # write out the tree data for snake
         self.writeinfo('tree: %s' % self.mkrelative(self.topdir))
@@ -153,7 +139,7 @@ class Pungi(pypungi.PungiBase):
         pkgorder.append(self.config.get('default', 'product_path'))
 
         # run the command
-        self._doRunCommand(pkgorder, output=pkgorderfile)
+        pypungi._doRunCommand(pkgorder, self.logger, output=pkgorderfile)
         pkgorderfile.close()
 
     def doGetRelnotes(self):
@@ -293,12 +279,15 @@ class Pungi(pypungi.PungiBase):
             discinfo = open(os.path.join(self.topdir, '.discinfo'), 'r').readlines()
         mediaid = discinfo[0].rstrip('\n')
 
+        compsfile = os.path.join(self.workdir, '%s-%s-comps.xml' % (self.config.get('default', 'name'), self.config.get('default', 'version')))
+
         # set up the process
         createrepo = ['/usr/bin/createrepo']
+        createrepo.append('--quiet')
         createrepo.append('--database')
 
         createrepo.append('--groupfile')
-        createrepo.append(self.config.get('default', 'comps'))
+        createrepo.append(compsfile)
 
         createrepo.append('--baseurl')
         createrepo.append('media://%s' % mediaid)
@@ -322,7 +311,7 @@ class Pungi(pypungi.PungiBase):
                 createrepo.append('%s-disc%s' % (self.topdir, disc))
 
         # run the command
-        self._doRunCommand(createrepo)
+        pypungi._doRunCommand(createrepo, self.logger)
 
     def doCreateIsos(self):
         """Create isos from the various split directories."""
@@ -384,15 +373,15 @@ class Pungi(pypungi.PungiBase):
                 extraargs.append(os.path.join('%s-disc%s' % (self.topdir, disc)))
 
                 # run the command
-                self._doRunCommand(mkisofs + extraargs)
+                pypungi._doRunCommand(mkisofs + extraargs, self.logger)
 
                 # implant md5 for mediacheck on all but source arches
                 if not self.config.get('default', 'arch') == 'source':
-                    self._doRunCommand(['/usr/lib/anaconda-runtime/implantisomd5', isofile])
+                    pypungi._doRunCommand(['/usr/lib/anaconda-runtime/implantisomd5', isofile], self.logger)
 
                 # shove the sha1sum into a file
                 sha1file = open(os.path.join(self.isodir, 'SHA1SUM'), 'a')
-                self._doRunCommand(['/usr/bin/sha1sum', isoname], rundir=self.isodir, output=sha1file)
+                pypungi._doRunCommand(['/usr/bin/sha1sum', isoname], self.logger, rundir=self.isodir, output=sha1file)
                 sha1file.close()
 
                 # keep track of the CD images we've written
@@ -450,15 +439,15 @@ class Pungi(pypungi.PungiBase):
                 extraargs.append(os.path.join(self.archdir, 'SRPMS'))
 
             # run the command
-            self._doRunCommand(mkisofs + extraargs)
+            pypungi._doRunCommand(mkisofs + extraargs, self.logger)
 
             # implant md5 for mediacheck on all but source arches
             if not self.config.get('default', 'arch') == 'source':
-                self._doRunCommand(['/usr/lib/anaconda-runtime/implantisomd5', isofile])
+                pypungi._doRunCommand(['/usr/lib/anaconda-runtime/implantisomd5', isofile], self.logger)
 
             # shove the sha1sum into a file
             sha1file = open(os.path.join(self.isodir, 'SHA1SUM'), 'a')
-            self._doRunCommand(['/usr/bin/sha1sum', isoname], rundir=self.isodir, output=sha1file)
+            pypungi._doRunCommand(['/usr/bin/sha1sum', isoname], self.logger, rundir=self.isodir, output=sha1file)
             sha1file.close()
 
             # return the .discinfo file
@@ -490,7 +479,7 @@ class Pungi(pypungi.PungiBase):
             rescue.append(self.config.get('default', 'product_path'))
 
             # run the command
-            self._doRunCommand(rescue)
+            pypungi._doRunCommand(rescue, self.logger)
 
             # write the iso
             extraargs = []
@@ -515,11 +504,11 @@ class Pungi(pypungi.PungiBase):
             extraargs.append(os.path.join(self.workdir, "%s-rescueimage" % self.config.get('default', 'arch')))
 
             # run the command
-            self._doRunCommand(mkisofs + extraargs)
+            pypungi._doRunCommand(mkisofs + extraargs, self.logger)
 
             # shove the sha1sum into a file
             sha1file = open(os.path.join(self.isodir, 'SHA1SUM'), 'a')
-            self._doRunCommand(['/usr/bin/sha1sum', isoname], rundir=self.isodir, output=sha1file)
+            pypungi._doRunCommand(['/usr/bin/sha1sum', isoname], self.logger, self.logger, rundir=self.isodir, output=sha1file)
             sha1file.close()
 
         # Do some clean up

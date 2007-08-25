@@ -43,6 +43,7 @@ rm -rf $RPM_BUILD_ROOT
 # For noarch packages: sitelib
 %{python_sitelib}/pypungi
 %{_bindir}/pungi
+%{_datadir}/pungi
 
 
 %changelog

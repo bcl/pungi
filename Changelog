@@ -4,6 +4,12 @@
 - make "product_name" "name" instead.  KISS
 - hard set product_path to 'Packages'
 - Use group metadata from repos instead of our own comps file
+- Get group files out of configured repos and create a mashup
+  of the comps.  Filter it and make use of it when creating repos.
+- Move _doRunCommand into pypungi/__init__.py so that it can be
+  easily used by all modules.  Also pass in a logger for correct
+  logging
+- Quiet down creatrepo calls
 
 * Thu Aug 23 2007 Jesse Keating <jkeating@redhat.com>
 - Add a source config for the Fedora spin

@@ -338,6 +338,54 @@ class Gather(pypungi.PungiBase):
 
         self.logger.info('Finished downloading packages.')
 
+    def makeCompsFile(self):
+        """Gather any comps files we can from repos and merge them into one."""
+
+        # get our list of repos
+        repos = self.ayum.repos.repos.values()
+
+        compsstub = '<?xml version="1.0" encoding="UTF-8"?>\n<!DOCTYPE comps PUBLIC "-//Red Hat, Inc.//DTD Comps info//EN" "comps.dtd">\n<comps>\n'
+
+        closestub = '\n</comps>\n'
+
+        ourcompspath = os.path.join(self.workdir, '%s-%s-comps.xml' % (self.config.get('default', 'name'), self.config.get('default', 'version')))
+
+        ourcomps = open(ourcompspath, 'w')
+
+        ourcomps.write(compsstub)
+
+        # iterate through the list and get what comps we can.
+        # Strip the first three lines and the last line of substance off
+        # once done, write it to our comps file
+        for repo in repos:
+            try:
+                groupfile = repo.getGroups()
+            except yum.Errors.RepoMDError, e:
+                self.logger.warn("No group data found for %s" % repo.id)
+                pass
+            else:
+                compslines = open(groupfile, 'r').readlines()
+                for line in compslines:
+                    if line.startswith('</comps>'):
+                        end = compslines.index(line)
+
+                for line in compslines:
+                    if line.startswith('<comps>'):
+                        start = compslines.index(line) + 1
+                
+                ourcomps.writelines(compslines[start:end])
+
+        ourcomps.write(closestub)
+        ourcomps.close()
+
+        # Run the xslt filter over our comps file
+        compsfilter = ['/usr/bin/xsltproc', '--novalid']
+        compsfilter.append('-o')
+        compsfilter.append(ourcompspath)
+        compsfilter.append('/usr/share/pungi/comps-cleanup.xsl')
+        compsfilter.append(ourcompspath)
+
+        pypungi._doRunCommand(compsfilter, self.logger)
 
     def downloadSRPMs(self):
         """Cycle through the list of srpms and

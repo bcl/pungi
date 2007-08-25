@@ -14,6 +14,7 @@
 
 import logging
 import os
+import subprocess
 
 class PungiBase():
     """The base Pungi class.  Set up config items and logging here"""
@@ -47,4 +48,22 @@ class PungiBase():
         logging.basicConfig(level=logging.DEBUG,
                             format='%(name)s.%(levelname)s: %(message)s',
                             filename=logfile)
+
+
+def _doRunCommand(command, logger, rundir='/tmp', output=subprocess.PIPE, error=subprocess.PIPE):
+    """Run a command and log the output.  Error out if we get something on stderr"""
+
+
+    logger.info("Running %s" % ' '.join(command))
+
+    p1 = subprocess.Popen(command, cwd=rundir, stdout=output, stderr=error, universal_newlines=True)
+    (out, err) = p1.communicate()
+
+    if out:
+        logger.debug(out)
+
+    if p1.returncode != 0:
+        logger.error("Got an error from %s" % command[0])
+        logger.error(err)
+        raise OSError, "Got an error from %s: %s" % (command[0], err)
 
