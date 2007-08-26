@@ -48,8 +48,23 @@ class PungiYum(yum.YumBase):
 
 class Gather(pypungi.PungiBase):
     def __init__(self, config, ksparser):
-        pypungi.PungiBase.__init__(self, config)
+        # Set up arches, needed for log file name
+        hostarch = os.uname()[4]
+        if hostarch in yum.rpmUtils.arch.getArchList('athlon'):
+            config.set('default', 'arch', 'i386')
+            yumarch = 'athlon'
+        elif hostarch == 'ppc':
+            config.set('default', 'arch', 'ppc')
+            yumarch = 'ppc64'
+        elif hostarch == 'sparc':
+            config.set('default', 'arch', 'sparc')
+            yumarch = 'sparc64v'
+        else:
+            config.set('default', 'arch', hostarch)
+            yumarch = hostarch
 
+        pypungi.PungiBase.__init__(self, config)
+ 
         # Set our own logging name space
         self.logger = logging.getLogger('Pungi.Gather')
 
@@ -61,32 +76,50 @@ class Gather(pypungi.PungiBase):
         self.logger.addHandler(console)
 
         self.ksparser = ksparser
-        self.config.cachedir = os.path.join(self.workdir, 'yumcache')
         self.polist = []
         self.srpmlist = []
         self.resolved_deps = {} # list the deps we've already resolved, short circuit.
 
         # Create a yum object to use
         self.ayum = PungiYum(config)
-        self.ayum.doConfigSetup(fn=config.get('default', 'yumconf'), debuglevel=6, errorlevel=6, root=os.path.join(self.workdir, 'yumroot'))
+        self.ayum.doLoggingSetup(6, 6)
+        yumconf = yum.config.YumConf()
+        yumconf.debuglevel = 6
+        yumconf.errorlevel = 6
+        yumconf.cachedir = os.path.join(self.workdir, 'yumcache')
+        yumconf.persistdir = os.path.join(self.workdir, 'yumlib')
+        yumconf.installroot = os.path.join(self.workdir, 'yumroot')
+        yumconf.uid = os.geteuid()
+        yumconf.cache = 0
+        self.ayum._conf = yumconf
+        self.ayum.repos.setCacheDir(self.ayum.conf.cachedir)
+
         self.ayum.cleanMetadata() # clean metadata that might be in the cache from previous runs
         self.ayum.cleanSqlite() # clean metadata that might be in the cache from previous runs
-        self.ayum.doRepoSetup()
-        self.ayum.doTsSetup()
-        self.ayum.doRpmDBSetup()
-        if config.get('default', 'arch') == 'i386':
-            arches = yum.rpmUtils.arch.getArchList('i686')
-            self.ayum.compatarch = 'i686'
-        elif config.get('default', 'arch') == 'ppc':
-            arches = yum.rpmUtils.arch.getArchList('ppc64')
-            self.ayum.compatarch = 'ppc64'
-        elif config.get('default', 'arch') == 'sparc':
-            arches = yum.rpmUtils.arch.getArchList('sparc64v')
-            self.ayum.compatarch = 'sparc64v'
-        else:
-            arches = yum.rpmUtils.arch.getArchList(config.get('default', 'arch'))
-            self.ayum.compatarch = config.get('default', 'arch')
+        self.ayum.compatarch = yumarch
+        arches = yum.rpmUtils.arch.getArchList(yumarch)
         arches.append('src') # throw source in there, filter it later
+
+        # deal with our repos
+        for repo in ksparser.handler.repo.repoList:
+            self.logger.info('Adding repo %s' % repo.name)
+            thisrepo = yum.yumRepo.YumRepository(repo.name)
+            thisrepo.name = repo.name
+            # add excludes and such here when pykickstart gets them
+            if repo.mirrorlist:
+                thisrepo.mirrorlist = repo.mirrorlist
+                self.logger.info('URI for repo %s is %s' % (repo.name, repo.mirrorlist))
+            else:
+                thisrepo.baseurl = repo.baseurl
+                self.logger.info('URI for repo %s is %s' % (repo.name, repo.baseurl))
+            self.ayum._repos.add(thisrepo)
+
+        for repo in self.ayum.repos.repos.values():
+            self.logger.info('Enabling repo %s' % repo.name)
+            repo.enable()
+            repo.enablegroups = True
+
+        self.logger.info('Getting sacks for arches %s' % arches)
         self.ayum._getSacks(archlist=arches)
 
     def _filtersrc(self, po):
@@ -210,7 +243,7 @@ class Gather(pypungi.PungiBase):
         matchdict = {} # A dict of objects to names
 
         # Build up a package dict.
-        pkgdict = {'groups': [], 'packages': [], 'excludes': [])
+        pkgdict = {'groups': [], 'packages': [], 'excludes': []}
         for group in self.ksparser.handler.packages.groupList:
             if group.include == 1:
                 pkgdict['groups'].append(group.name)

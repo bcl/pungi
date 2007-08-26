@@ -41,6 +41,7 @@ def main():
     ksparser.readKickstart(opts.config)
 
     config = SafeConfigParser()
+    config.add_section('default')
 
     # add some sections here before setting stuff.
 
@@ -53,6 +54,7 @@ def main():
     config.set('default', 'relnotedirre', relnotedirre)
     config.set('default', 'relnotepkgs', relnotepkgs)
     config.set('default', 'product_path', 'Packages')
+    config.set('default', 'cachedir', '/srv/pungi/cache') # needs to be handled better
 
     # set configs from cli options
     config.set('default', 'name', opts.name)
@@ -88,7 +90,7 @@ def main():
             sys.exit(1)
 
     # Actually do work.
-    if not config.get('default', 'arch') == 'source':
+    if not opts.sourceisos:
         if opts.do_all or opts.do_gather:
             mygather = pypungi.gather.Gather(config, ksparser)
             mygather.getPackageObjects()
@@ -160,6 +162,8 @@ if __name__ == '__main__':
           help='the number of discs you want to create (defaults to 1)')
         parser.add_option("--nosource", action="store_true", dest="nosource",
           help='the flavor of your distribution spin (optional)')
+        parser.add_option("--sourceisos", default=False, action="store_true", dest="sourceisos",
+          help='Create the source isos (other arch runs must be done)')
 
         parser.add_option("-c", "--config", dest="config",
           help='Path to kickstart config file')
@@ -181,9 +185,9 @@ if __name__ == '__main__':
 
         (opts, args) = parser.parse_args()
         
-        if not '-c' in sys.argv or not '--config' in sys.argv:
-            parser.print_help()
-            sys.exit(0)
+        #if not '-c' in sys.argv or not '--config' in sys.argv:
+        #    parser.print_help()
+        #    sys.exit(0)
 
         if opts.do_gather or opts.do_createrepo or opts.do_buildinstall or opts.do_packageorder or opts.do_splittree or opts.do_createiso:
             opts.do_all = False

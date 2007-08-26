@@ -3,6 +3,10 @@
 - Turn pkglist into a pre-parsed package dictionary
 - Arrange config setting logically
 - Error out on usage if no config file passed
+- Pass gather a ksparser object instead, needed for yum repos
+  and more advanced package handling.
+- Use ksparser to get repo(s) from kickstart config.
+- Don't rely upon a yum conf, do all setup ourselves.
 
 * Fri Aug 24 2007 Jesse Keating <jkeating@redhat.com>
 - Remove a lot of configurable items and hard set them
