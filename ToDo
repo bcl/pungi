@@ -50,7 +50,7 @@ DONE ^^
   Drop all stuff but GPL, README, GPG keys, potentially README-BURNING-ISOS ?
 
 * From livecd-creator
-  Steal root check
+  Steal root check *DONE*
   Use same cli syntax if possible (conf -> config, etc..)
 
 * Figure out how to allow use of $releasever and $basearch

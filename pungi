@@ -22,6 +22,12 @@ import pykickstart.version
 from ConfigParser import SafeConfigParser
 
 def main():
+
+    # You must be this high to ride.
+    if os.geteuid () != 0:
+        print >> sys.stderr, "You must run livecd-creator as root"
+        return 1
+
     # Set some default variables, can be overrided in config file
 
     # Turn this into a dict someday, to iterate over when setting defaults
