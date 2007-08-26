@@ -28,7 +28,9 @@ DONE ^^
 * Make the following transitions
   product_name -> name *DONE*
   product path == 'Packages/" *DONE*
-  cachedir == /var/cache/pungi ?
+  cachedir == /var/cache/pungi *DONE*
+
+DONE ^^
 
 * Get comps data from repos
   Use ayum.comps.<whatever> to get comps information *DONE*
@@ -39,8 +41,10 @@ DONE ^^
 
 * From pykickstart
   manifest -> %packages *DONE*
-  yum-repos -> repo
+  yum-repos -> repo *DONE*
   isosize -> part iso size <size> (optional) *DONE*
+
+DONE ^^
 
 * Release notes stuff
   Drop all stuff but GPL, README, GPG keys, potentially README-BURNING-ISOS ?
@@ -48,5 +52,7 @@ DONE ^^
 * From livecd-creator
   Steal root check
   Use same cli syntax if possible (conf -> config, etc..)
+
+* Figure out how to allow use of $releasever and $basearch
 
 * Profit!
