@@ -197,11 +197,11 @@ class Gather(pypungi.PungiBase):
         packages.extend(groupobj.mandatory_packages.keys())
 
         # Add the default packages unless we don't want them
-        if group.include == 1
+        if group.include == 1:
             packages.extend(groupobj.default_packages.keys())
 
         # Add the optional packages if we want them
-        if group.include == 2
+        if group.include == 2:
             packages.extend(groupobj.default_packages.keys())
             packages.extend(groupobj.optional_packages.keys())
 
@@ -325,7 +325,15 @@ class Gather(pypungi.PungiBase):
                 target = os.path.join(pkgdir, os.path.basename(remote))
                 if os.path.exists(target):
                     os.remove(target) # avoid traceback after interrupted download
-                os.link(local, target)
+                try:
+                    os.link(local, target)
+                except OSError, e:
+                    if e.errno == 18:
+                        # Can't hardlink cross file systems
+                        shutil.copy2(local, target)
+                    else:
+                        self.logger.error('Got an error linking from cache: %s' % e)
+                        raise OSError, e
                 continue
 
             # Disable cache otherwise things won't download
@@ -336,9 +344,18 @@ class Gather(pypungi.PungiBase):
             # do a little dance for file:// repos...
             path = repo.getPackage(pkg)
             if not os.path.exists(local) or not os.path.samefile(path, local):
-                shutil.copy2(path, local)
+                shutil.copy2(local, path)
  
-            os.link(local, os.path.join(pkgdir, os.path.basename(remote)))
+            try:
+                os.link(local, os.path.join(pkgdir, os.path.basename(remote)))
+            except OSError, e:
+                if e.errno == 18:
+                    # Can't hardlink cross file systems
+                    shutil.copy2(local, os.path.join(pkgdir, os.path.basename(remote)))
+                else:
+                    self.logger.error('Got an error linking from cache: %s' % e)
+                    raise OSError, e
+
 
         self.logger.info('Finished downloading packages.')
 
@@ -425,7 +442,16 @@ class Gather(pypungi.PungiBase):
                 if os.path.exists(os.path.join(pkgdir, os.path.basename(remote))) and self.verifyCachePkg(pkg, os.path.join(pkgdir, os.path.basename(remote))):
                     self.logger.debug("%s already exists in tree and appears to be complete" % local)
                 else:
-                    os.link(local, os.path.join(pkgdir, os.path.basename(remote)))
+                    try:
+                        os.link(local, os.path.join(pkgdir, os.path.basename(remote)))
+                    except OSError, e:
+                        if e.errno == 18:
+                            # Can't hardlink cross file systems
+                            shutil.copy2(local, os.path.join(pkgdir, os.path.basename(remote)))
+                        else:
+                            self.logger.error('Got an error linking from cache: %s' % e)
+                            raise OSError, e
+
                 continue
 
             # Disable cache otherwise things won't download
@@ -436,6 +462,15 @@ class Gather(pypungi.PungiBase):
             # do a little dance for file:// repos...
             path = repo.getPackage(pkg)
             if not os.path.exists(local) or not os.path.samefile(path, local):
-                shutil.copy2(path, local)
+                shutil.copy2(local, path)
 
-            os.link(local, os.path.join(pkgdir, os.path.basename(remote)))
+            try:
+                os.link(local, os.path.join(pkgdir, os.path.basename(remote)))
+            except OSError, e:
+                if e.errno == 18:
+                    # Can't hardlink cross file systems
+                    shutil.copy2(local, target)
+                else:
+                    self.logger.error('Got an error linking from cache: %s' % e)
+                    raise OSError, e
+

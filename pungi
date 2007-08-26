@@ -54,13 +54,14 @@ def main():
     config.set('default', 'relnotedirre', relnotedirre)
     config.set('default', 'relnotepkgs', relnotepkgs)
     config.set('default', 'product_path', 'Packages')
-    config.set('default', 'cachedir', '/srv/pungi/cache') # needs to be handled better
+    config.set('default', 'cachedir', '/var/cache/pungi')
 
     # set configs from cli options
     config.set('default', 'name', opts.name)
     config.set('default', 'version', opts.ver)
     config.set('default', 'flavor', opts.flavor)
     config.set('default', 'destdir', opts.destdir)
+    config.set('default', 'cachedir', opts.cachedir)
     config.set('default', 'bugurl', opts.bugurl)
     config.set('default', 'discs', opts.discs)
 
@@ -156,6 +157,8 @@ if __name__ == '__main__':
           help='the flavor of your distribution spin (optional)')
         parser.add_option("--destdir", default=".", dest="destdir",
           help='destination directory (defaults to current directory)')
+        parser.add_option("--cachedir", default="/var/cache/pungi", dest="cachedir",
+          help='package cache directory (defaults to /var/cache/pungi)')
         parser.add_option("--bugurl", default="http://bugzilla.redhat.com", dest="bugurl",
           help='the url for your bug system (defaults to http://bugzilla.redhat.com)')
         parser.add_option("--discs", default='1', dest="discs",

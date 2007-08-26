@@ -30,6 +30,7 @@ A tool to create anaconda based installation trees/isos of a set of rpms.
 %install
 rm -rf $RPM_BUILD_ROOT
 %{__python} setup.py install -O1 --skip-build --root $RPM_BUILD_ROOT
+%{__install} -d $RPM_BUILD_ROOT/var/cache/pungi
 
  
 %clean
@@ -44,6 +45,7 @@ rm -rf $RPM_BUILD_ROOT
 %{python_sitelib}/pypungi
 %{_bindir}/pungi
 %{_datadir}/pungi
+/var/cache/pungi
 
 
 %changelog
