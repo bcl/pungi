@@ -179,41 +179,30 @@ class Gather(pypungi.PungiBase):
             self.resolved_deps[req] = None
 
     def getPackagesFromGroup(self, group):
-        """Get a list of package names from a comps object
+        """Get a list of package names from a ksparser group object
 
             Returns a list of package names"""
 
         packages = []
-        optional = None
-        nodefaults = None
-
-        # Check for an option regarding default/optional packages
-        last = group.split()[-1]
-        if last == '--optional':
-            optional = True
-            group = group.split(' --optional')[0]
-
-        if last == '--nodefaults':
-            nodefaults = True
-            group = group.split(' --nodefaults')[0]
 
         # Check if we have the group
-        if not self.ayum.comps.has_group(group):
+        if not self.ayum.comps.has_group(group.name):
             self.logger.error("Group %s not found in comps!" % group)
             return packages
 
         # Get the group object to work with
-        groupobj = self.ayum.comps.return_group(group)
+        groupobj = self.ayum.comps.return_group(group.name)
 
         # Add the mandatory packages
         packages.extend(groupobj.mandatory_packages.keys())
 
         # Add the default packages unless we don't want them
-        if not nodefaults:
+        if group.include == 1
             packages.extend(groupobj.default_packages.keys())
 
         # Add the optional packages if we want them
-        if optional:
+        if group.include == 2
+            packages.extend(groupobj.default_packages.keys())
             packages.extend(groupobj.optional_packages.keys())
 
         # Deal with conditional packages
@@ -242,26 +231,20 @@ class Gather(pypungi.PungiBase):
         searchlist = [] # The list of package names/globs to search for
         matchdict = {} # A dict of objects to names
 
-        # Build up a package dict.
-        pkgdict = {'groups': [], 'packages': [], 'excludes': []}
-        for group in self.ksparser.handler.packages.groupList:
-            if group.include == 1:
-                pkgdict['groups'].append(group.name)
-
-        pkgdict['packages'].extend(self.ksparser.handler.packages.packageList)
-
-        pkgdict['excludes'].extend(self.ksparser.handler.packages.excludedList)
-
         # First remove the excludes
-        self.ayum.conf.exclude.extend(pkgdict['excludes'])
+        self.ayum.conf.exclude.extend(self.ksparser.handler.packages.excludedList)
         self.ayum.excludePackages()
 
+        # Check to see if we need the base group
+        if self.ksparser.handler.packages.addBase:
+            self.ksparser.handler.packages.add(['@base'])
+
         # Get a list of packages from groups
-        for group in pkgdict['groups']:
+        for group in self.ksparser.handler.packages.groupList:
             searchlist.extend(self.getPackagesFromGroup(group))
 
         # Add the adds
-        searchlist.extend(pkgdict['packages'])
+        searchlist.extend(self.ksparser.handler.packages.packageList)
 
         # Make the search list unique
         searchlist = yum.misc.unique(searchlist)
