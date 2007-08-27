@@ -35,7 +35,6 @@ class Pungi(pypungi.PungiBase):
         console.setLevel(logging.INFO)
         self.logger.addHandler(console)
 
-        self.prodpath = 'Fedora' # Probably should be defined elsewhere
         self.destdir = self.config.get('default', 'destdir')
         self.archdir = os.path.join(self.destdir,
                                    self.config.get('default', 'version'),
