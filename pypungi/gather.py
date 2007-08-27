@@ -48,20 +48,16 @@ class PungiYum(yum.YumBase):
 
 class Gather(pypungi.PungiBase):
     def __init__(self, config, ksparser):
-        # Set up arches, needed for log file name
-        hostarch = os.uname()[4]
-        if hostarch in yum.rpmUtils.arch.getArchList('athlon'):
-            config.set('default', 'arch', 'i386')
+
+        arch = self.config.get('default', 'arch')
+        if arch == 'i386'
             yumarch = 'athlon'
-        elif hostarch == 'ppc':
-            config.set('default', 'arch', 'ppc')
+        elif arch == 'ppc':
             yumarch = 'ppc64'
-        elif hostarch == 'sparc':
-            config.set('default', 'arch', 'sparc')
+        elif arch == 'sparc':
             yumarch = 'sparc64v'
         else:
-            config.set('default', 'arch', hostarch)
-            yumarch = hostarch
+            yumarch = arch
 
         pypungi.PungiBase.__init__(self, config)
  
@@ -96,6 +92,17 @@ class Gather(pypungi.PungiBase):
 
         self.ayum.cleanMetadata() # clean metadata that might be in the cache from previous runs
         self.ayum.cleanSqlite() # clean metadata that might be in the cache from previous runs
+ 
+        arch = self.config.get('default', 'arch')
+        if arch == 'i386'
+            yumarch = 'athlon'
+        elif arch == 'ppc':
+            yumarch = 'ppc64'
+        elif arch == 'sparc':
+            yumarch = 'sparc64v'
+        else:
+            yumarch = arch
+
         self.ayum.compatarch = yumarch
         arches = yum.rpmUtils.arch.getArchList(yumarch)
         arches.append('src') # throw source in there, filter it later

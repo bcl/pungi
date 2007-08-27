@@ -1,3 +1,6 @@
+* Mon Aug 27 2007 Jesse Keating <jkeating@redhat.com>
+- Set up arch in __init__.py as it's needed for logging
+
 * Sun Aug 26 2007 Jesse Keating <jkeating@redhat.com>
 - Add better support for %packages syntax using native pykickstart
 - Add a cache dir for pungi (/var/cache/pungi) and a cli option to override
