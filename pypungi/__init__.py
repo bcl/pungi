@@ -15,24 +15,12 @@
 import logging
 import os
 import subprocess
-import yum
-import os
 
 class PungiBase():
     """The base Pungi class.  Set up config items and logging here"""
 
     def __init__(self, config):
         self.config = config
-
-        hostarch = os.uname()[4]
-        if hostarch in yum.rpmUtils.arch.getArchList('athlon'):
-            config.set('default', 'arch', 'i386')
-        elif hostarch == 'ppc':
-            config.set('default', 'arch', 'ppc')
-        elif hostarch == 'sparc':
-            config.set('default', 'arch', 'sparc')
-        else:
-            config.set('default', 'arch', hostarch)
 
         self.doLoggerSetup()
 

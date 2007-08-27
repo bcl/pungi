@@ -61,6 +61,7 @@ def main():
     config.set('default', 'relnotepkgs', relnotepkgs)
     config.set('default', 'product_path', 'Packages')
     config.set('default', 'cachedir', '/var/cache/pungi')
+    config.set('default', 'arch', yum.rpmUtils.arch.getBaseArch())
 
     # set configs from cli options
     config.set('default', 'name', opts.name)
