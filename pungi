@@ -171,7 +171,7 @@ if __name__ == '__main__':
         parser.add_option("--discs", default='1', dest="discs",
           help='the number of discs you want to create (defaults to 1)')
         parser.add_option("--nosource", action="store_true", dest="nosource",
-          help='the flavor of your distribution spin (optional)')
+          help='disable gathering of source packages (optional)')
         parser.add_option("--sourceisos", default=False, action="store_true", dest="sourceisos",
           help='Create the source isos (other arch runs must be done)')
 
