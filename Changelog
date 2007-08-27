@@ -1,5 +1,6 @@
 * Mon Aug 27 2007 Jesse Keating <jkeating@redhat.com>
 - Set up arch in __init__.py as it's needed for logging
+- Add support for $releasever in repo uris.
 
 * Sun Aug 26 2007 Jesse Keating <jkeating@redhat.com>
 - Add better support for %packages syntax using native pykickstart

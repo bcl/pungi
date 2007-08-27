@@ -87,6 +87,9 @@ class Gather(pypungi.PungiBase):
         yumconf.installroot = os.path.join(self.workdir, 'yumroot')
         yumconf.uid = os.geteuid()
         yumconf.cache = 0
+        yumvars = yum.config._getEnvVar()
+        yumvars['releasever'] = self.config.get('default', 'version')
+        yumconf.yumvar = yumvars
         self.ayum._conf = yumconf
         self.ayum.repos.setCacheDir(self.ayum.conf.cachedir)
 
@@ -119,7 +122,8 @@ class Gather(pypungi.PungiBase):
             else:
                 thisrepo.baseurl = repo.baseurl
                 self.logger.info('URI for repo %s is %s' % (repo.name, repo.baseurl))
-            self.ayum._repos.add(thisrepo)
+            thisrepo.yumvar.update(self.ayum.conf.yumvar)
+            self.ayum.repos.add(thisrepo)
 
         for repo in self.ayum.repos.repos.values():
             self.logger.info('Enabling repo %s' % repo.name)
