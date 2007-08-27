@@ -51,8 +51,12 @@ DONE ^^
 
 * From livecd-creator
   Steal root check *DONE*
-  Use same cli syntax if possible (conf -> config, etc..)
+  Use same cli syntax if possible (conf -> config, etc..) *DONE*
 
-* Figure out how to allow use of $releasever and $basearch
+DONE ^^
+
+* Figure out how to allow use of $releasever and $basearch *DONE*
+
+DONE ^^
 
 * Profit!
