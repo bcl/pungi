@@ -48,17 +48,6 @@ class PungiYum(yum.YumBase):
 
 class Gather(pypungi.PungiBase):
     def __init__(self, config, ksparser):
-
-        arch = self.config.get('default', 'arch')
-        if arch == 'i386'
-            yumarch = 'athlon'
-        elif arch == 'ppc':
-            yumarch = 'ppc64'
-        elif arch == 'sparc':
-            yumarch = 'sparc64v'
-        else:
-            yumarch = arch
-
         pypungi.PungiBase.__init__(self, config)
  
         # Set our own logging name space
@@ -89,6 +78,7 @@ class Gather(pypungi.PungiBase):
         yumconf.cache = 0
         yumvars = yum.config._getEnvVar()
         yumvars['releasever'] = self.config.get('default', 'version')
+        yumvars['basearch'] = yum.rpmUtils.arch.getBaseArch(myarch=self.config.get('default', 'arch'))
         yumconf.yumvar = yumvars
         self.ayum._conf = yumconf
         self.ayum.repos.setCacheDir(self.ayum.conf.cachedir)
@@ -97,7 +87,7 @@ class Gather(pypungi.PungiBase):
         self.ayum.cleanSqlite() # clean metadata that might be in the cache from previous runs
  
         arch = self.config.get('default', 'arch')
-        if arch == 'i386'
+        if arch == 'i386':
             yumarch = 'athlon'
         elif arch == 'ppc':
             yumarch = 'ppc64'
@@ -117,18 +107,16 @@ class Gather(pypungi.PungiBase):
             thisrepo.name = repo.name
             # add excludes and such here when pykickstart gets them
             if repo.mirrorlist:
-                thisrepo.mirrorlist = repo.mirrorlist
-                self.logger.info('URI for repo %s is %s' % (repo.name, repo.mirrorlist))
+                thisrepo.mirrorlist = yum.parser.varReplace(repo.mirrorlist, self.ayum.conf.yumvar)
+                self.logger.info('Mirrorlist for repo %s is %s' % (thisrepo.name, thisrepo.mirrorlist))
             else:
-                thisrepo.baseurl = repo.baseurl
-                self.logger.info('URI for repo %s is %s' % (repo.name, repo.baseurl))
-            thisrepo.yumvar.update(self.ayum.conf.yumvar)
+                thisrepo.baseurl = yum.parser.varReplace(repo.baseurl, self.ayum.conf.yumvar)
+                self.logger.info('URL for repo %s is %s' % (thisrepo.name, thisrepo.baseurl))
+            thisrepo.basecachedir = self.ayum.conf.cachedir
+            thisrepo.enablegroups = True
             self.ayum.repos.add(thisrepo)
-
-        for repo in self.ayum.repos.repos.values():
-            self.logger.info('Enabling repo %s' % repo.name)
-            repo.enable()
-            repo.enablegroups = True
+            self.ayum.repos.enableRepo(thisrepo.id)
+            self.ayum._getRepos(thisrepo=thisrepo.id, doSetup = True)
 
         self.logger.info('Getting sacks for arches %s' % arches)
         self.ayum._getSacks(archlist=arches)

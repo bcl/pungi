@@ -3,6 +3,7 @@
 - Add support for $releasever in repo uris.
 - Set arch using rpmUtils, and do it in /usr/bin/pungi
 - Add a kickstart file usable for composing Fedora 8 "Fedora"
+- Fix bugs with $basearch and mirrorlist usage.
 
 * Sun Aug 26 2007 Jesse Keating <jkeating@redhat.com>
 - Add better support for %packages syntax using native pykickstart
