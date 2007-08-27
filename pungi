@@ -153,7 +153,7 @@ if __name__ == '__main__':
     today = time.strftime('%Y%m%d', time.localtime())
 
     def get_arguments():
-        parser = OptionParser(version="%prog 0.5.0")
+        parser = OptionParser(version="%prog 1.0.0")
 
         # Pulled in from config file to be cli options as part of pykickstart conversion
         parser.add_option("--name", default="Fedora", dest="name",

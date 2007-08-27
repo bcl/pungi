@@ -1,7 +1,7 @@
 %{!?python_sitelib: %define python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")}
 
 Name:           pungi
-Version:        0.5.0
+Version:        1.0.0
 Release:        1%{?dist}
 Summary:        Distribution compose tool
 
@@ -40,7 +40,6 @@ rm -rf $RPM_BUILD_ROOT
 %files
 %defattr(-,root,root,-)
 %doc Authors Changelog COPYING GPL README ToDo
-%config(noreplace) %{_sysconfdir}/pungi
 # For noarch packages: sitelib
 %{python_sitelib}/pypungi
 %{_bindir}/pungi
@@ -49,6 +48,23 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Mon Aug 27 2007 Jesse Keating <jkeating@redhat.com>
+- Add support for $releasever in repo uris.
+- Add a kickstart file usable for composing Fedora 8 "Fedora"
+- Fix bugs with $basearch and mirrorlist usage.
+- Add a cache dir for pungi (/var/cache/pungi) and a cli option to override
+- Add root check.
+- Use a kickstart file as input now (for cdsize and package manifest)
+- Remove a lot of configurable items and hard set them
+- Move some items to cli flags only (part of moving to pykickstart)
+- hard set product_path to 'Packages'
+- Use group metadata from repos instead of our own comps file
+- Get group files out of configured repos and create a mashup
+  of the comps.  Filter it and make use of it when creating repos.
+- Quiet down creatrepo calls
+- Adjust logging to make use of new facility, use right levels
+- Drop a note when all done with composing
+
 * Tue Aug 21 2007 Jesse Keating <jkeating@redhat.com> - 0.5.0-1
 - Rework how source rpms are pulled in
   Always pull in 'src' arch packages, just filter them

@@ -2,10 +2,8 @@ include Authors
 include Changelog
 include COPYING
 include GPL
-include PLAN.*
 include README
 include TESTING
 include ToDo
 include pungi.spec
-include config/*
 include share/*
