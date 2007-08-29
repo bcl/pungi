@@ -1,12 +1,12 @@
 %{!?python_sitelib: %define python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")}
 
 Name:           pungi
-Version:        1.0.0
-Release:        1%{?dist}
+Version:        1.0.1
+Release:        1%{?dist}.1
 Summary:        Distribution compose tool
 
 Group:          Development/Tools
-License:        GPL
+License:        GPLv2
 URL:            http://hosted.fedoraproject.org/projects/pungi
 Source0:        http://linux.duke.edu/projects/%{name}/release/%{name}-%{version}.tar.gz
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -48,7 +48,13 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
-* Mon Aug 27 2007 Jesse Keating <jkeating@redhat.com>
+* Tue Aug 28 2007 Jesse Keating <jkeating@redhat.com> - 1.0.1-1
+- Default flavor to blank.
+
+* Mon Aug 27 2007 Jesse Keating <jkeating@redhat.com> - 1.0.0-2
+- Fix the licensing tag.
+
+* Mon Aug 27 2007 Jesse Keating <jkeating@redhat.com> - 1.0.0-1
 - Add support for $releasever in repo uris.
 - Add a kickstart file usable for composing Fedora 8 "Fedora"
 - Fix bugs with $basearch and mirrorlist usage.

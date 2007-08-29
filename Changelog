@@ -1,3 +1,6 @@
+* Tue Aug 28 2007 Jesse Keating <jkeating@redhat.com>
+- Default flavor to blank.
+
 * Mon Aug 27 2007 Jesse Keating <jkeating@redhat.com>
 - Set up arch in __init__.py as it's needed for logging
 - Add support for $releasever in repo uris.
