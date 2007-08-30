@@ -1,8 +1,8 @@
 %{!?python_sitelib: %define python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")}
 
 Name:           pungi
-Version:        1.0.1
-Release:        1%{?dist}.1
+Version:        1.0.2
+Release:        1%{?dist}
 Summary:        Distribution compose tool
 
 Group:          Development/Tools
@@ -48,6 +48,11 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Thu Aug 30 2007 Jesse Keating <jkeating@redhat.com> - 1.0.2-1
+- Fix some bugs with source iso creation
+- Add source repo to kickstart file
+- Add %end to %packages in kickstart file
+
 * Tue Aug 28 2007 Jesse Keating <jkeating@redhat.com> - 1.0.1-1
 - Default flavor to blank.
 

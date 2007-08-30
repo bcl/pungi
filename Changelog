@@ -1,3 +1,8 @@
+* Thu Aug 30 2007 Jesse Keating <jkeating@redhat.com>
+- Fix some bugs with source iso creation
+- Add source repo to kickstart file
+- Add %end to %packages in kickstart file
+
 * Tue Aug 28 2007 Jesse Keating <jkeating@redhat.com>
 - Default flavor to blank.
 

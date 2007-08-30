@@ -71,6 +71,8 @@ def main():
     config.set('default', 'cachedir', opts.cachedir)
     config.set('default', 'bugurl', opts.bugurl)
     config.set('default', 'discs', opts.discs)
+    if opts.sourceisos:
+        config.set('default', 'arch', 'source')
 
     # set some other defaults
     config.set('default', 'iso_basename', config.get('default', 'name'))
@@ -130,7 +132,7 @@ def main():
            mypungi.doCreateIsos()
 
     # Do things slightly different for src.
-    if config.get('default', 'arch') == 'source':
+    if opts.sourceisos:
         # we already have all the content gathered
         mypungi = pypungi.pungi.Pungi(config)
         mypungi.topdir = os.path.join(config.get('default', 'destdir'),
@@ -153,7 +155,7 @@ if __name__ == '__main__':
     today = time.strftime('%Y%m%d', time.localtime())
 
     def get_arguments():
-        parser = OptionParser(version="%prog 1.0.1")
+        parser = OptionParser(version="%prog 1.0.2")
 
         # Pulled in from config file to be cli options as part of pykickstart conversion
         parser.add_option("--name", default="Fedora", dest="name",

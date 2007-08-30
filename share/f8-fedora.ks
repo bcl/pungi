@@ -6,6 +6,7 @@
 
 # Add the repos you wish to use to compose here.  At least one of them needs group data.
 repo --name=rawhide  --mirrorlist=http://mirrors.fedoraproject.org/mirrorlist?repo=rawhide&arch=$basearch
+repo --name=rawhide-source  --mirrorlist=http://mirrors.fedoraproject.org/mirrorlist?repo=rawhide-source&arch=$basearch
 
 # Package manifest for the compose.  Uses repo group metadata to translate groups.
 # (@base is added by default unless you add --nobase to %packages)
@@ -133,3 +134,4 @@ jfsutils
 anaconda-runtime
 iscsi-initiator-utils
 memtest86+
+%end
