@@ -164,7 +164,7 @@ if __name__ == '__main__':
           help='the version of your distribution (defaults to datestamp)')
         parser.add_option("--flavor", default="", dest="flavor",
           help='the flavor of your distribution spin (optional)')
-        parser.add_option("--destdir", default=".", dest="destdir",
+        parser.add_option("--destdir", default=os.getcwd(), dest="destdir",
           help='destination directory (defaults to current directory)')
         parser.add_option("--cachedir", default="/var/cache/pungi", dest="cachedir",
           help='package cache directory (defaults to /var/cache/pungi)')
