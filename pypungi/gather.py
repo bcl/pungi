@@ -343,7 +343,7 @@ class Gather(pypungi.PungiBase):
             # do a little dance for file:// repos...
             path = repo.getPackage(pkg)
             if not os.path.exists(local) or not os.path.samefile(path, local):
-                shutil.copy2(local, path)
+                shutil.copy2(path, local)
  
             try:
                 os.link(local, os.path.join(pkgdir, os.path.basename(remote)))

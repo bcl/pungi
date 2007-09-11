@@ -1,6 +1,7 @@
 * Tue Sep 11 2007 Jesse Keating <jkeating@redhat.com>
 - Fix a bug with default dest dir (notting)
 - Include a man page (dcantrell)
+- Fix a bug with file:// based repos
 
 * Thu Aug 30 2007 Jesse Keating <jkeating@redhat.com>
 - Fix some bugs with source iso creation
