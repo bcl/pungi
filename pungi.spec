@@ -31,6 +31,8 @@ A tool to create anaconda based installation trees/isos of a set of rpms.
 rm -rf $RPM_BUILD_ROOT
 %{__python} setup.py install -O1 --skip-build --root $RPM_BUILD_ROOT
 %{__install} -d $RPM_BUILD_ROOT/var/cache/pungi
+%{__install} -d $RPM_BUILD_ROOT/%{_mandir}/man8
+%{__install} doc/pungi.8 $RPM_BUILD_ROOT/%{_mandir}/man8/
 
  
 %clean
@@ -39,11 +41,12 @@ rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(-,root,root,-)
-%doc Authors Changelog COPYING GPL README ToDo
+%doc Authors Changelog COPYING GPL ToDo doc/README
 # For noarch packages: sitelib
 %{python_sitelib}/pypungi
 %{_bindir}/pungi
 %{_datadir}/pungi
+%{_mandir}/man8/pungi.8.gz
 /var/cache/pungi
 
 
