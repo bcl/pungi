@@ -134,4 +134,5 @@ jfsutils
 anaconda-runtime
 iscsi-initiator-utils
 memtest86+
+vnc-server
 %end
