@@ -10,7 +10,7 @@ License:        GPLv2
 URL:            http://hosted.fedoraproject.org/projects/pungi
 Source0:        http://linux.duke.edu/projects/%{name}/release/%{name}-%{version}.tar.gz
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
-Requires:       anaconda-runtime, yum => 3.0.3
+Requires:       anaconda-runtime, yum => 3.0.3, pykickstart => 1.13
 BuildRequires:  python-devel
 
 BuildArch:      noarch
