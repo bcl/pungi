@@ -29,7 +29,6 @@ class PungiYum(yum.YumBase):
     def doLoggingSetup(self, debuglevel, errorlevel):
         """Setup the logging facility."""
 
-
         logdir = os.path.join(self.pungiconfig.get('default', 'destdir'), 'logs')
         if not os.path.exists(logdir):
             os.makedirs(logdir)
@@ -149,7 +148,6 @@ class Gather(pypungi.PungiBase):
         """Add the dependencies for a given package to the
            transaction info"""
 
-
         self.logger.info('Checking deps of %s.%s' % (po.name, po.arch))
 
         reqs = po.requires
@@ -225,7 +223,6 @@ class Gather(pypungi.PungiBase):
 
            Returns a list of package objects"""
 
-
         final_pkgobjs = {} # The final list of package objects
         searchlist = [] # The list of package names/globs to search for
         matchdict = {} # A dict of objects to names
@@ -285,78 +282,77 @@ class Gather(pypungi.PungiBase):
         """Cycle through the list of package objects and
            find the sourcerpm for them.  Requires yum still
            configured and a list of package objects"""
-
  
         for po in self.polist:
             srpm = po.sourcerpm.split('.src.rpm')[0]
             if not srpm in self.srpmlist:
                 self.srpmlist.append(srpm)
 
+    def _link(self, local, target):
+        try:
+            os.link(local, target)
+        except OSError, e:
+            if e.errno != 18: # EXDEV
+                self.logger.error('Got an error linking from cache: %s' % e)
+                raise OSError, e
 
-    def downloadPackages(self):
+            # Can't hardlink cross file systems
+            shutil.copy2(local, target)
+
+    def _downloadPackageList(self, polist, relpkgdir):
         """Cycle through the list of package objects and
            download them from their respective repos."""
 
-
         downloads = []
-        for pkg in self.polist:
+        for pkg in polist:
             downloads.append('%s.%s' % (pkg.name, pkg.arch))
             downloads.sort()
         self.logger.info("Download list: %s" % downloads)
 
-        # Package location within destdir, name subject to change/config
-        pkgdir = os.path.join(self.config.get('default', 'destdir'), self.config.get('default', 'version'), 
-                                             self.config.get('default', 'flavor'), 
-                                             self.config.get('default', 'arch'), 
-                                             self.config.get('default', 'osdir'),
-                                             self.config.get('default', 'product_path')) 
+        pkgdir = os.path.join(self.config.get('default', 'destdir'),
+                              self.config.get('default', 'version'),
+                              self.config.get('default', 'flavor'),
+                              relpkgdir)
 
         if not os.path.exists(pkgdir):
             os.makedirs(pkgdir)
 
-        for pkg in self.polist:
-            repo = self.ayum.repos.getRepo(pkg.repoid)
-            remote = pkg.relativepath
-            local = os.path.basename(remote)
-            local = os.path.join(self.config.get('default', 'cachedir'), local)
-            if os.path.exists(local) and self.verifyCachePkg(pkg, local):
+        for po in polist:
+            repo = self.ayum.repos.getRepo(po.repoid)
+
+            basename = os.path.basename(po.relativepath)
+
+            local = os.path.join(self.config.get('default', 'cachedir'), basename)
+            target = os.path.join(pkgdir, basename)
+
+            if os.path.exists(local) and self.verifyCachePkg(po, local):
                 self.logger.debug("%s already exists and appears to be complete" % local)
-                target = os.path.join(pkgdir, os.path.basename(remote))
                 if os.path.exists(target):
                     os.remove(target) # avoid traceback after interrupted download
-                try:
-                    os.link(local, target)
-                except OSError, e:
-                    if e.errno == 18:
-                        # Can't hardlink cross file systems
-                        shutil.copy2(local, target)
-                    else:
-                        self.logger.error('Got an error linking from cache: %s' % e)
-                        raise OSError, e
+                self._link(local, target)
                 continue
 
             # Disable cache otherwise things won't download
             repo.cache = 0
-            self.logger.info('Downloading %s' % os.path.basename(remote))
-            pkg.localpath = local # Hack: to set the localpath to what we want.
+            self.logger.info('Downloading %s' % basename)
+            po.localpath = local # Hack: to set the localpath to what we want.
 
             # do a little dance for file:// repos...
-            path = repo.getPackage(pkg)
+            path = repo.getPackage(po)
             if not os.path.exists(local) or not os.path.samefile(path, local):
                 shutil.copy2(path, local)
  
-            try:
-                os.link(local, os.path.join(pkgdir, os.path.basename(remote)))
-            except OSError, e:
-                if e.errno == 18:
-                    # Can't hardlink cross file systems
-                    shutil.copy2(local, os.path.join(pkgdir, os.path.basename(remote)))
-                else:
-                    self.logger.error('Got an error linking from cache: %s' % e)
-                    raise OSError, e
-
+            self._link(local, target)
 
         self.logger.info('Finished downloading packages.')
+
+    def downloadPackages(self):
+        """Download the package objects obtained in getPackageObjects()."""
+
+        self._downloadPackageList(self.polist,
+                                  os.path.join(self.config.get('default', 'arch'),
+                                               self.config.get('default', 'osdir'),
+                                               self.config.get('default', 'product_path')))
 
     def makeCompsFile(self):
         """Gather any comps files we can from repos and merge them into one."""
@@ -411,7 +407,6 @@ class Gather(pypungi.PungiBase):
         """Cycle through the list of srpms and
            find the package objects for them, Then download them."""
 
-
         srpmpolist = []
 
         for srpm in self.srpmlist:
@@ -425,51 +420,4 @@ class Gather(pypungi.PungiBase):
                 sys.exit(1)
 
         # do the downloads
-        pkgdir = os.path.join(self.config.get('default', 'destdir'), self.config.get('default', 'version'),
-            self.config.get('default', 'flavor'), 'source', 'SRPMS')
-
-        if not os.path.exists(pkgdir):
-            os.makedirs(pkgdir)
-
-        for pkg in srpmpolist:
-            repo = self.ayum.repos.getRepo(pkg.repoid)
-            remote = pkg.relativepath
-            local = os.path.basename(remote)
-            local = os.path.join(self.config.get('default', 'cachedir'), local)
-            if os.path.exists(local) and self.verifyCachePkg(pkg, local):
-                self.logger.debug("%s already exists and appears to be complete" % local)
-                if os.path.exists(os.path.join(pkgdir, os.path.basename(remote))) and self.verifyCachePkg(pkg, os.path.join(pkgdir, os.path.basename(remote))):
-                    self.logger.debug("%s already exists in tree and appears to be complete" % local)
-                else:
-                    try:
-                        os.link(local, os.path.join(pkgdir, os.path.basename(remote)))
-                    except OSError, e:
-                        if e.errno == 18:
-                            # Can't hardlink cross file systems
-                            shutil.copy2(local, os.path.join(pkgdir, os.path.basename(remote)))
-                        else:
-                            self.logger.error('Got an error linking from cache: %s' % e)
-                            raise OSError, e
-
-                continue
-
-            # Disable cache otherwise things won't download
-            repo.cache = 0
-            self.logger.info('Downloading %s' % os.path.basename(remote))
-            pkg.localpath = local # Hack: to set the localpath to what we want.
-
-            # do a little dance for file:// repos...
-            path = repo.getPackage(pkg)
-            if not os.path.exists(local) or not os.path.samefile(path, local):
-                shutil.copy2(local, path)
-
-            try:
-                os.link(local, os.path.join(pkgdir, os.path.basename(remote)))
-            except OSError, e:
-                if e.errno == 18:
-                    # Can't hardlink cross file systems
-                    shutil.copy2(local, target)
-                else:
-                    self.logger.error('Got an error linking from cache: %s' % e)
-                    raise OSError, e
-
+        self._downloadPackageList(srpmpolist, os.path.join('source', 'SRPMS'))
