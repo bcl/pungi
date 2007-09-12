@@ -16,7 +16,7 @@ import logging
 import os
 import subprocess
 
-class PungiBase():
+class PungiBase:
     """The base Pungi class.  Set up config items and logging here"""
 
     def __init__(self, config):
