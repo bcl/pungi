@@ -100,6 +100,13 @@ class Gather(pypungi.PungiBase):
         arches.append('src') # throw source in there, filter it later
 
         # deal with our repos
+        # Check to see if method was url, add that to the repo list.
+        if ksparser.handler.method.url:
+            reponame = "ks-method-url"
+            repourl = ksparser.handler.method.url
+            newrepo = ksparser.handler.RepoData(name=reponame, baseurl=repourl)
+            ksparser.handler.repo.add(newrepo)
+
         for repo in ksparser.handler.repo.repoList:
             self.logger.info('Adding repo %s' % repo.name)
             thisrepo = yum.yumRepo.YumRepository(repo.name)
