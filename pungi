@@ -13,13 +13,12 @@
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 import os
+import pypungi.config
 import pypungi.gather
 import pypungi.pungi
 import yum
 import pykickstart.parser
 import pykickstart.version
-
-from ConfigParser import SafeConfigParser
 
 def main():
 
@@ -28,56 +27,17 @@ def main():
         print >> sys.stderr, "You must run pungi as root"
         return 1
 
-    # Set some default variables, can be overrided in config file
+    config = pypungi.config.Config()
 
-    # Turn this into a dict someday, to iterate over when setting defaults
-    osdir = "os"
-    sourcedir = "source"
-    debugdir = "debug"
-    isodir = "iso"
-    cdsize = "4608.0"
-    relnotefilere = "eula.txt fedora.css GPL README-BURNING-ISOS-en_US.txt RELEASE-NOTES-en_US.html ^RPM-GPG"
-    relnotedirre = "images stylesheet-images"
-    relnotepkgs = "fedora-release fedora-release-notes"
-    
-    (opts, args) = get_arguments()
+    (opts, args) = get_arguments(config)
 
     # Set up the kickstart parser and pass in the kickstart file we were handed
     ksparser = pykickstart.parser.KickstartParser(pykickstart.version.makeVersion())
     ksparser.readKickstart(opts.config)
 
-    config = SafeConfigParser()
-    config.add_section('default')
-
-    # add some sections here before setting stuff.
-
-    # hard coded non-options
-    config.set('default', 'osdir', osdir)
-    config.set('default', 'sourcedir', sourcedir)
-    config.set('default', 'debugdir', debugdir)
-    config.set('default', 'isodir', isodir)
-    config.set('default', 'relnotefilere', relnotefilere)
-    config.set('default', 'relnotedirre', relnotedirre)
-    config.set('default', 'relnotepkgs', relnotepkgs)
-    config.set('default', 'product_path', 'Packages')
-    config.set('default', 'cachedir', '/var/cache/pungi')
-    config.set('default', 'arch', yum.rpmUtils.arch.getBaseArch())
-
-    # set configs from cli options
-    config.set('default', 'name', opts.name)
-    config.set('default', 'version', opts.ver)
-    config.set('default', 'flavor', opts.flavor)
-    config.set('default', 'destdir', opts.destdir)
-    config.set('default', 'cachedir', opts.cachedir)
-    config.set('default', 'bugurl', opts.bugurl)
-    config.set('default', 'discs', opts.discs)
     if opts.sourceisos:
         config.set('default', 'arch', 'source')
 
-    # set some other defaults
-    config.set('default', 'iso_basename', config.get('default', 'name'))
-
-    config.set('default', 'cdsize', cdsize)
     for part in ksparser.handler.partition.partitions:
         if part.mountpoint == 'iso':
             config.set('default', 'cdsize', part.size)
@@ -154,23 +114,33 @@ if __name__ == '__main__':
 
     today = time.strftime('%Y%m%d', time.localtime())
 
-    def get_arguments():
+    def get_arguments(config):
         parser = OptionParser(version="%prog 1.0.2")
 
+        def set_config(option, opt_str, value, parser, config):
+            config.set('default', option.dest, value)
+
         # Pulled in from config file to be cli options as part of pykickstart conversion
-        parser.add_option("--name", default="Fedora", dest="name",
+        parser.add_option("--name", dest="name", type="string",
+          action="callback", callback=set_config, callback_args=(config, ),
           help='the name for your distribution (defaults to "Fedora")')
-        parser.add_option("--ver", default=today, dest="ver",
+        parser.add_option("--ver", dest="version", type="string",
+          action="callback", callback=set_config, callback_args=(config, ),
           help='the version of your distribution (defaults to datestamp)')
-        parser.add_option("--flavor", default="", dest="flavor",
+        parser.add_option("--flavor", dest="flavor", type="string",
+          action="callback", callback=set_config, callback_args=(config, ),
           help='the flavor of your distribution spin (optional)')
-        parser.add_option("--destdir", default=os.getcwd(), dest="destdir",
+        parser.add_option("--destdir", dest="destdir", type="string",
+          action="callback", callback=set_config, callback_args=(config, ),
           help='destination directory (defaults to current directory)')
-        parser.add_option("--cachedir", default="/var/cache/pungi", dest="cachedir",
+        parser.add_option("--cachedir", dest="cachedir", type="string",
+          action="callback", callback=set_config, callback_args=(config, ),
           help='package cache directory (defaults to /var/cache/pungi)')
-        parser.add_option("--bugurl", default="http://bugzilla.redhat.com", dest="bugurl",
+        parser.add_option("--bugurl", dest="bugurl", type="string",
+          action="callback", callback=set_config, callback_args=(config, ),
           help='the url for your bug system (defaults to http://bugzilla.redhat.com)')
-        parser.add_option("--discs", default='1', dest="discs",
+        parser.add_option("--discs", dest="discs", type="string",
+          action="callback", callback=set_config, callback_args=(config, ),
           help='the number of discs you want to create (defaults to 1)')
         parser.add_option("--nosource", action="store_true", dest="nosource",
           help='disable gathering of source packages (optional)')

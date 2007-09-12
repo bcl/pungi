@@ -1,6 +1,8 @@
 * Wed Sep 12 2007 Jesse Keating <jkeating@redhat.com>
 - Remove python2.5 needs (Mark McLoughlin)
 - Consolidate the download code for easier maint. (Mark McLoughlin)
+- Create a config class that can make using pungi modules easier. (Mark 
+McLoughlin)
 
 * Tue Sep 11 2007 Jesse Keating <jkeating@redhat.com>
 - Fix a bug with default dest dir (notting)
