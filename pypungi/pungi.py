@@ -49,7 +49,8 @@ class Pungi(pypungi.PungiBase):
 
         self.common_files = []
         self.infofile = os.path.join(self.config.get('default', 'destdir'),
-                                     '.composeinfo')
+                                    self.config.get('default', 'version'),
+                                    '.composeinfo')
 
     def writeinfo(self, line):
         """Append a line to the infofile in self.infofile"""
@@ -60,11 +61,11 @@ class Pungi(pypungi.PungiBase):
         f.close()
 
     def mkrelative(self, subfile):
-        """Return the relative path for 'subfile' underneath 'self.destdir'."""
+        """Return the relative path for 'subfile' underneath the version dir."""
 
-
-        if subfile.startswith(self.destdir):
-            return subfile.replace(self.destdir + os.path.sep, '')
+        basedir = os.path.join(self.destdir, self.config.get('default', 'version'))
+        if subfile.startswith(basedir):
+            return subfile.replace(basedir + os.path.sep, '')
 
     def doCreaterepo(self):
         """Run createrepo to generate repodata in the tree."""
