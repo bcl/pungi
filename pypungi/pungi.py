@@ -83,7 +83,27 @@ class Pungi(pypungi.PungiBase):
         createrepo.append(self.topdir)
 
         # run the command
-        pypungi._doRunCommand(createrepo, self.logger, rundir=self.topdir)
+        pypungi._doRunCommand(createrepo, self.logger)
+
+        # setup the repoview call
+        repoview = ['/usr/bin/repoview']
+        repoview.append('--quiet')
+        repoview.append('--title')
+        if self.config.get('default', 'flavor'):
+            repoview.append('%s %s: %s - %s' % (self.config.get('default', 'name'),
+                                                self.config.get('default', 'version'),
+                                                self.config.get('default', 'flavor'),
+                                                self.config.get('default', 'arch')))
+        else:
+            repoview.append('%s %s - %s' % (self.config.get('default', 'name'),
+                                                self.config.get('default', 'version'),
+                                                self.config.get('default', 'arch')))
+
+        repoview.append(self.topdir)
+
+        # run the command
+        pypungi._doRunCommand(repoview, self.logger)
+            
 
     def doBuildinstall(self):
         """Run anaconda-runtime's buildinstall on the tree."""

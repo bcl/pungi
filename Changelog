@@ -1,3 +1,6 @@
+* Fri Sep 14 2007 Jesse Keating <jkeating@redhat.com>
+- Create repoview content in the tree
+
 * Wed Sep 12 2007 Jesse Keating <jkeating@redhat.com>
 - Remove python2.5 needs (Mark McLoughlin)
 - Consolidate the download code for easier maint. (Mark McLoughlin)
