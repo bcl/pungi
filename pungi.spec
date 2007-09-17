@@ -1,7 +1,7 @@
 %{!?python_sitelib: %define python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")}
 
 Name:           pungi
-Version:        1.0.2
+Version:        1.1.0
 Release:        1%{?dist}
 Summary:        Distribution compose tool
 
@@ -51,6 +51,18 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Fri Sep 14 2007 Jesse Keating <jkeating@redhat.com> - 1.1.0-1
+- Create repoview content in the tree
+- Move the .composeinfo file into the directory we actually publish
+- Remove python2.5 needs (Mark McLoughlin)
+- Consolidate the download code for easier maint. (Mark McLoughlin)
+- Create a config class that can make using pungi modules easier. (Mark 
+McLoughlin)
+- Use url line in kickstart files as a repo
+- Fix a bug with default dest dir (notting)
+- Include a man page (dcantrell)
+- Fix a bug with file:// based repos
+
 * Thu Aug 30 2007 Jesse Keating <jkeating@redhat.com> - 1.0.2-1
 - Fix some bugs with source iso creation
 - Add source repo to kickstart file
