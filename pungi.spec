@@ -1,7 +1,7 @@
 %{!?python_sitelib: %define python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")}
 
 Name:           pungi
-Version:        1.1.0
+Version:        1.1.1
 Release:        1%{?dist}
 Summary:        Distribution compose tool
 
@@ -51,6 +51,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Tue Sep 18 2007 Jesse Keating <jkeating@redhat.com> - 1.1.1-1
+- Create a media.repo file on the first iso
+
 * Fri Sep 14 2007 Jesse Keating <jkeating@redhat.com> - 1.1.0-1
 - Create repoview content in the tree
 - Move the .composeinfo file into the directory we actually publish
