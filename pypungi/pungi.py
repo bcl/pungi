@@ -314,7 +314,7 @@ class Pungi(pypungi.PungiBase):
 
         createrepo.append('--outputdir')
         if self.config.getint('default', 'discs') == 1:
-            os.makedirs('%s-disc1' % self.topdir)
+            os.makedirs('%s-disc1' % self.topdir) # rename this for single disc
         createrepo.append('%s-disc1' % self.topdir)
 
         createrepo.append('--basedir')
@@ -332,6 +332,18 @@ class Pungi(pypungi.PungiBase):
 
         # run the command
         pypungi._doRunCommand(createrepo, self.logger)
+
+	# Write out a repo file for the disc to be used on the installed system
+	self.logger.info('Creating media repo file.')
+	repofile = open(os.path.join('%s-disc1' % self.topdir, 'media.repo'), 'w')
+	repocontent = """[InstallMedia]
+name=%s %s
+mediaid=%s
+gpgcheck=0
+""" % (self.config.get('default', 'name'), self.config.get('default', 'version'), mediaid)
+
+	repofile.write(repocontent)
+	repofile.close()
 
     def doCreateIsos(self):
         """Create isos from the various split directories."""

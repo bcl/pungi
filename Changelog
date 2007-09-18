@@ -1,3 +1,6 @@
+* Tue Sep 18 2007 Jesse Keating <jkeating@redhat.com>
+- Drop a .repo file on the root of the media.  Used after install.
+
 * Fri Sep 14 2007 Jesse Keating <jkeating@redhat.com>
 - Create repoview content in the tree
 - Move the .composeinfo file into the directory we actually publish
