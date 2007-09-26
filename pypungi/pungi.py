@@ -339,6 +339,7 @@ class Pungi(pypungi.PungiBase):
 	repocontent = """[InstallMedia]
 name=%s %s
 mediaid=%s
+metadata_expire=-1
 gpgcheck=0
 """ % (self.config.get('default', 'name'), self.config.get('default', 'version'), mediaid)
 
