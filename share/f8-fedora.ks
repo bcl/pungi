@@ -57,7 +57,7 @@ wireshark-gnome
 @sql-server
 @web-server --optional
 # Virt group
-@virtualization
+@virtualization --optional
 # filesystem stuff
 reiserfs-utils
 xfsprogs

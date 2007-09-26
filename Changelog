@@ -1,3 +1,6 @@
+* Wed Sep 26 2007 Jesse Keating <jkeating@redhat.com>
+- Pull in all the optional Virt stuff
+
 * Tue Sep 25 2007 Jesse Keating <jkeating@redhat.com>
 - Fix location of media.repo file.
 
