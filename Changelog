@@ -1,3 +1,6 @@
+* Tue Sep 25 2007 Jesse Keating <jkeating@redhat.com>
+- Fix location of media.repo file.
+
 * Tue Sep 18 2007 Jesse Keating <jkeating@redhat.com>
 - Drop a .repo file on the root of the media.  Used after install.
 

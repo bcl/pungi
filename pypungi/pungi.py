@@ -335,7 +335,7 @@ class Pungi(pypungi.PungiBase):
 
 	# Write out a repo file for the disc to be used on the installed system
 	self.logger.info('Creating media repo file.')
-	repofile = open(os.path.join('%s-disc1' % self.topdir, 'media.repo'), 'w')
+	repofile = open(os.path.join(self.topdir, 'media.repo'), 'w')
 	repocontent = """[InstallMedia]
 name=%s %s
 mediaid=%s
