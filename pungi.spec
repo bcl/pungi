@@ -1,7 +1,7 @@
 %{!?python_sitelib: %define python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")}
 
 Name:           pungi
-Version:        1.1.3
+Version:        1.1.4
 Release:        1%{?dist}
 Summary:        Distribution compose tool
 
@@ -51,6 +51,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Tue Oct 02 2007 Jesse Keating <jkeating@redhat.com> - 1.1.4-1
+- Make sure we use strings in the config object
+
 * Wed Sep 26 2007 Jesse Keating <jkeating@redhat.com> - 1.1.3-1
 - Pull in all the optional Virt stuff
 - Don't expire the metadata from Media repo.
