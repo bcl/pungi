@@ -40,7 +40,7 @@ def main():
 
     for part in ksparser.handler.partition.partitions:
         if part.mountpoint == 'iso':
-            config.set('default', 'cdsize', part.size)
+            config.set('default', 'cdsize', str(part.size))
 
     # Set up our directories
     if not os.path.exists(config.get('default', 'destdir')):
