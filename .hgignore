@@ -1,7 +1,7 @@
 syntax: glob
 *.pyc
 *~
-.pida*
+.pungi.pida*
 MANIFEST
 build/*
 dist/*
