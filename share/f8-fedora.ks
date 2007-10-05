@@ -25,6 +25,7 @@ echo-icon-theme
 tracker
 gnash
 liferea
+esc
 # apps
 @authoring-and-publishing
 @editors
