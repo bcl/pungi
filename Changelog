@@ -1,3 +1,6 @@
+* Thu Oct 11 2007 Jesse Keating <jkeating@redhat.com>
+- Add a cost to the media repo file.
+
 * Tue Oct 02 2007 Jesse Keating <jkeating@redhat.com>
 - Make sure we stuff a string value into ConfigParser.
 
