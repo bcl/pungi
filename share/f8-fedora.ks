@@ -33,6 +33,7 @@ emacs
 @games
 @graphical-internet
 @graphics
+@java
 @office
 @sound-and-video
 @text-internet
