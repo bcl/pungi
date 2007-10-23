@@ -1,7 +1,7 @@
 %{!?python_sitelib: %define python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")}
 
 Name:           pungi
-Version:        1.1.6
+Version:        1.1.7
 Release:        1%{?dist}
 Summary:        Distribution compose tool
 
@@ -51,6 +51,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Tue Oct 23 2007 Jesse Keating <jkeating@redhat.com> - 1.1.7-1
+- Add java-development to the group set.
+
 * Fri Oct 19 2007 Jesse Keating <jkeating@redhat.com> - 1.1.6-1
 - Update the manifest
 

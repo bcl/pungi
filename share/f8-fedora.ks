@@ -43,6 +43,7 @@ wireshark-gnome
 @development-libs
 @development-tools
 @gnome-software-development
+@java-development
 @kde-software-development
 @web-development
 @x-software-development
