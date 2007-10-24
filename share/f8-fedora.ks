@@ -28,6 +28,7 @@ liferea
 esc
 # apps
 @authoring-and-publishing
+@eclipse
 @editors
 emacs
 @games
