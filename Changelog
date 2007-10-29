@@ -1,3 +1,7 @@
+* Mon Oct 29 2007 Jesse Keating <jkeating@redhat.com>
+- Check to see if the cached package is same size or larger and if so remove
+it.  Otherwise regets will freak out.
+
 * Tue Oct 23 2007 Jesse Keating <jkeating@redhat.com>
 - Add java-development to the group set.
 

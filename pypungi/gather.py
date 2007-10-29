@@ -330,12 +330,19 @@ class Gather(pypungi.PungiBase):
             local = os.path.join(self.config.get('default', 'cachedir'), basename)
             target = os.path.join(pkgdir, basename)
 
+            cursize = os.stat(local)[6]
+            totsize = long(po.size)
+
             if os.path.exists(local) and self.verifyCachePkg(po, local):
                 self.logger.debug("%s already exists and appears to be complete" % local)
                 if os.path.exists(target):
                     os.remove(target) # avoid traceback after interrupted download
                 self._link(local, target)
                 continue
+            else:
+                # Check to see if the file on disk is bigger, and if so, remove it
+                if cursize >= totsize:
+                    os.unlink(local)
 
             # Disable cache otherwise things won't download
             repo.cache = 0

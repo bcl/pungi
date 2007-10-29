@@ -1,7 +1,7 @@
 %{!?python_sitelib: %define python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")}
 
 Name:           pungi
-Version:        1.1.8
+Version:        1.1.9
 Release:        1%{?dist}
 Summary:        Distribution compose tool
 
@@ -51,6 +51,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Mon Oct 29 2007 Jesse Keating <jkeating@redhat.com> - 1.1.9-1
+- Remove oversized cached packages (fixes reget problem)
+
 * Sat Oct 27 2007 Jesse Keating <jkeating@redhat.com> - 1.1.8-1
 - Add eclipse group.
 
