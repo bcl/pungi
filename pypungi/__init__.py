@@ -68,3 +68,14 @@ def _doRunCommand(command, logger, rundir='/tmp', output=subprocess.PIPE, error=
         logger.error(err)
         raise OSError, "Got an error from %s: %s" % (command[0], err)
 
+def _link(local, target):
+    try:
+        os.link(local, target)
+    except OSError, e:
+        if e.errno != 18: # EXDEV
+            self.logger.error('Got an error linking from cache: %s' % e)
+            raise OSError, e
+
+        # Can't hardlink cross file systems
+        shutil.copy2(local, target)
+

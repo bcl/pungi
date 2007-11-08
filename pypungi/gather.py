@@ -293,17 +293,6 @@ class Gather(pypungi.PungiBase):
             if not srpm in self.srpmlist:
                 self.srpmlist.append(srpm)
 
-    def _link(self, local, target):
-        try:
-            os.link(local, target)
-        except OSError, e:
-            if e.errno != 18: # EXDEV
-                self.logger.error('Got an error linking from cache: %s' % e)
-                raise OSError, e
-
-            # Can't hardlink cross file systems
-            shutil.copy2(local, target)
-
     def _downloadPackageList(self, polist, relpkgdir):
         """Cycle through the list of package objects and
            download them from their respective repos."""
@@ -337,7 +326,7 @@ class Gather(pypungi.PungiBase):
                 self.logger.debug("%s already exists and appears to be complete" % local)
                 if os.path.exists(target):
                     os.remove(target) # avoid traceback after interrupted download
-                self._link(local, target)
+                pypungi._link(local, target)
                 continue
             elif os.path.exists(local):
                 # Check to see if the file on disk is bigger, and if so, remove it
@@ -355,7 +344,7 @@ class Gather(pypungi.PungiBase):
             if not os.path.exists(local) or not os.path.samefile(path, local):
                 shutil.copy2(path, local)
  
-            self._link(local, target)
+            pypungi._link(local, target)
 
         self.logger.info('Finished downloading packages.')
 

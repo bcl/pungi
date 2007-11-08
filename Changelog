@@ -1,3 +1,6 @@
+* Wed Nov 07 2007 Jesse Keating <jkeating@redhat.com>
+- Preserve timestamps on release note files
+
 * Mon Oct 29 2007 Jesse Keating <jkeating@redhat.com>
 - Check to see if the cached package is same size or larger and if so remove
 it.  Otherwise regets will freak out.
