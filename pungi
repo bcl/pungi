@@ -167,9 +167,9 @@ if __name__ == '__main__':
 
         (opts, args) = parser.parse_args()
         
-        #if not '-c' in sys.argv or not '--config' in sys.argv:
-        #    parser.print_help()
-        #    sys.exit(0)
+        if not opts.config:
+            parser.print_help()
+            sys.exit(0)
 
         if opts.do_gather or opts.do_createrepo or opts.do_buildinstall or opts.do_packageorder or opts.do_splittree or opts.do_createiso:
             opts.do_all = False
