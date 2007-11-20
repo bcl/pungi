@@ -333,10 +333,10 @@ class Pungi(pypungi.PungiBase):
         # run the command
         pypungi._doRunCommand(createrepo, self.logger)
 
-	# Write out a repo file for the disc to be used on the installed system
-	self.logger.info('Creating media repo file.')
-	repofile = open(os.path.join(self.topdir, 'media.repo'), 'w')
-	repocontent = """[InstallMedia]
+        # Write out a repo file for the disc to be used on the installed system
+        self.logger.info('Creating media repo file.')
+        repofile = open(os.path.join(self.topdir, 'media.repo'), 'w')
+        repocontent = """[InstallMedia]
 name=%s %s
 mediaid=%s
 metadata_expire=-1
@@ -344,8 +344,8 @@ gpgcheck=0
 cost=500
 """ % (self.config.get('default', 'name'), self.config.get('default', 'version'), mediaid)
 
-	repofile.write(repocontent)
-	repofile.close()
+        repofile.write(repocontent)
+        repofile.close()
 
     def doCreateIsos(self):
         """Create isos from the various split directories."""
