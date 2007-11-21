@@ -15,6 +15,7 @@
 import logging
 import os
 import subprocess
+import shutil
 
 class PungiBase(object):
     """The base Pungi class.  Set up config items and logging here"""
