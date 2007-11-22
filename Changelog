@@ -1,3 +1,8 @@
+* Thu Nov 22 2007 Jesse Keating <jkeating@redhat.com>
+- Print a usage if no options are passed
+- Correct a man page typo
+- Update the F8 config to use released repos
+
 * Wed Nov 07 2007 Jesse Keating <jkeating@redhat.com>
 - Preserve timestamps on release note files
 
