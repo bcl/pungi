@@ -52,13 +52,13 @@ class PungiBase(object):
                             filename=logfile)
 
 
-def _doRunCommand(command, logger, rundir='/tmp', output=subprocess.PIPE, error=subprocess.PIPE):
+def _doRunCommand(command, logger, rundir='/tmp', output=subprocess.PIPE, error=subprocess.PIPE, env=None):
     """Run a command and log the output.  Error out if we get something on stderr"""
 
 
     logger.info("Running %s" % ' '.join(command))
 
-    p1 = subprocess.Popen(command, cwd=rundir, stdout=output, stderr=error, universal_newlines=True)
+    p1 = subprocess.Popen(command, cwd=rundir, stdout=output, stderr=error, universal_newlines=True, env=env)
     (out, err) = p1.communicate()
 
     if out:

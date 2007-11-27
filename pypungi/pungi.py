@@ -137,7 +137,7 @@ class Pungi(pypungi.PungiBase):
         buildinstall.append(self.topdir)
 
         # run the command
-        pypungi._doRunCommand(buildinstall, self.logger)
+        pypungi._doRunCommand(buildinstall, self.logger, env={"TMPDIR": self.workdir})
 
         # write out the tree data for snake
         self.writeinfo('tree: %s' % self.mkrelative(self.topdir))
