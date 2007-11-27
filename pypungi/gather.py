@@ -266,7 +266,7 @@ class Gather(pypungi.PungiBase):
 
         for pkg in unmatched:
             if not pkg in matchdict.keys():
-                self.logger.warn('Could not find a match for %s' % pkg)
+                self.logger.warn('Could not find a match for %s in any configured repo' % pkg)
 
         if len(self.ayum.tsInfo) == 0:
             raise yum.Errors.MiscError, 'No packages found to download.'
