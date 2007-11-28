@@ -81,14 +81,7 @@ def main():
            mypungi.doBuildinstall()
            mypungi.doGetRelnotes()
 
-        if opts.do_all or opts.do_packageorder:
-           mypungi.doPackageorder()
-
-        if opts.do_all or opts.do_splittree:
-             mypungi.doSplittree()
-
         if opts.do_all or opts.do_createiso:
-           mypungi.doCreateSplitrepo()
            mypungi.doCreateIsos()
 
     # Do things slightly different for src.
@@ -99,9 +92,6 @@ def main():
                                       config.get('default', 'version'),
                                       config.get('default', 'flavor'),
                                       'source', 'SRPM')
-        if opts.do_all or opts.do_splittree:
-            mypungi.doSplitSRPMs()
-
         if opts.do_all or opts.do_createiso:
             mypungi.doCreateIsos()
 
@@ -144,6 +134,8 @@ if __name__ == '__main__':
           help='the number of discs you want to create (defaults to 1)')
         parser.add_option("--nosource", action="store_true", dest="nosource",
           help='disable gathering of source packages (optional)')
+        parser.add_option("--nosplitmedia", action="store_true", dest="nosplitmedia",
+          help='disable creation of split media (optional)')
         parser.add_option("--sourceisos", default=False, action="store_true", dest="sourceisos",
           help='Create the source isos (other arch runs must be done)')
 
@@ -157,10 +149,6 @@ if __name__ == '__main__':
           help="Flag to enable processing the Createrepo stage")
         parser.add_option("-B", action="store_true", default=False, dest="do_buildinstall",
           help="Flag to enable processing the BuildInstall stage")
-        parser.add_option("-P", action="store_true", default=False, dest="do_packageorder",
-          help="Flag to enable processing the Package Order stage")
-        parser.add_option("-S", action="store_true", default=False, dest="do_splittree",
-          help="Flag to enable processing the SplitTree stage")
         parser.add_option("-I", action="store_true", default=False, dest="do_createiso",
           help="Flag to enable processing the CreateISO stage")
 
@@ -171,7 +159,7 @@ if __name__ == '__main__':
             parser.print_help()
             sys.exit(0)
 
-        if opts.do_gather or opts.do_createrepo or opts.do_buildinstall or opts.do_packageorder or opts.do_splittree or opts.do_createiso:
+        if opts.do_gather or opts.do_createrepo or opts.do_buildinstall or opts.do_createiso:
             opts.do_all = False
         return (opts, args)
 

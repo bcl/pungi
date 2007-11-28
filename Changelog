@@ -1,3 +1,9 @@
+* Wed Nov 28 2007 Jesse Keating <jkeating@redhat.com>
+- Figure out number of isos on the fly, based on tree size
+- Add command line option to disable creation of split media
+- Remove -S -P options, as splittree and packageorder are now
+called from createIsos, if needed.
+
 * Tue Nov 27 2007 Jesse Keating <jkeating@redhat.com>
 - Enable TMPDIR again so that anconda-runtime working files
 go to the working dir.
