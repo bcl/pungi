@@ -146,10 +146,6 @@ class Pungi(pypungi.PungiBase):
         """Run anaconda-runtime's pkgorder on the tree, used for splitting media."""
 
 
-        # non-op for only one disc
-        if self.config.getint('default', 'discs') == 1:
-            return
-
         pkgorderfile = open(os.path.join(self.workdir, 'pkgorder-%s' % self.config.get('default', 'arch')), 'w')
         # setup the command
         pkgorder = ['/usr/lib/anaconda-runtime/pkgorder']
@@ -226,10 +222,6 @@ class Pungi(pypungi.PungiBase):
            sized chunks."""
 
 
-        # non-op for only one disc
-        if self.config.getint('default', 'discs') == 1:
-            return
-
         timber = splittree.Timber()
         timber.arch = self.config.get('default', 'arch')
         timber.target_size = self.config.getfloat('default', 'cdsize') * 1024 * 1024
@@ -254,9 +246,6 @@ class Pungi(pypungi.PungiBase):
         """Use anaconda-runtime's splittree to split the srpms into appropriate
            sized chunks."""
 
-        # non-op for only one disc
-        if self.config.getint('default', 'discs') == 1:
-            return
 
         timber = splittree.Timber()
         timber.arch = self.config.get('default', 'arch')
@@ -380,7 +369,7 @@ cost=500
 
         # Check the size of the tree
         # This size checking method may be bunk, accepting patches...
-        treesize = int(subprocess.Popen(mkisofs + ['-print-size', self.topdir], stdout=subprocess.PIPE).communicate()[0])
+        treesize = int(subprocess.Popen(mkisofs + ['-print-size', '-quiet', self.topdir], stdout=subprocess.PIPE).communicate()[0])
         # Size returned is 2KiB clusters or some such.  This translates that to MiB.
         treesize = treesize * 2048 / 1024 / 1024
 
