@@ -1,6 +1,9 @@
 * Tue Nov 27 2007 Jesse Keating <jkeating@redhat.com>
 - Enable TMPDIR again so that anconda-runtime working files
 go to the working dir.
+- Use downloadPkgs() from yum instead of a homebrew download function.
+- Add a callback to show download progress
+- Add a force option to _link, removes existing target file
 
 * Thu Nov 22 2007 Jesse Keating <jkeating@redhat.com>
 - Print a usage if no options are passed

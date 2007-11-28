@@ -18,6 +18,13 @@ import shutil
 import sys
 import pypungi
 import logging
+import urlgrabber.progress
+
+class CallBack(urlgrabber.progress.TextMeter):
+    """A call back function used with yum."""
+
+    def progressbar(self, current, total, name=None):
+        return
 
 class PungiYum(yum.YumBase):
     """Subclass of Yum"""
@@ -70,11 +77,12 @@ class Gather(pypungi.PungiBase):
         yumconf = yum.config.YumConf()
         yumconf.debuglevel = 6
         yumconf.errorlevel = 6
-        yumconf.cachedir = os.path.join(self.workdir, 'yumcache')
+        yumconf.cachedir = self.config.get('default', 'cachedir')
         yumconf.persistdir = os.path.join(self.workdir, 'yumlib')
         yumconf.installroot = os.path.join(self.workdir, 'yumroot')
         yumconf.uid = os.geteuid()
         yumconf.cache = 0
+        yumconf.failovermethod = 'priority'
         yumvars = yum.config._getEnvVar()
         yumvars['releasever'] = self.config.get('default', 'version')
         yumvars['basearch'] = yum.rpmUtils.arch.getBaseArch(myarch=self.config.get('default', 'arch'))
@@ -82,9 +90,6 @@ class Gather(pypungi.PungiBase):
         self.ayum._conf = yumconf
         self.ayum.repos.setCacheDir(self.ayum.conf.cachedir)
 
-        self.ayum.cleanMetadata() # clean metadata that might be in the cache from previous runs
-        self.ayum.cleanSqlite() # clean metadata that might be in the cache from previous runs
- 
         arch = self.config.get('default', 'arch')
         if arch == 'i386':
             yumarch = 'athlon'
@@ -121,6 +126,12 @@ class Gather(pypungi.PungiBase):
             self.ayum.repos.add(thisrepo)
             self.ayum.repos.enableRepo(thisrepo.id)
             self.ayum._getRepos(thisrepo=thisrepo.id, doSetup = True)
+
+        self.ayum.repos.setProgressBar(CallBack())
+        self.ayum.repos.callback = CallBack()
+
+        self.ayum.cleanMetadata() # clean metadata that might be in the cache from previous runs
+        self.ayum.cleanSqlite() # clean metadata that might be in the cache from previous runs
 
         self.logger.info('Getting sacks for arches %s' % arches)
         self.ayum._getSacks(archlist=arches)
@@ -311,40 +322,29 @@ class Gather(pypungi.PungiBase):
         if not os.path.exists(pkgdir):
             os.makedirs(pkgdir)
 
-        for po in polist:
-            repo = self.ayum.repos.getRepo(po.repoid)
+        probs = self.ayum.downloadPkgs(polist)
 
+        if len(probs.keys()) > 0:
+            self.log.error("Errors were encountered while downloading packages.")
+            for key in probs.keys():
+                errors = yum.misc.unique(probs[key])
+                for error in errors:
+                    self.log.error("%s: %s" % (key, error))
+            sys.exit(1)
+
+        for po in polist:
             basename = os.path.basename(po.relativepath)
 
-            local = os.path.join(self.config.get('default', 'cachedir'), basename)
+            local = po.localPkg()
             target = os.path.join(pkgdir, basename)
 
-            totsize = long(po.size)
-
-            # this block needs work to be more efficient
-            if os.path.exists(local) and self.verifyCachePkg(po, local):
-                self.logger.debug("%s already exists and appears to be complete" % local)
-                if os.path.exists(target):
-                    os.remove(target) # avoid traceback after interrupted download
-                pypungi._link(local, target)
+            # Link downloaded package in (or link package from file repo)
+            try:
+                pypungi._link(local, target, force=True)
                 continue
-            elif os.path.exists(local):
-                # Check to see if the file on disk is bigger, and if so, remove it
-                cursize = os.stat(local)[6]
-                if cursize >= totsize:
-                    os.unlink(local)
-
-            # Disable cache otherwise things won't download
-            repo.cache = 0
-            self.logger.info('Downloading %s' % basename)
-            po.localpath = local # Hack: to set the localpath to what we want.
-
-            # do a little dance for file:// repos...
-            path = repo.getPackage(po)
-            if not os.path.exists(local) or not os.path.samefile(path, local):
-                shutil.copy2(path, local)
- 
-            pypungi._link(local, target)
+            except:
+                self.logger.error("Unable to link %s from the yum cache." % po.name)
+                sys.exit(1)
 
         self.logger.info('Finished downloading packages.')
 

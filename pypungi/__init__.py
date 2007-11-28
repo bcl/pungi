@@ -69,7 +69,12 @@ def _doRunCommand(command, logger, rundir='/tmp', output=subprocess.PIPE, error=
         logger.error(err)
         raise OSError, "Got an error from %s: %s" % (command[0], err)
 
-def _link(local, target):
+def _link(local, target, force=False):
+    """Simple function to link or copy a package, removing target optionally."""
+
+    if os.path.exists(target) and force:
+        os.remove(target)
+
     try:
         os.link(local, target)
     except OSError, e:
