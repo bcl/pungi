@@ -16,8 +16,10 @@ repo --name=updates-source --mirrorlist=http://mirrors.fedoraproject.org/mirrorl
 %packages
 # core
 @core
+tcsh
 @base-x
 kernel*
+-kernel*-debug*
 # Hardware stuff
 @hardware-support
 @dial-up
@@ -29,10 +31,12 @@ tracker
 gnash
 liferea
 esc
+thunderbird
 # apps
 @authoring-and-publishing
 @eclipse
 @editors
+joe
 emacs
 @games
 @graphical-internet
