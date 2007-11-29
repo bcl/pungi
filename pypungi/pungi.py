@@ -336,7 +336,7 @@ cost=500
         repofile.write(repocontent)
         repofile.close()
 
-    def doCreateIsos(self):
+    def doCreateIsos(self, split=True):
         """Create isos of the tree, optionally splitting the tree for split media."""
 
 
@@ -369,20 +369,25 @@ cost=500
 
         # Check the size of the tree
         # This size checking method may be bunk, accepting patches...
-        treesize = int(subprocess.Popen(mkisofs + ['-print-size', '-quiet', self.topdir], stdout=subprocess.PIPE).communicate()[0])
+        if not self.config.get('default', 'arch') == 'source':
+            treesize = int(subprocess.Popen(mkisofs + ['-print-size', '-quiet', self.topdir], stdout=subprocess.PIPE).communicate()[0])
+        else:
+            srcdir = os.path.join(self.config.get('default', 'destdir'), self.config.get('default', 'version'), 'source', 'SRPMS')
+
+            treesize = int(subprocess.Popen(mkisofs + ['-print-size', '-quiet', srcdir], stdout=subprocess.PIPE).communicate()[0])
         # Size returned is 2KiB clusters or some such.  This translates that to MiB.
         treesize = treesize * 2048 / 1024 / 1024
 
         cdsize = self.config.getfloat('default', 'cdsize')
 
         # Do some math to figure out how many discs we'd need
-        if treesize < cdsize or self.config.has_option('default', 'nosplitmedia'):
+        if treesize < cdsize or not split:
             self.config.set('default', 'discs', '1')
         else:
             discs = int(treesize / cdsize + 1)
             self.config.set('default', 'discs', str(discs))
             if self.config.get('default', 'arch') == 'source':
-                self.doSplitSRPMS()
+                self.doSplitSRPMs()
             else:
                 self.doPackageorder()
                 self.doSplittree()

@@ -1,3 +1,6 @@
+* Thu Nov 29 2007 Jesse Keating <jkeating@redhat.com>
+- Add a split option to the doCreateIsos call
+
 * Wed Nov 28 2007 Jesse Keating <jkeating@redhat.com>
 - Figure out number of isos on the fly, based on tree size
 - Add command line option to disable creation of split media

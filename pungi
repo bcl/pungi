@@ -82,7 +82,7 @@ def main():
            mypungi.doGetRelnotes()
 
         if opts.do_all or opts.do_createiso:
-           mypungi.doCreateIsos()
+           mypungi.doCreateIsos(split=opts.nosplitmedia)
 
     # Do things slightly different for src.
     if opts.sourceisos:
@@ -93,7 +93,7 @@ def main():
                                       config.get('default', 'flavor'),
                                       'source', 'SRPM')
         if opts.do_all or opts.do_createiso:
-            mypungi.doCreateIsos()
+            mypungi.doCreateIsos(split=opts.nosplitmedia)
 
     print "All done!"
 
@@ -134,7 +134,7 @@ if __name__ == '__main__':
           help='the number of discs you want to create (defaults to 1)')
         parser.add_option("--nosource", action="store_true", dest="nosource",
           help='disable gathering of source packages (optional)')
-        parser.add_option("--nosplitmedia", action="store_true", dest="nosplitmedia",
+        parser.add_option("--nosplitmedia", action="store_true", dest="nosplitmedia", default=False,
           help='disable creation of split media (optional)')
         parser.add_option("--sourceisos", default=False, action="store_true", dest="sourceisos",
           help='Create the source isos (other arch runs must be done)')
