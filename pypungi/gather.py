@@ -325,11 +325,11 @@ class Gather(pypungi.PungiBase):
         probs = self.ayum.downloadPkgs(polist)
 
         if len(probs.keys()) > 0:
-            self.log.error("Errors were encountered while downloading packages.")
+            self.logger.error("Errors were encountered while downloading packages.")
             for key in probs.keys():
                 errors = yum.misc.unique(probs[key])
                 for error in errors:
-                    self.log.error("%s: %s" % (key, error))
+                    self.logger.error("%s: %s" % (key, error))
             sys.exit(1)
 
         for po in polist:
