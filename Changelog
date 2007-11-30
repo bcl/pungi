@@ -1,3 +1,6 @@
+* Fri Nov 30 2007 Jesse Keating <jkeating@redhat.com>
+- Only check for root if you're doing root level tasks (buildinstall)
+
 * Thu Nov 29 2007 Jesse Keating <jkeating@redhat.com>
 - Add a split option to the doCreateIsos call
 

@@ -22,8 +22,8 @@ import pykickstart.version
 
 def main():
 
-    # You must be this high to ride.
-    if os.geteuid () != 0:
+    # You must be this high to ride if you're going to do root tasks
+    if os.geteuid () != 0 and (opts.do_all or opts.do_buildinstall):
         print >> sys.stderr, "You must run pungi as root"
         return 1
 
