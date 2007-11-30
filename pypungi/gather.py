@@ -123,6 +123,7 @@ class Gather(pypungi.PungiBase):
                 self.logger.info('URL for repo %s is %s' % (thisrepo.name, thisrepo.baseurl))
             thisrepo.basecachedir = self.ayum.conf.cachedir
             thisrepo.enablegroups = True
+            thisrepo.failovermethod = 'priority'
             self.ayum.repos.add(thisrepo)
             self.ayum.repos.enableRepo(thisrepo.id)
             self.ayum._getRepos(thisrepo=thisrepo.id, doSetup = True)
