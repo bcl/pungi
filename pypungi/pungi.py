@@ -44,8 +44,7 @@ class Pungi(pypungi.PungiBase):
         self.topdir = os.path.join(self.archdir, 'os')
         self.isodir = os.path.join(self.archdir, self.config.get('default','isodir'))
 
-        if not os.path.exists(self.workdir):
-            os.makedirs(self.workdir)
+        pypungi._ensuredir(workdir, force=self.config.getbool('default', 'force'))
 
         self.common_files = []
         self.infofile = os.path.join(self.config.get('default', 'destdir'),
@@ -174,7 +173,7 @@ class Pungi(pypungi.PungiBase):
         for pattern in self.config.get('default', 'relnotedirre').split():
             dirres.append(re.compile(pattern))
 
-        os.makedirs(docsdir)
+        pypungi._ensuredir(docsdir, force=self.config.getbool('default', 'force'), clean=True)
 
         # Expload the packages we list as relnote packages
         pkgs = os.listdir(os.path.join(self.topdir, self.config.get('default', 'product_path')))
@@ -269,7 +268,9 @@ class Pungi(pypungi.PungiBase):
 
         # this is stolen from splittree.py in anaconda-runtime.  Blame them if its ugly (:
         for i in range(timber.src_list[0], timber.src_list[-1] + 1):
-                os.makedirs("%s-disc%d/SRPMS" % (timber.dist_dir, i))
+                pypungi._ensuredir('%s-disc%d/SRPMS' % (timper.dist_dir, i),
+                                   force=self.config.getbool('default', 'force'),
+                                   clean=True)
                 timber.linkFiles(timber.dist_dir,
                                "%s-disc%d" %(timber.dist_dir, i),
                                timber.common_files)
@@ -303,7 +304,8 @@ class Pungi(pypungi.PungiBase):
 
         createrepo.append('--outputdir')
         if self.config.getint('default', 'discs') == 1:
-            os.makedirs('%s-disc1' % self.topdir) # rename this for single disc
+            pypungi._ensuredir('%s-disc1', force=self.config.getbool('default', 'force'),
+                               clean=True) # rename this for single disc
         createrepo.append('%s-disc1' % self.topdir)
 
         createrepo.append('--basedir')
@@ -344,7 +346,8 @@ cost=500
         anaruntime = '/usr/lib/anaconda-runtime/boot'
         discinfofile = os.path.join(self.topdir, '.discinfo') # we use this a fair amount
 
-        os.makedirs(self.isodir)
+        pypungi._ensuredir(self.isodir, force=self.config.getbool('default', 'force'),
+                           clean=True) # This is risky...
 
         # setup the base command
         mkisofs = ['/usr/bin/mkisofs']

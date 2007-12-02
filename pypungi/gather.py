@@ -46,6 +46,7 @@ class PungiYum(yum.YumBase):
             logfile = os.path.join(logdir, '%s.log' % (self.pungiconfig.get('default', 'arch')))
 
         yum.logging.basicConfig(level=yum.logging.DEBUG, filename=logfile)
+        self.logger.error('foobar')
 
     def doFileLogSetup(self, uid, logfile):
         # This function overrides a yum function, allowing pungi to control
@@ -320,8 +321,8 @@ class Gather(pypungi.PungiBase):
                               self.config.get('default', 'flavor'),
                               relpkgdir)
 
-        if not os.path.exists(pkgdir):
-            os.makedirs(pkgdir)
+        # Ensure the pkgdir exists, force if requested, and make sure we clean it out
+        pypungi._ensuredir(pkgdir, force=self.config.getbool('default', 'force'), clean=True)
 
         probs = self.ayum.downloadPkgs(polist)
 

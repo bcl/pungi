@@ -41,6 +41,8 @@ def main():
     for part in ksparser.handler.partition.partitions:
         if part.mountpoint == 'iso':
             config.set('default', 'cdsize', str(part.size))
+            
+    config.set('default', 'force', opts.force)
 
     # Set up our directories
     if not os.path.exists(config.get('default', 'destdir')):
@@ -49,6 +51,8 @@ def main():
         except OSError, e:
             print >> sys.stderr, "Error: Cannot create destination dir %s" % config.get('default', 'destdir')
             sys.exit(1)
+    else:
+        print >> sys.stdout, "Warning: Reusing existing destination directory."
 
     cachedir = config.get('default', 'cachedir')
 
@@ -138,6 +142,8 @@ if __name__ == '__main__':
           help='disable creation of split media (optional)')
         parser.add_option("--sourceisos", default=False, action="store_true", dest="sourceisos",
           help='Create the source isos (other arch runs must be done)')
+        parser.add_option("--force", default=False, action="store_true",
+          help='Force reuse of an existing destination directory (will overwrite files)')
 
         parser.add_option("-c", "--config", dest="config",
           help='Path to kickstart config file')

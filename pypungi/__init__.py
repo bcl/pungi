@@ -16,6 +16,7 @@ import logging
 import os
 import subprocess
 import shutil
+import sys
 
 class PungiBase(object):
     """The base Pungi class.  Set up config items and logging here"""
@@ -37,8 +38,7 @@ class PungiBase(object):
 
         logdir = os.path.join(self.config.get('default', 'destdir'), 'logs')
 
-        if not os.path.exists(logdir):
-            os.makedirs(logdir)
+        _ensuredir(logdir, force=True) # Always allow logs to be written out
 
         if self.config.get('default', 'flavor'):
             logfile = os.path.join(logdir, '%s.%s.log' % (self.config.get('default', 'flavor'),
@@ -85,3 +85,25 @@ def _link(local, target, force=False):
         # Can't hardlink cross file systems
         shutil.copy2(local, target)
 
+def _ensuredir(target, force=False, clean=False):
+    """Ensure that a directory exists, if it already exists, only continue
+    if force is set."""
+    
+    def whoops(func, path, exc_info):
+        self.logger.error('Could not remove %s' % path)
+        sys.exit(1)
+    
+    if os.path.exists(target) and not os.path.isdir(target):
+        self.logger.error('%s exists but is not a directory.' % target)
+        sys.exit(1)
+    
+    if not os.path.isdir(target):
+        os.makedirs(target)
+    elif force and clean:
+        shutil.rmtree(target, onerror=whoops)
+        os.makedirs(target)
+    elif force:
+        return
+    else:
+        self.logger.error('Directory %s already exists.  Use --force to overwrite.' % target)
+        sys.exit(1)

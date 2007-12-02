@@ -1,3 +1,7 @@
+* Sun Dec 02 Jesse Keating <jkeating@redhat.com>
+- Add a --force option to reuse an existing destdir
+- Only overwrite dirs if --force is offered, clean out some specific dirs
+
 * Fri Nov 30 2007 Jesse Keating <jkeating@redhat.com>
 - Only check for root if you're doing root level tasks (buildinstall)
 
