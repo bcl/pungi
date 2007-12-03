@@ -119,7 +119,7 @@ if __name__ == '__main__':
     today = time.strftime('%Y%m%d', time.localtime())
 
     def get_arguments(config):
-        parser = OptionParser(version="%prog 1.1.10")
+        parser = OptionParser(version="%prog 1.2.0")
 
         def set_config(option, opt_str, value, parser, config):
             config.set('default', option.dest, value)
@@ -175,7 +175,7 @@ if __name__ == '__main__':
             parser.print_help()
             sys.exit(0)
             
-        if not config.get('default', 'flavor').isalnum():
+        if not config.get('default', 'flavor').isalnum() and not config.get('default', 'flavor') == '':
             print >> sys.stderr, "Flavor must be alphanumeric."
             sys.exit(1)
 
