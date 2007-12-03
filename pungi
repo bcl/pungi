@@ -82,8 +82,8 @@ def main():
            mypungi.doCreaterepo()
 
         if opts.do_all or opts.do_buildinstall:
-           mypungi.doBuildinstall()
            mypungi.doGetRelnotes()
+           mypungi.doBuildinstall()
 
         if opts.do_all or opts.do_createiso:
            mypungi.doCreateIsos(split=opts.nosplitmedia)
