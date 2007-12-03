@@ -44,7 +44,7 @@ class Pungi(pypungi.PungiBase):
         self.topdir = os.path.join(self.archdir, 'os')
         self.isodir = os.path.join(self.archdir, self.config.get('default','isodir'))
 
-        pypungi._ensuredir(workdir, force=self.config.getbool('default', 'force'))
+        pypungi._ensuredir(self.workdir, self.logger, force=True)
 
         self.common_files = []
         self.infofile = os.path.join(self.config.get('default', 'destdir'),
@@ -173,7 +173,7 @@ class Pungi(pypungi.PungiBase):
         for pattern in self.config.get('default', 'relnotedirre').split():
             dirres.append(re.compile(pattern))
 
-        pypungi._ensuredir(docsdir, force=self.config.getbool('default', 'force'), clean=True)
+        pypungi._ensuredir(docsdir, self.logger, force=self.config.getboolean('default', 'force'), clean=True)
 
         # Expload the packages we list as relnote packages
         pkgs = os.listdir(os.path.join(self.topdir, self.config.get('default', 'product_path')))
@@ -204,7 +204,7 @@ class Pungi(pypungi.PungiBase):
                 for regex in fileres:
                     if regex.match(filename) and not os.path.exists(os.path.join(self.topdir, filename)):
                         self.logger.info("Linking release note file %s" % filename)
-                        pypungi._link(os.path.join(dirpath, filename), os.path.join(self.topdir, filename))
+                        pypungi._link(os.path.join(dirpath, filename), os.path.join(self.topdir, filename), self.logger)
                         self.common_files.append(filename)
 
         # Walk the tree for our dirs
@@ -269,7 +269,8 @@ class Pungi(pypungi.PungiBase):
         # this is stolen from splittree.py in anaconda-runtime.  Blame them if its ugly (:
         for i in range(timber.src_list[0], timber.src_list[-1] + 1):
                 pypungi._ensuredir('%s-disc%d/SRPMS' % (timper.dist_dir, i),
-                                   force=self.config.getbool('default', 'force'),
+                                   self.logger,
+                                   force=self.config.getboolean('default', 'force'),
                                    clean=True)
                 timber.linkFiles(timber.dist_dir,
                                "%s-disc%d" %(timber.dist_dir, i),
@@ -304,7 +305,8 @@ class Pungi(pypungi.PungiBase):
 
         createrepo.append('--outputdir')
         if self.config.getint('default', 'discs') == 1:
-            pypungi._ensuredir('%s-disc1', force=self.config.getbool('default', 'force'),
+            pypungi._ensuredir('%s-disc1' % self.topdir, self.logger, 
+                               force=self.config.getboolean('default', 'force'),
                                clean=True) # rename this for single disc
         createrepo.append('%s-disc1' % self.topdir)
 
@@ -346,7 +348,8 @@ cost=500
         anaruntime = '/usr/lib/anaconda-runtime/boot'
         discinfofile = os.path.join(self.topdir, '.discinfo') # we use this a fair amount
 
-        pypungi._ensuredir(self.isodir, force=self.config.getbool('default', 'force'),
+        pypungi._ensuredir(self.isodir, self.logger,
+                           force=self.config.getboolean('default', 'force'),
                            clean=True) # This is risky...
 
         # setup the base command

@@ -322,7 +322,7 @@ class Gather(pypungi.PungiBase):
                               relpkgdir)
 
         # Ensure the pkgdir exists, force if requested, and make sure we clean it out
-        pypungi._ensuredir(pkgdir, force=self.config.getbool('default', 'force'), clean=True)
+        pypungi._ensuredir(pkgdir, self.logger, force=self.config.getboolean('default', 'force'), clean=True)
 
         probs = self.ayum.downloadPkgs(polist)
 
@@ -342,7 +342,7 @@ class Gather(pypungi.PungiBase):
 
             # Link downloaded package in (or link package from file repo)
             try:
-                pypungi._link(local, target, force=True)
+                pypungi._link(local, target, self.logger, force=True)
                 continue
             except:
                 self.logger.error("Unable to link %s from the yum cache." % po.name)

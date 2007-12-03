@@ -22,14 +22,14 @@ import pykickstart.version
 
 def main():
 
+    config = pypungi.config.Config()
+
+    (opts, args) = get_arguments(config)
+
     # You must be this high to ride if you're going to do root tasks
     if os.geteuid () != 0 and (opts.do_all or opts.do_buildinstall):
         print >> sys.stderr, "You must run pungi as root"
         return 1
-
-    config = pypungi.config.Config()
-
-    (opts, args) = get_arguments(config)
 
     # Set up the kickstart parser and pass in the kickstart file we were handed
     ksparser = pykickstart.parser.KickstartParser(pykickstart.version.makeVersion())
@@ -42,7 +42,7 @@ def main():
         if part.mountpoint == 'iso':
             config.set('default', 'cdsize', str(part.size))
             
-    config.set('default', 'force', opts.force)
+    config.set('default', 'force', str(opts.force))
 
     # Set up our directories
     if not os.path.exists(config.get('default', 'destdir')):

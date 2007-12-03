@@ -38,7 +38,7 @@ class PungiBase(object):
 
         logdir = os.path.join(self.config.get('default', 'destdir'), 'logs')
 
-        _ensuredir(logdir, force=True) # Always allow logs to be written out
+        _ensuredir(logdir, None, force=True) # Always allow logs to be written out
 
         if self.config.get('default', 'flavor'):
             logfile = os.path.join(logdir, '%s.%s.log' % (self.config.get('default', 'flavor'),
@@ -69,7 +69,7 @@ def _doRunCommand(command, logger, rundir='/tmp', output=subprocess.PIPE, error=
         logger.error(err)
         raise OSError, "Got an error from %s: %s" % (command[0], err)
 
-def _link(local, target, force=False):
+def _link(local, target, logger, force=False):
     """Simple function to link or copy a package, removing target optionally."""
 
     if os.path.exists(target) and force:
@@ -79,22 +79,32 @@ def _link(local, target, force=False):
         os.link(local, target)
     except OSError, e:
         if e.errno != 18: # EXDEV
-            self.logger.error('Got an error linking from cache: %s' % e)
+            logger.error('Got an error linking from cache: %s' % e)
             raise OSError, e
 
         # Can't hardlink cross file systems
         shutil.copy2(local, target)
 
-def _ensuredir(target, force=False, clean=False):
+def _ensuredir(target, logger, force=False, clean=False):
     """Ensure that a directory exists, if it already exists, only continue
     if force is set."""
     
+    # We have to check existance of a logger, as setting the logger could
+    # itself cause an issue.
     def whoops(func, path, exc_info):
-        self.logger.error('Could not remove %s' % path)
+        message = 'Could not remove %s' % path
+        if logger:
+            logger.error(message)
+        else:
+            sys.stderr(message)
         sys.exit(1)
     
     if os.path.exists(target) and not os.path.isdir(target):
-        self.logger.error('%s exists but is not a directory.' % target)
+        message = '%s exists but is not a directory.' % target
+        if logger:
+            logger.error(message)
+        else:
+            sys.stderr(message)
         sys.exit(1)
     
     if not os.path.isdir(target):
@@ -105,5 +115,9 @@ def _ensuredir(target, force=False, clean=False):
     elif force:
         return
     else:
-        self.logger.error('Directory %s already exists.  Use --force to overwrite.' % target)
+        message = 'Directory %s already exists.  Use --force to overwrite.' % target
+        if logger:
+            logger.error(message)
+        else:
+            sys.stderr(message)
         sys.exit(1)
