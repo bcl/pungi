@@ -19,6 +19,7 @@ import pypungi.pungi
 import yum
 import pykickstart.parser
 import pykickstart.version
+import subprocess
 
 def main():
 
@@ -30,6 +31,15 @@ def main():
     if os.geteuid () != 0 and (opts.do_all or opts.do_buildinstall):
         print >> sys.stderr, "You must run pungi as root"
         return 1
+    
+    if opts.do_all or opts.do_buildinstall:
+        try:
+            selinux = subprocess.Popen('/usr/sbin/getenforce', stdout=subprocess.PIPE).communicate()[0].strip('\n')
+            if selinux == 'Enforcing':
+                print >> sys.stdout, "WARNING: SELinux is enforcing.  This may lead to a compose with selinux disabled."
+                print >> sys.stdout, "Consider running with setenforce 0."
+        except:
+            pass
 
     # Set up the kickstart parser and pass in the kickstart file we were handed
     ksparser = pykickstart.parser.KickstartParser(pykickstart.version.makeVersion())
