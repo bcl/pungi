@@ -124,7 +124,9 @@ class Gather(pypungi.PungiBase):
                 self.logger.info('URL for repo %s is %s' % (thisrepo.name, thisrepo.baseurl))
             thisrepo.basecachedir = self.ayum.conf.cachedir
             thisrepo.enablegroups = True
-            thisrepo.failovermethod = 'priority'
+            thisrepo.failovermethod = 'priority' # This is until yum uses this failover by default
+            thisrepo.exclude = repo.excludepkgs
+            thisrepo.includepkgs = repo.includepkgs
             self.ayum.repos.add(thisrepo)
             self.ayum.repos.enableRepo(thisrepo.id)
             self.ayum._getRepos(thisrepo=thisrepo.id, doSetup = True)
