@@ -174,6 +174,10 @@ if __name__ == '__main__':
         if not opts.config:
             parser.print_help()
             sys.exit(0)
+            
+        if not config.get('default', 'flavor').isalnum():
+            print >> sys.stderr, "Flavor must be alphanumeric."
+            sys.exit(1)
 
         if opts.do_gather or opts.do_createrepo or opts.do_buildinstall or opts.do_createiso:
             opts.do_all = False
