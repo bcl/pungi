@@ -577,6 +577,8 @@ cost=500
 
         for directory in dirs:
             if directory.startswith('os-disc') or directory.startswith('SRPM-disc'):
+                if os.path.exists(os.path.join(self.workdir, directory)):
+                    shutil.rmtree(os.path.join(self.workdir, directory))
                 shutil.move(os.path.join(self.archdir, directory), os.path.join(self.workdir, directory))
 
         self.logger.info("CreateIsos is done.")
