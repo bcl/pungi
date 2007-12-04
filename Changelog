@@ -1,3 +1,14 @@
+* Tue Dec 04 Jesse Keating <jkeating@redhat.com>
+- Make logged output reusable in shell
+- Default to 670 for a CD size, so that we don't overflow
+- More fixes around re-using an existing tree
+
+* Mon Dec 03 Jesse Keating <jkeating@redhat.com>
+- Enable repo includes/excludes.
+- Disable TMPDIR usage, still broken.
+- Put a constraint on flavor values
+- Check for selinux enforcing and warn.
+
 * Sun Dec 02 Jesse Keating <jkeating@redhat.com>
 - Add a --force option to reuse an existing destdir
 - Only overwrite dirs if --force is offered, clean out some specific dirs

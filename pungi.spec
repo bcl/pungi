@@ -1,7 +1,7 @@
 %{!?python_sitelib: %define python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")}
 
 Name:           pungi
-Version:        1.1.10
+Version:        1.2.0
 Release:        1%{?dist}
 Summary:        Distribution compose tool
 
@@ -51,6 +51,20 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Tue Dec 4 2007 Jesse Keating <jkeating@redhat.com> 1.2.0-1
+- Make logged output reusable in shell
+- Default to making split media of CD size
+- Enable repo includes/excludes.
+- Put a constraint on flavor values
+- Check for selinux enforcing and warn.
+- Add a --force option to reuse an existing destdir
+- Only check for root if you're doing root level tasks (buildinstall)
+- Figure out number of isos on the fly, based on tree size
+- Remove -S -P options, as splittree and packageorder are now
+called from createIsos, if needed.
+- Use downloadPkgs() from yum instead of a homebrew download function.
+- Add a callback to show download progress
+
 * Thu Nov 22 2007 Jesse Keating <jkeating@redhat.com> - 1.1.10-1
 - Print a usage if no options are passed
 - Correct a man page typo

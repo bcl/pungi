@@ -1,15 +1,13 @@
-# Kickstart file for composing the "Fedora" spin of Fedora 8
+# Kickstart file for composing the "Fedora" spin of Fedora (rawhide)
 
 # Use a part of 'iso' to define how large you want your isos.
 # Only used when composing to more than one iso.
+# Default is 670 (megs), CD size.
 #part iso --size=4998
 
 # Add the repos you wish to use to compose here.  At least one of them needs group data.
-repo --name=fedora  --mirrorlist=http://mirrors.fedoraproject.org/mirrorlist?repo=fedora-$releasever&arch=$basearch
-repo --name=fedora-source  --mirrorlist=http://mirrors.fedoraproject.org/mirrorlist?repo=fedora-source-$releasever&arch=$basearch
-
-repo --name=updates --mirrorlist=http://mirrors.fedoraproject.org/mirrorlist?repo=updates-released-f$releasever&arch=$basearch
-repo --name=updates-source --mirrorlist=http://mirrors.fedoraproject.org/mirrorlist?repo=updates-released-source-f$releasever&arch=$basearch
+repo --name=rawhide --mirrorlist=http://mirrors.fedoraproject.org/mirrorlist?repo=rawhide&arch=$basearch
+repo --name=rawhide-source  --mirrorlist=http://mirrors.fedoraproject.org/mirrorlist?repo=rawhide-source&arch=$basearch
 
 # Package manifest for the compose.  Uses repo group metadata to translate groups.
 # (@base is added by default unless you add --nobase to %packages)
@@ -20,6 +18,7 @@ tcsh
 @base-x
 kernel*
 -kernel*-debug*
+-kernel*-devel*
 # Hardware stuff
 @hardware-support
 @dial-up
