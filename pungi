@@ -34,7 +34,9 @@ def main():
     
     if opts.do_all or opts.do_buildinstall:
         try:
-            selinux = subprocess.Popen('/usr/sbin/getenforce', stdout=subprocess.PIPE).communicate()[0].strip('\n')
+            selinux = subprocess.Popen('/usr/sbin/getenforce', 
+                                       stdout=subprocess.PIPE, 
+                                       stderr=open('/dev/null', 'w')).communicate()[0].strip('\n')
             if selinux == 'Enforcing':
                 print >> sys.stdout, "WARNING: SELinux is enforcing.  This may lead to a compose with selinux disabled."
                 print >> sys.stdout, "Consider running with setenforce 0."
