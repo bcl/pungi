@@ -28,8 +28,7 @@ class Config(SafeConfigParser):
         self.set('default', 'sourcedir', 'source')
         self.set('default', 'debugdir', 'debug')
         self.set('default', 'isodir', 'iso')
-        self.set('default', 'relnotefilere',
-                 'eula.txt fedora.css GPL README-BURNING-ISOS-en_US.txt RELEASE-NOTES-en_US.html ^RPM-GPG')
+        self.set('default', 'relnotefilere', 'GPL README-BURNING-ISOS-en_US.txt ^RPM-GPG')
         self.set('default', 'relnotedirre', 'images stylesheet-images')
         self.set('default', 'relnotepkgs', 'fedora-release fedora-release-notes')
         self.set('default', 'product_path', 'Packages')
