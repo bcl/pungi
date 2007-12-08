@@ -1,3 +1,6 @@
+* Sat Dec 08 Jesse Keating <jkeating@redhat.com>
+- Use a createrepo cache.
+
 * Tue Dec 04 Jesse Keating <jkeating@redhat.com>
 - Make logged output reusable in shell
 - Default to 670 for a CD size, so that we don't overflow

@@ -80,6 +80,10 @@ class Pungi(pypungi.PungiBase):
         createrepo.append('--groupfile')
         createrepo.append(compsfile)
 
+        createrepo.append('--cachedir')
+        createrepo.append(os.path.join(self.config.get('default', 'cachedir'),
+                                       'createrepocache'))
+
         createrepo.append(self.topdir)
 
         # run the command
@@ -300,6 +304,10 @@ class Pungi(pypungi.PungiBase):
 
         createrepo.append('--groupfile')
         createrepo.append(compsfile)
+
+        createrepo.append('--cachedir')
+        createrepo.append(os.path.join(self.config.get('default', 'cachedir'),
+                                       'createrepocache'))
 
         createrepo.append('--baseurl')
         createrepo.append('media://%s' % mediaid)
