@@ -71,6 +71,15 @@ class Pungi(pypungi.PungiBase):
 
 
         compsfile = os.path.join(self.workdir, '%s-%s-comps.xml' % (self.config.get('default', 'name'), self.config.get('default', 'version')))
+        
+        # setup the cache dirs
+        for target in [os.path.join(self.config.get('default', 'cachedir', 
+                                                    'createrepocache')),
+                       os.path.join(self.config.get('default', 'cachedir',
+                                                    'repoviewcache'))]:
+            pypungi._ensuredir(target,
+                            self.logger,
+                            force=True)
 
         # setup the createrepo call
         createrepo = ['/usr/bin/createrepo']
@@ -92,6 +101,11 @@ class Pungi(pypungi.PungiBase):
         # setup the repoview call
         repoview = ['/usr/bin/repoview']
         repoview.append('--quiet')
+        
+        repoview.append('--state-dir')
+        repoview.append(os.path.join(self.config.get('default', 'cachedir'),
+                                     'repoviewcache'))
+        
         repoview.append('--title')
         if self.config.get('default', 'flavor'):
             repoview.append('%s %s: %s - %s' % (self.config.get('default', 'name'),
