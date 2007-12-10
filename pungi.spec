@@ -1,7 +1,7 @@
 %{!?python_sitelib: %define python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")}
 
 Name:           pungi
-Version:        1.2.0
+Version:        1.2.1
 Release:        1%{?dist}
 Summary:        Distribution compose tool
 
@@ -51,6 +51,11 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Mon Dec 10 2007 Jesse Keating <jkeating@redhat.com> 1.2.1-1
+- Use a repoview cache.
+- Use a createrepo cache.
+- Change path to isomd5sum
+
 * Tue Dec 4 2007 Jesse Keating <jkeating@redhat.com> 1.2.0-1
 - Make logged output reusable in shell
 - Default to making split media of CD size
