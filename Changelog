@@ -1,5 +1,6 @@
 * Mon Dec 10 Jesse Keating <jkeating@redhat.com>
 - Use a repoview cache.
+- Change path to isomd5sum
 
 * Sat Dec 08 Jesse Keating <jkeating@redhat.com>
 - Use a createrepo cache.

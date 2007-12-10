@@ -483,7 +483,7 @@ cost=500
 
         # implant md5 for mediacheck on all but source arches
         if not self.config.get('default', 'arch') == 'source':
-            pypungi._doRunCommand(['/usr/lib/anaconda-runtime/implantisomd5', isofile], self.logger)
+            pypungi._doRunCommand(['/usr/bin/implantisomd5', isofile], self.logger)
 
         # shove the sha1sum into a file
         sha1file = open(os.path.join(self.isodir, 'SHA1SUM'), 'a')
@@ -534,7 +534,7 @@ cost=500
 
                 # implant md5 for mediacheck on all but source arches
                 if not self.config.get('default', 'arch') == 'source':
-                    pypungi._doRunCommand(['/usr/lib/anaconda-runtime/implantisomd5', isofile], self.logger)
+                    pypungi._doRunCommand(['/usr/bin/implantisomd5', isofile], self.logger)
 
                 # shove the sha1sum into a file
                 sha1file = open(os.path.join(self.isodir, 'SHA1SUM'), 'a')
