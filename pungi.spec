@@ -1,7 +1,7 @@
 %{!?python_sitelib: %define python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")}
 
 Name:           pungi
-Version:        1.2.2
+Version:        1.2.3
 Release:        1%{?dist}
 Summary:        Distribution compose tool
 
@@ -44,7 +44,7 @@ rm -rf $RPM_BUILD_ROOT
 %doc Authors Changelog COPYING GPL ToDo doc/README
 # For noarch packages: sitelib
 %{python_sitelib}/pypungi
-%{python_sitelib}/pypungi-%{version}-py2.5.egg-info
+%{python_sitelib}/%{name}-%{version}-py2.5.egg-info
 %{_bindir}/pungi
 %{_datadir}/pungi
 %{_mandir}/man8/pungi.8.gz
@@ -52,7 +52,7 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
-* Mon Dec 10 2007 Jesse Keating <jkeating@redhat.com> 1.2.2-1
+* Mon Dec 10 2007 Jesse Keating <jkeating@redhat.com> 1.2.3-1
 - Use a repoview cache.
 - Use a createrepo cache.
 - Change path to isomd5sum
