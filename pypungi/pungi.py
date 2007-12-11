@@ -73,13 +73,11 @@ class Pungi(pypungi.PungiBase):
         compsfile = os.path.join(self.workdir, '%s-%s-comps.xml' % (self.config.get('default', 'name'), self.config.get('default', 'version')))
         
         # setup the cache dirs
-        for target in [os.path.join(self.config.get('default', 'cachedir', 
-                                                    'createrepocache')),
-                       os.path.join(self.config.get('default', 'cachedir',
-                                                    'repoviewcache'))]:
-            pypungi._ensuredir(target,
-                            self.logger,
-                            force=True)
+        for target in ['createrepocache', 'repoviewcache']:
+            pypungi._ensuredir(os.path.join(self.config.get('default', 'cachedir'),
+                                            target), 
+                               self.logger, 
+                               force=True)
 
         # setup the createrepo call
         createrepo = ['/usr/bin/createrepo']
