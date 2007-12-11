@@ -29,7 +29,7 @@ class Config(SafeConfigParser):
         self.set('default', 'debugdir', 'debug')
         self.set('default', 'isodir', 'iso')
         self.set('default', 'relnotefilere', 'GPL README-BURNING-ISOS-en_US.txt ^RPM-GPG')
-        self.set('default', 'relnotedirre', 'images stylesheet-images')
+        self.set('default', 'relnotedirre', '')
         self.set('default', 'relnotepkgs', 'fedora-release fedora-release-notes')
         self.set('default', 'product_path', 'Packages')
         self.set('default', 'cachedir', '/var/cache/pungi')
