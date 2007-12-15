@@ -6,10 +6,11 @@ setup(name='pungi',
       description='Distribution compose tool',
       author='Jesse Keating',
       author_email='jkeating@redhat.com',
-      url='http://hosted.fedoraproject.org/projects/pungi',
-      license='GPL',
+      url='http://fedorahosted.org/pungi',
+      license='GPLv2',
+      package_dir = {'': 'src'}, 
       packages = ['pypungi'],
-      scripts = ['pungi'],
+      scripts = ['src/bin/pungi.py'],
       data_files=[('/usr/share/pungi', glob.glob('share/*'))]
       )
 

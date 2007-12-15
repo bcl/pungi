@@ -33,6 +33,7 @@ rm -rf $RPM_BUILD_ROOT
 %{__install} -d $RPM_BUILD_ROOT/var/cache/pungi
 %{__install} -d $RPM_BUILD_ROOT/%{_mandir}/man8
 %{__install} doc/pungi.8 $RPM_BUILD_ROOT/%{_mandir}/man8/
+%{__mv} $RPM_BUILD_ROOT/%{_bindir}/pungi.py $RPM_BUILD_ROOT/%{_bindir}/pungi
 
  
 %clean
@@ -44,7 +45,9 @@ rm -rf $RPM_BUILD_ROOT
 %doc Authors Changelog COPYING GPL ToDo doc/README
 # For noarch packages: sitelib
 %{python_sitelib}/pypungi
-%{python_sitelib}/%{name}-%{version}-py2.5.egg-info
+%if 0%{?fedora} >= 9
+  %{python_sitelib}/%{name}-%{version}-py2.5.egg-info
+%endif
 %{_bindir}/pungi
 %{_datadir}/pungi
 %{_mandir}/man8/pungi.8.gz
