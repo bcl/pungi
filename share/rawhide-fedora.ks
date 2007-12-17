@@ -13,7 +13,6 @@ repo --name=rawhide-source  --mirrorlist=http://mirrors.fedoraproject.org/mirror
 # (@base is added by default unless you add --nobase to %packages)
 %packages
 # core
-@core
 tcsh
 @base-x
 kernel*

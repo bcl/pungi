@@ -1,3 +1,6 @@
+* Mon Dec 17 Jesse Keating <jkeating@redhat.com>
+- Always add the core comps group.
+
 * Mon Dec 10 Jesse Keating <jkeating@redhat.com>
 - Use a repoview cache.
 - Change path to isomd5sum

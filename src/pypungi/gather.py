@@ -250,6 +250,9 @@ class Gather(pypungi.PungiBase):
         # First remove the excludes
         self.ayum.conf.exclude.extend(self.ksparser.handler.packages.excludedList)
         self.ayum.excludePackages()
+        
+        # Always add the core groiup
+        self.ksparser.handler.packages.add(['@core'])
 
         # Check to see if we need the base group
         if self.ksparser.handler.packages.addBase:
