@@ -4,6 +4,7 @@ syntax: glob
 pungi.pidaproject
 .project
 .pydevproject
+.settings/org.eclipse.mylyn.tasks.ui.prefs
 MANIFEST
 build/*
 dist/*
