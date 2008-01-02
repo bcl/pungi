@@ -42,6 +42,7 @@ emacs
 @java
 @office
 @sound-and-video
+k3b
 @text-internet
 @system-tools
 wireshark-gnome
