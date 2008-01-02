@@ -1,14 +1,14 @@
 %{!?python_sitelib: %define python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")}
 
 Name:           pungi
-Version:        1.2.4
+Version:        1.2.6
 Release:        1%{?dist}
 Summary:        Distribution compose tool
 
 Group:          Development/Tools
 License:        GPLv2
-URL:            http://hosted.fedoraproject.org/projects/pungi
-Source0:        http://linux.duke.edu/projects/%{name}/release/%{name}-%{version}.tar.gz
+URL:            https://fedorahosted.org/pungi
+Source0:        https://fedorahosted.org/pungi/attachment/wiki/%{version}/%{name}-%{version}.tar.bz2
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 Requires:       anaconda-runtime, yum => 3.0.3, repoview
 BuildRequires:  python-devel
@@ -55,6 +55,10 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Wed Jan 2 2008 jkeating <jkeating@redhat.com> 1.2.6-1
+- Update the url field for new hosted urls.
+- Add k3b to the Fedora manifest.
+
 * Mon Dec 10 2007 Jesse Keating <jkeating@redhat.com> 1.2.4-1
 - Remove extra files from tarball
 

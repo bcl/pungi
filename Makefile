@@ -19,7 +19,7 @@ tag:
 
 archive:
 	@rm -rf ${PKGNAME}-$(VERSION)/
-	@python setup.py sdist > /dev/null
+	@python setup.py sdist --formats=bztar > /dev/null
 	@echo "The archive is in dist/${PKGNAME}-$(VERSION).tar.gz"
 
 srpm: archive
