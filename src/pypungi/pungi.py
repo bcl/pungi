@@ -424,13 +424,6 @@ cost=500
         isofile = os.path.join(self.isodir, isoname)
 
         if not self.config.get('default', 'arch') == 'source':
-            # backup the main .discinfo to use a split one.  This is an ugly hack :/
-            content = open(discinfofile, 'r').readlines()
-            shutil.move(discinfofile, os.path.join(self.config.get('default', 'destdir'), 
-                '.discinfo-%s' % self.config.get('default', 'arch')))
-            content[content.index('ALL\n')] = ','.join([str(x) for x in range(1, self.config.getint('default', 'discs') + 1)]) + '\n'
-            open(discinfofile, 'w').writelines(content)
-
             # move the main repodata out of the way to use the split repodata
             shutil.move(os.path.join(self.topdir, 'repodata'), os.path.join(self.config.get('default', 'destdir'), 
                 'repodata-%s' % self.config.get('default', 'arch')))
@@ -482,8 +475,6 @@ cost=500
 
         # return the .discinfo file
         if not self.config.get('default', 'arch') == 'source':
-            shutil.move(os.path.join(self.config.get('default', 'destdir'), '.discinfo-%s' % self.config.get('default', 'arch')), discinfofile)
-
             shutil.rmtree(os.path.join(self.topdir, 'repodata')) # remove our copied repodata
             shutil.move(os.path.join(self.config.get('default', 'destdir'), 
                 'repodata-%s' % self.config.get('default', 'arch')), os.path.join(self.topdir, 'repodata'))
