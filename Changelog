@@ -1,3 +1,6 @@
+* Mon Jan 21 2008 Jesse Keating <jkeating@redhat.com>
+- Use createrepo api instead of execing it from the cli
+
 * Mon Dec 17 Jesse Keating <jkeating@redhat.com>
 - Always add the core comps group.
 

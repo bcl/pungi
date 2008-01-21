@@ -21,6 +21,7 @@ import splittree
 import shutil
 import re
 import pypungi
+import createrepo
 
 class Pungi(pypungi.PungiBase):
     def __init__(self, config):
@@ -65,7 +66,52 @@ class Pungi(pypungi.PungiBase):
         basedir = os.path.join(self.destdir, self.config.get('default', 'version'))
         if subfile.startswith(basedir):
             return subfile.replace(basedir + os.path.sep, '')
-
+        
+    def _makeMetadata(self, path, cachedir, comps=False, repoview=False, repoviewtitle=False,
+                      baseurl=False, output=False, basedir=False, split=False):
+        """Create repodata and repoview."""
+        
+        conf = createrepo.MetaDataConfig()
+        conf.cachedir = os.path.join(cachedir, 'createrepocache')
+        conf.update = True
+        if output:
+            conf.outputdir = output
+        else:
+            conf.outputdir = path
+        conf.directory = path
+        conf.database = True
+        if comps:
+           conf.groupfile = comps
+        if basedir:
+            conf.basedir = basedir
+        if split:
+            conf.split = True
+            conf.directories = split
+            repomatic = createrepo.SplitMetaDataGenerator(conf)
+        else:
+            repomatic = createrepo.MetaDataGenerator(conf)
+        self.logger.info('Making repodata')
+        repomatic.doPkgMetadata()
+        repomatic.doRepoMetadata()
+        repomatic.doFinalMove()
+        
+        if repoview:
+            # setup the repoview call
+            repoview = ['/usr/bin/repoview']
+            repoview.append('--quiet')
+            
+            repoview.append('--state-dir')
+            repoview.append(os.path.join(cachedir, 'repoviewcache'))
+            
+            if repoviewtitle:
+                repoview.append('--title')
+                repoview.append(repoviewtitle)
+    
+            repoview.append(path)
+    
+            # run the command
+            pypungi._doRunCommand(repoview, self.logger)
+        
     def doCreaterepo(self):
         """Run createrepo to generate repodata in the tree."""
 
@@ -78,48 +124,13 @@ class Pungi(pypungi.PungiBase):
                                             target), 
                                self.logger, 
                                force=True)
+            
+        repoviewtitle = '%s %s - %s' % (self.config.get('default', 'name'), 
+                                        self.config.get('default', 'version'),
+                                        self.config.get('default', 'arch'))
 
         # setup the createrepo call
-        createrepo = ['/usr/bin/createrepo']
-        createrepo.append('--quiet')
-        createrepo.append('--database')
-
-        createrepo.append('--groupfile')
-        createrepo.append(compsfile)
-
-        createrepo.append('--cachedir')
-        createrepo.append(os.path.join(self.config.get('default', 'cachedir'),
-                                       'createrepocache'))
-
-        createrepo.append(self.topdir)
-
-        # run the command
-        pypungi._doRunCommand(createrepo, self.logger)
-
-        # setup the repoview call
-        repoview = ['/usr/bin/repoview']
-        repoview.append('--quiet')
-        
-        repoview.append('--state-dir')
-        repoview.append(os.path.join(self.config.get('default', 'cachedir'),
-                                     'repoviewcache'))
-        
-        repoview.append('--title')
-        if self.config.get('default', 'flavor'):
-            repoview.append('%s %s: %s - %s' % (self.config.get('default', 'name'),
-                                                self.config.get('default', 'version'),
-                                                self.config.get('default', 'flavor'),
-                                                self.config.get('default', 'arch')))
-        else:
-            repoview.append('%s %s - %s' % (self.config.get('default', 'name'),
-                                                self.config.get('default', 'version'),
-                                                self.config.get('default', 'arch')))
-
-        repoview.append(self.topdir)
-
-        # run the command
-        pypungi._doRunCommand(repoview, self.logger)
-            
+        self._makeMetadata(self.topdir, self.config.get('default', 'cachedir'), compsfile, repoview=True, repoviewtitle=repoviewtitle)
 
     def doBuildinstall(self):
         """Run anaconda-runtime's buildinstall on the tree."""
@@ -309,43 +320,26 @@ class Pungi(pypungi.PungiBase):
 
         compsfile = os.path.join(self.workdir, '%s-%s-comps.xml' % (self.config.get('default', 'name'), self.config.get('default', 'version')))
 
-        # set up the process
-        createrepo = ['/usr/bin/createrepo']
-        createrepo.append('--quiet')
-        createrepo.append('--database')
-
-        createrepo.append('--groupfile')
-        createrepo.append(compsfile)
-
-        createrepo.append('--cachedir')
-        createrepo.append(os.path.join(self.config.get('default', 'cachedir'),
-                                       'createrepocache'))
-
-        createrepo.append('--baseurl')
-        createrepo.append('media://%s' % mediaid)
-
-        createrepo.append('--outputdir')
         if self.config.getint('default', 'discs') == 1:
             pypungi._ensuredir('%s-disc1' % self.topdir, self.logger, 
-                               force=self.config.getboolean('default', 'force'),
                                clean=True) # rename this for single disc
-        createrepo.append('%s-disc1' % self.topdir)
-
-        createrepo.append('--basedir')
+            
         if self.config.getint('default', 'discs') == 1:
-            createrepo.append(self.topdir)
-            createrepo.append(self.topdir)
+            path = self.topdir
+            basedir=None
+            split=False
         else:
-            createrepo.append('%s-disc1' % self.topdir)
-
-        if self.config.getint('default', 'discs') > 1:
-            createrepo.append('--split')
-
+            path = '%s-disc1' % self.topdir
+            basedir = path
+            split=[]
             for disc in range(1, self.config.getint('default', 'discs') + 1):
-                createrepo.append('%s-disc%s' % (self.topdir, disc))
-
-        # run the command
-        pypungi._doRunCommand(createrepo, self.logger)
+                split.append('%s-disc%s' % (self.topdir, disc))
+            
+        # set up the process
+        self._makeMetadata(path, self.config.get('default', 'cachedir'), compsfile, repoview=False, 
+                                                 baseurl='media://%s' % mediaid, 
+                                                 output='%s-disc1' % self.topdir, 
+                                                 basedir=basedir, split=split)
 
         # Write out a repo file for the disc to be used on the installed system
         self.logger.info('Creating media repo file.')
