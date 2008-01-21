@@ -312,11 +312,9 @@ class Pungi(pypungi.PungiBase):
         """Create the split metadata for the isos"""
 
 
-        if self.config.getint('default', 'discs') > 1:
-            discinfo = open('%s-disc1/.discinfo' % self.topdir, 'r').readlines()
-        else:
-            discinfo = open(os.path.join(self.topdir, '.discinfo'), 'r').readlines()
+        discinfo = open(os.path.join(self.topdir, '.discinfo'), 'r').readlines()
         mediaid = discinfo[0].rstrip('\n')
+        discinfo.close()
 
         compsfile = os.path.join(self.workdir, '%s-%s-comps.xml' % (self.config.get('default', 'name'), self.config.get('default', 'version')))
 
