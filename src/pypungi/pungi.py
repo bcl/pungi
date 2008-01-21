@@ -314,7 +314,6 @@ class Pungi(pypungi.PungiBase):
 
         discinfo = open(os.path.join(self.topdir, '.discinfo'), 'r').readlines()
         mediaid = discinfo[0].rstrip('\n')
-        discinfo.close()
 
         compsfile = os.path.join(self.workdir, '%s-%s-comps.xml' % (self.config.get('default', 'name'), self.config.get('default', 'version')))
 
