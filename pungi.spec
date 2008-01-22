@@ -1,7 +1,7 @@
 %{!?python_sitelib: %define python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")}
 
 Name:           pungi
-Version:        1.2.6
+Version:        1.2.7
 Release:        1%{?dist}
 Summary:        Distribution compose tool
 
@@ -55,6 +55,10 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Tue Jan 22 2008 jkeating <jkeating@redhat.com> 1.2.7-1
+- Rework how repodata gets generated for media.
+- use createrepo api
+
 * Wed Jan 2 2008 jkeating <jkeating@redhat.com> 1.2.6-1
 - Update the url field for new hosted urls.
 - Add k3b to the Fedora manifest.
