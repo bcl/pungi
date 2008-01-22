@@ -1,5 +1,8 @@
 * Mon Jan 21 2008 Jesse Keating <jkeating@redhat.com>
 - Use createrepo api instead of execing it from the cli
+- Create different repodata for the unified media, as anaconda no longer
+  deals with "ALL" or "1,2,3,4" correctly.  Simplify anaconda by just
+  using normal metadata.  Re-factor some things to handle this right.
 
 * Mon Dec 17 Jesse Keating <jkeating@redhat.com>
 - Always add the core comps group.

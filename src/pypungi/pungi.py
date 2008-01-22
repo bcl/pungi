@@ -68,12 +68,12 @@ class Pungi(pypungi.PungiBase):
             return subfile.replace(basedir + os.path.sep, '')
         
     def _makeMetadata(self, path, cachedir, comps=False, repoview=False, repoviewtitle=False,
-                      baseurl=False, output=False, basedir=False, split=False):
+                      baseurl=False, output=False, basedir=False, split=False, update=True):
         """Create repodata and repoview."""
         
         conf = createrepo.MetaDataConfig()
         conf.cachedir = os.path.join(cachedir, 'createrepocache')
-        conf.update = True
+        conf.update = update
         if output:
             conf.outputdir = output
         else:
@@ -84,6 +84,8 @@ class Pungi(pypungi.PungiBase):
            conf.groupfile = comps
         if basedir:
             conf.basedir = basedir
+        if baseurl:
+            conf.baseurl = baseurl
         if split:
             conf.split = True
             conf.directories = split
@@ -308,7 +310,7 @@ class Pungi(pypungi.PungiBase):
         timber.splitSRPMS()
         self.logger.info("splitSRPMS complete")
 
-    def doCreateSplitrepo(self):
+    def doCreateMediarepo(self, split=False):
         """Create the split metadata for the isos"""
 
 
@@ -317,14 +319,11 @@ class Pungi(pypungi.PungiBase):
 
         compsfile = os.path.join(self.workdir, '%s-%s-comps.xml' % (self.config.get('default', 'name'), self.config.get('default', 'version')))
 
-        if self.config.getint('default', 'discs') == 1:
+        if not split:
             pypungi._ensuredir('%s-disc1' % self.topdir, self.logger, 
                                clean=True) # rename this for single disc
-            
-        if self.config.getint('default', 'discs') == 1:
             path = self.topdir
             basedir=None
-            split=False
         else:
             path = '%s-disc1' % self.topdir
             basedir = path
@@ -336,7 +335,7 @@ class Pungi(pypungi.PungiBase):
         self._makeMetadata(path, self.config.get('default', 'cachedir'), compsfile, repoview=False, 
                                                  baseurl='media://%s' % mediaid, 
                                                  output='%s-disc1' % self.topdir, 
-                                                 basedir=basedir, split=split)
+                                                 basedir=basedir, split=split, update=False)
 
         # Write out a repo file for the disc to be used on the installed system
         self.logger.info('Creating media repo file.')
@@ -404,14 +403,9 @@ cost=500
         else:
             discs = int(treesize / cdsize + 1)
             self.config.set('default', 'discs', str(discs))
-            if self.config.get('default', 'arch') == 'source':
-                self.doSplitSRPMs()
-            else:
-                self.doPackageorder()
-                self.doSplittree()
 
         if not self.config.get('default', 'arch') == 'source':
-            self.doCreateSplitrepo()
+            self.doCreateMediarepo(split=False)
 
         if treesize > 700: # we're larger than a 700meg CD
             isoname = '%s-%s-%s-DVD.iso' % (self.config.get('default', 'iso_basename'), self.config.get('default', 'version'), 
@@ -477,11 +471,21 @@ cost=500
             shutil.rmtree(os.path.join(self.topdir, 'repodata')) # remove our copied repodata
             shutil.move(os.path.join(self.config.get('default', 'destdir'), 
                 'repodata-%s' % self.config.get('default', 'arch')), os.path.join(self.topdir, 'repodata'))
+            
+        # Move the unified disk out
+        shutil.rmtree(os.path.join(self.workdir, 'os-unified'), ignore_errors=True)
+        shutil.move('%s-disc1' % self.topdir, os.path.join(self.workdir, 'os-unified'))
 
         # Write out a line describing the media
         self.writeinfo('media: %s' % isofile)
 
         if self.config.getint('default', 'discs') > 1:
+            if self.config.get('default', 'arch') == 'source':
+                self.doSplitSRPMs()
+            else:
+                self.doPackageorder()
+                self.doSplittree()
+                self.doCreateMediarepo(split=True)
             for disc in range(1, self.config.getint('default', 'discs') + 1): # cycle through the CD isos
                 isoname = '%s-%s-%s-disc%s.iso' % (self.config.get('default', 'iso_basename'), self.config.get('default', 'version'), 
                     self.config.get('default', 'arch'), disc)
