@@ -391,11 +391,11 @@ class Gather(pypungi.PungiBase):
             else:
                 compslines = open(groupfile, 'r').readlines()
                 for line in compslines:
-                    if line.startswith('</comps>'):
+                    if line.startswith('</comps'):
                         end = compslines.index(line)
 
                 for line in compslines:
-                    if line.startswith('<comps>'):
+                    if line.startswith('<comps'):
                         start = compslines.index(line) + 1
                 
                 ourcomps.writelines(compslines[start:end])
