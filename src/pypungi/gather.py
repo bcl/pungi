@@ -16,6 +16,7 @@ import yum
 import os
 import shutil
 import sys
+import gzip
 import pypungi
 import logging
 import urlgrabber.progress
@@ -389,7 +390,11 @@ class Gather(pypungi.PungiBase):
                 self.logger.warn("No group data found for %s" % repo.id)
                 pass
             else:
-                compslines = open(groupfile, 'r').readlines()
+                # Check to see if we got a gzipped comps file
+                if groupfile.endswith('.gz'):
+                    compslines = gzip.open(groupfile, 'r').readlines()
+                else:
+                    compslines = open(groupfile, 'r').readlines()
                 for line in compslines:
                     if line.startswith('</comps'):
                         end = compslines.index(line)

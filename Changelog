@@ -1,3 +1,6 @@
+* Thu Feb 21 2008 Jesse Keating <jkeating@redhat.com>
+- Handle gzipped comps files.
+
 * Fri Feb 08 2008 Jesse Keating <jkeating@redhat.com>
 - Fix comps mashup to be more lenient with the open/close of <comps
 
