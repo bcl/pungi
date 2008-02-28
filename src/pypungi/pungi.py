@@ -418,6 +418,11 @@ cost=500
 
         if not self.config.get('default', 'arch') == 'source':
             # move the main repodata out of the way to use the split repodata
+            if os.path.isdir(os.path.join(self.config.get('default', 'destdir'), 
+                                          'repodata-%s' % self.config.get('default', 'arch'))):
+                shutil.rmtree(os.path.join(self.config.get('default', 'destdir'), 
+                                           'repodata-%s' % self.config.get('default', 'arch')))
+                
             shutil.move(os.path.join(self.topdir, 'repodata'), os.path.join(self.config.get('default', 'destdir'), 
                 'repodata-%s' % self.config.get('default', 'arch')))
             shutil.copytree('%s-disc1/repodata' % self.topdir, os.path.join(self.topdir, 'repodata'))
