@@ -1,3 +1,7 @@
+* Thu Feb 28 2008 Jesse Keating <jkeating@redhat.com>
+- Make sure we get fresh repomd.xml each time we run
+- Don't autoclean the repodata, some of it can be reused
+
 * Thu Feb 21 2008 Jesse Keating <jkeating@redhat.com>
 - Handle gzipped comps files.
 

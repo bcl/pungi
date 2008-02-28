@@ -134,9 +134,13 @@ class Gather(pypungi.PungiBase):
 
         self.ayum.repos.setProgressBar(CallBack())
         self.ayum.repos.callback = CallBack()
-
-        self.ayum.cleanMetadata() # clean metadata that might be in the cache from previous runs
-        self.ayum.cleanSqlite() # clean metadata that might be in the cache from previous runs
+        
+        # Set the metadata and mirror list to be expired so we always get new ones.
+        for repo in self.ayum.repos.listEnabled():
+            repo.metadata_expire = 0
+            repo.mirrorlist_expire = 0
+            if os.path.exists(os.path.join(repo.cachedir, 'repomd.xml')):
+                os.remove(os.path.join(repo.cachedir, 'repomd.xml'))
 
         self.logger.info('Getting sacks for arches %s' % arches)
         self.ayum._getSacks(archlist=arches)
