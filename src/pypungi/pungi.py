@@ -536,47 +536,15 @@ cost=500
             # Write out a line describing the CD set
             self.writeinfo('mediaset: %s' % ' '.join(isolist))
 
-        # Now make rescue images
+        # Now copy the netinst iso
         if not self.config.get('default', 'arch') == 'source' and \
-            os.path.exists('/usr/lib/anaconda-runtime/mk-rescueimage.%s' % self.config.get('default', 'arch')):
-            isoname = '%s-%s-%s-rescuecd.iso' % (self.config.get('default', 'iso_basename'),
+        os.path.exists(os.path.join(self.topdir, 'images', 'netinst.iso')):
+            isoname = '%s-%s-%s-netinst.iso' % (self.config.get('default', 'iso_basename'),
                 self.config.get('default', 'version'), self.config.get('default', 'arch'))
             isofile = os.path.join(self.isodir, isoname)
 
-            # make the rescue tree
-            rescue = ['/usr/lib/anaconda-runtime/mk-rescueimage.%s' % self.config.get('default', 'arch')]
-            rescue.append(self.topdir)
-            rescue.append(self.workdir)
-            rescue.append(self.config.get('default', 'iso_basename'))
-            rescue.append(self.config.get('default', 'product_path'))
-
-            # run the command
-            pypungi._doRunCommand(rescue, self.logger)
-
-            # write the iso
-            extraargs = []
-
-            if self.config.get('default', 'arch') == 'i386' or self.config.get('default', 'arch') == 'x86_64':
-                extraargs.extend(x86bootargs)
-            elif self.config.get('default', 'arch') == 'ia64':
-                extraargs.extend(ia64bootargs)
-            elif self.config.get('default', 'arch') == 'ppc':
-                extraargs.extend(ppcbootargs)
-                extraargs.append(os.path.join(self.workdir, "%s-rescueimage" % self.config.get('default', 'arch'), "ppc/mac"))
-            elif self.config.get('default', 'arch') == 'sparc':
-                extraargs.extend(sparcbootargs)
-
-            extraargs.append('-V')
-            extraargs.append('%s %s %s Rescue' % (self.config.get('default', 'name'),
-                    self.config.get('default', 'version'), self.config.get('default', 'arch')))
-
-            extraargs.append('-o')
-            extraargs.append(isofile)
-
-            extraargs.append(os.path.join(self.workdir, "%s-rescueimage" % self.config.get('default', 'arch')))
-
-            # run the command
-            pypungi._doRunCommand(mkisofs + extraargs, self.logger)
+            # copy the netinst iso to the iso dir
+            shutil.copy2(os.path.join(self.topdir, 'images', 'netinst.iso'), isofile)
 
             # shove the sha1sum into a file
             sha1file = open(os.path.join(self.isodir, 'SHA1SUM'), 'a')

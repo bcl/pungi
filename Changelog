@@ -1,3 +1,7 @@
+* Mon Mar 03 2008 Jesse Keating <jkeating@redhat.com>
+- Copy the netinst iso over to the isos/ directory
+- Require a new enough anaconda for this
+
 * Thu Feb 28 2008 Jesse Keating <jkeating@redhat.com>
 - Make sure we get fresh repomd.xml each time we run
 - Don't autoclean the repodata, some of it can be reused
