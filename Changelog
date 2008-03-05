@@ -1,3 +1,6 @@
+* Wed Mar 05 2008 Jesse Keating <jkeating@redhat.com>
+- Fix ppc split iso generation
+
 * Mon Mar 03 2008 Jesse Keating <jkeating@redhat.com>
 - Copy the netinst iso over to the isos/ directory
 - Require a new enough anaconda for this

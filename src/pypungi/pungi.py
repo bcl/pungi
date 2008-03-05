@@ -436,10 +436,7 @@ cost=500
             extraargs.extend(ia64bootargs)
         elif self.config.get('default', 'arch') == 'ppc':
             extraargs.extend(ppcbootargs)
-            if self.config.getint('default', 'discs') == 1:
-                extraargs.append(os.path.join(self.topdir, "ppc/mac")) # this may work for both cases.. test
-            else:
-                extraargs.append(os.path.join('%s-disc%s' % (self.topdir, disc), "ppc/mac"))
+            extraargs.append(os.path.join(self.topdir, "ppc/mac"))
         elif self.config.get('default', 'arch') == 'sparc':
             extraargs.extend(sparcbootargs)
 
