@@ -1,7 +1,7 @@
 %{!?python_sitelib: %define python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")}
 
 Name:           pungi
-Version:        1.2.9
+Version:        1.2.10
 Release:        1%{?dist}
 Summary:        Distribution compose tool
 
@@ -55,6 +55,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Tue Mar 11 2008 Jesse Keating <jkeating@redhat.com> - 1.2.10-1
+- Handle netinst.iso being renamed to boot.iso
+
 * Wed Mar 05 2008 Jesse Keating <jkeating@redhat.com> - 1.2.9-1
 - Fix ppc split iso generation
 - Exclude repoview from isos

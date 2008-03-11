@@ -533,15 +533,15 @@ cost=500
             # Write out a line describing the CD set
             self.writeinfo('mediaset: %s' % ' '.join(isolist))
 
-        # Now copy the netinst iso
+        # Now link the boot iso
         if not self.config.get('default', 'arch') == 'source' and \
-        os.path.exists(os.path.join(self.topdir, 'images', 'netinst.iso')):
+        os.path.exists(os.path.join(self.topdir, 'images', 'boot.iso')):
             isoname = '%s-%s-%s-netinst.iso' % (self.config.get('default', 'iso_basename'),
                 self.config.get('default', 'version'), self.config.get('default', 'arch'))
             isofile = os.path.join(self.isodir, isoname)
 
-            # copy the netinst iso to the iso dir
-            shutil.copy2(os.path.join(self.topdir, 'images', 'netinst.iso'), isofile)
+            # link the boot iso to the iso dir
+            pypungi._link(os.path.join(self.topdir, 'images', 'boot.iso'), isofile)
 
             # shove the sha1sum into a file
             sha1file = open(os.path.join(self.isodir, 'SHA1SUM'), 'a')

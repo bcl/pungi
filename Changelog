@@ -1,3 +1,7 @@
+* Tue Mar 11 2008 Jesse Keating <jkeating@redhat.com>
+- netinst.iso was renamed to boot.iso.  We want to link it
+  to the iso dir, but keep the netinst.iso name for now.
+
 * Wed Mar 05 2008 Jesse Keating <jkeating@redhat.com>
 - Fix ppc split iso generation
 - Exclude repoview from isos
