@@ -541,7 +541,7 @@ cost=500
             isofile = os.path.join(self.isodir, isoname)
 
             # link the boot iso to the iso dir
-            pypungi._link(os.path.join(self.topdir, 'images', 'boot.iso'), isofile)
+            pypungi._link(os.path.join(self.topdir, 'images', 'boot.iso'), isofile, self.logger)
 
             # shove the sha1sum into a file
             sha1file = open(os.path.join(self.isodir, 'SHA1SUM'), 'a')
