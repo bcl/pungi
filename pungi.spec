@@ -1,8 +1,8 @@
 %{!?python_sitelib: %define python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")}
 
 Name:           pungi
-Version:        1.2.11
-Release:        1%{?dist}.1
+Version:        1.2.12
+Release:        1%{?dist}
 Summary:        Distribution compose tool
 
 Group:          Development/Tools
@@ -55,6 +55,10 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Fri Mar 14 2008 Jesse Keating <jkeating@redhat.com> - 1.2.12-1
+- Fix source isos
+- Send the right options to buildinstall
+
 * Wed Mar 12 2008 Jesse Keating <jkeating@redhat.com> - 1.2.11-1
 - Make CDs fit again.
 
