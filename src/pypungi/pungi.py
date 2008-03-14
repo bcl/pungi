@@ -155,9 +155,6 @@ class Pungi(pypungi.PungiBase):
         buildinstall.append('--release')
         buildinstall.append('%s %s' % (self.config.get('default', 'name'), self.config.get('default', 'version')))
 
-        buildinstall.append('--prodpath')
-        buildinstall.append(self.config.get('default', 'product_path'))
-
         if self.config.has_option('default', 'bugurl'):
             buildinstall.append('--bugurl')
             buildinstall.append(self.config.get('default', 'bugurl'))

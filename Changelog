@@ -1,3 +1,6 @@
+* Fri Mar 14 2008 Jesse Keating <jkeating@redhat.com>
+- Don't pass --prodpath to buildinstall.  It won't like it.
+
 * Wed Mar 12 2008 Jesse Keating <jkeating@redhat.com>
 - Lower the CD size to 650; need to investigate pkgordering soon
 
