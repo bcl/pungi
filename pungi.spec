@@ -2,7 +2,7 @@
 
 Name:           pungi
 Version:        1.2.11
-Release:        1%{?dist}
+Release:        1%{?dist}.1
 Summary:        Distribution compose tool
 
 Group:          Development/Tools

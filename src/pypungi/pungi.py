@@ -295,7 +295,7 @@ class Pungi(pypungi.PungiBase):
 
         # this is stolen from splittree.py in anaconda-runtime.  Blame them if its ugly (:
         for i in range(timber.src_list[0], timber.src_list[-1] + 1):
-                pypungi._ensuredir('%s-disc%d/SRPMS' % (timper.dist_dir, i),
+                pypungi._ensuredir('%s-disc%d/SRPMS' % (timber.dist_dir, i),
                                    self.logger,
                                    force=self.config.getboolean('default', 'force'),
                                    clean=True)
@@ -472,8 +472,9 @@ cost=500
                 'repodata-%s' % self.config.get('default', 'arch')), os.path.join(self.topdir, 'repodata'))
             
         # Move the unified disk out
-        shutil.rmtree(os.path.join(self.workdir, 'os-unified'), ignore_errors=True)
-        shutil.move('%s-disc1' % self.topdir, os.path.join(self.workdir, 'os-unified'))
+        if not self.config.get('default', 'arch') == 'source':
+            shutil.rmtree(os.path.join(self.workdir, 'os-unified'), ignore_errors=True)
+            shutil.move('%s-disc1' % self.topdir, os.path.join(self.workdir, 'os-unified'))
 
         # Write out a line describing the media
         self.writeinfo('media: %s' % isofile)
