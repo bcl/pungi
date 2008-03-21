@@ -1,3 +1,6 @@
+* Fri Mar 21 2008 Jesse Keating <jkeating@redhat.com>
+- Handle shared source directory better.
+
 * Fri Mar 14 2008 Jesse Keating <jkeating@redhat.com>
 - Don't pass --prodpath to buildinstall.  It won't like it.
 - Fix source iso making

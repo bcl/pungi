@@ -332,7 +332,11 @@ class Gather(pypungi.PungiBase):
                               relpkgdir)
 
         # Ensure the pkgdir exists, force if requested, and make sure we clean it out
-        pypungi._ensuredir(pkgdir, self.logger, force=self.config.getboolean('default', 'force'), clean=True)
+        if relpkgdir.endswith('SRPMS'):
+            # Since we share source dirs with other arches don't clean, but do allow us to use it
+            pypungi._ensuredir(pkgdir, self.logger, force=True, clean=False)
+        else:
+            pypungi._ensuredir(pkgdir, self.logger, force=self.config.getboolean('default', 'force'), clean=True)
 
         probs = self.ayum.downloadPkgs(polist)
 
