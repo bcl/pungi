@@ -1,3 +1,6 @@
+* Tue Mar 25 2008 Jesse Keating <jkeating@redhat.com>
+- Use yum's comps method to write out a unified comps
+
 * Fri Mar 21 2008 Jesse Keating <jkeating@redhat.com>
 - Handle shared source directory better.
 
