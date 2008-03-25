@@ -379,7 +379,7 @@ class Gather(pypungi.PungiBase):
 
         ourcomps = open(ourcompspath, 'w')
 
-        ourcomps.write(self.ayum.comps.Comps.xml())
+        ourcomps.write(self.ayum.comps.xml())
 
         ourcomps.close()
 
