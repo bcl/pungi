@@ -26,7 +26,7 @@ archive:
 	@make Changelog
 	@rm -rf ${PKGNAME}-$(VERSION)/
 	@python setup.py sdist --formats=bztar > /dev/null
-	@echo "The archive is in dist/${PKGNAME}-$(VERSION).tar.gz"
+	@echo "The archive is in dist/${PKGNAME}-$(VERSION).tar.bz2"
 
 srpm: archive
 	@rm -f $(SRPM)
