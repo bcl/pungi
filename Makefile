@@ -1,7 +1,7 @@
 PKGNAME=pungi
 VERSION=$(shell rpm -q --qf "%{VERSION}\n" --specfile ${PKGNAME}.spec)
 RELEASE=$(shell rpm -q --qf "%{RELEASE}\n" --specfile ${PKGNAME}.spec)
-HGTAG=${PKGNAME}-$(VERSION)-$(RELEASE)
+GITTAG=${PKGNAME}-$(VERSION)-$(RELEASE)
 PKGRPMFLAGS=--define "_topdir ${PWD}" --define "_specdir ${PWD}" --define "_sourcedir ${PWD}/dist" --define "_srcrpmdir ${PWD}" --define "_rpmdir ${PWD}" --define "_builddir ${PWD}"
 
 RPM="noarch/${PKGNAME}-$(VERSION)-$(RELEASE).noarch.rpm"
@@ -14,10 +14,16 @@ all:
 	@echo "Nothing to do"
 
 tag:
-	@hg tag -m "$(HGTAG)" $(HGTAG)
+	@git tag -a -m "Tag as $(GITTAG)" -f $(GITTAG)
+	@echo "Tagged as $(GITTAG)"
 #	@hg push
 
+Changelog:
+	(GIT_DIR=.git git-log > .changelog.tmp && mv .changelog.tmp Changelog; rm -f .changelog.tmp) || (touch Changelog; echo 'git directory not found: installing possibly empty changelog.' >&2)
+
 archive:
+	@rm -f Changelog
+	@make Changelog
 	@rm -rf ${PKGNAME}-$(VERSION)/
 	@python setup.py sdist --formats=bztar > /dev/null
 	@echo "The archive is in dist/${PKGNAME}-$(VERSION).tar.gz"
@@ -45,3 +51,4 @@ clean:
 	@rm -vf *.tar.gz
 	@rm -vrf dist
 	@rm -vf MANIFEST
+	@rm -vf Changelog
