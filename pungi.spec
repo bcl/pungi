@@ -1,7 +1,7 @@
 %{!?python_sitelib: %define python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")}
 
 Name:           pungi
-Version:        1.2.12
+Version:        1.2.13
 Release:        1%{?dist}
 Summary:        Distribution compose tool
 
@@ -10,7 +10,7 @@ License:        GPLv2
 URL:            https://fedorahosted.org/pungi
 Source0:        https://fedorahosted.org/pungi/attachment/wiki/%{version}/%{name}-%{version}.tar.bz2
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
-Requires:       anaconda-runtime >= 11.4.0.41, yum => 3.0.3, repoview
+Requires:       anaconda-runtime >= 11.4.0.41, yum => 3.2.13, repoview
 BuildRequires:  python-devel
 
 BuildArch:      noarch
@@ -55,6 +55,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Tue Apr 01 2008 Jesse Keating <jkeating@redhat.com> - 1.2.13-1
+- Use the yum api for merging comps.
+
 * Fri Mar 14 2008 Jesse Keating <jkeating@redhat.com> - 1.2.12-1
 - Fix source isos
 - Send the right options to buildinstall
