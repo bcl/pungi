@@ -16,8 +16,9 @@ repo --name=rawhide-source  --mirrorlist=http://mirrors.fedoraproject.org/mirror
 tcsh
 @base-x
 kernel*
--kernel*-debug*
+-kernel*debug*
 -kernel*-devel*
+-kernel-kdump*
 # Hardware stuff
 @hardware-support
 @dial-up
@@ -26,7 +27,9 @@ kernel*
 @kde-desktop
 echo-icon-theme
 tracker
-gnash
+swfdec
+libflashsupport
+nspluginwrapper
 liferea
 esc
 thunderbird
