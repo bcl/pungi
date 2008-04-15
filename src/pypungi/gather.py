@@ -128,6 +128,8 @@ class Gather(pypungi.PungiBase):
             thisrepo.failovermethod = 'priority' # This is until yum uses this failover by default
             thisrepo.exclude = repo.excludepkgs
             thisrepo.includepkgs = repo.includepkgs
+            if repo.priority:
+                thisrepo.cost = repo.priority
             self.ayum.repos.add(thisrepo)
             self.ayum.repos.enableRepo(thisrepo.id)
             self.ayum._getRepos(thisrepo=thisrepo.id, doSetup = True)
