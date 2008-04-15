@@ -383,14 +383,15 @@ class Gather(pypungi.PungiBase):
 
         ourcomps.close()
 
+        # Disable this until https://bugzilla.redhat.com/show_bug.cgi?id=442097 is fixed.
         # Run the xslt filter over our comps file
-        compsfilter = ['/usr/bin/xsltproc', '--novalid']
-        compsfilter.append('-o')
-        compsfilter.append(ourcompspath)
-        compsfilter.append('/usr/share/pungi/comps-cleanup.xsl')
-        compsfilter.append(ourcompspath)
+        #compsfilter = ['/usr/bin/xsltproc', '--novalid']
+        #compsfilter.append('-o')
+        #compsfilter.append(ourcompspath)
+        #compsfilter.append('/usr/share/pungi/comps-cleanup.xsl')
+        #compsfilter.append(ourcompspath)
 
-        pypungi._doRunCommand(compsfilter, self.logger)
+        #pypungi._doRunCommand(compsfilter, self.logger)
 
     def downloadSRPMs(self):
         """Cycle through the list of srpms and
