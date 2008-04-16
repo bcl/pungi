@@ -96,6 +96,7 @@ jfsutils
 @czech-support
 @danish-support
 @dutch-support
+@esperanto-support
 @estonian-support
 @ethiopic-support
 @faeroese-support
@@ -118,18 +119,21 @@ jfsutils
 @italian-support
 @japanese-support
 @kannada-support
+@kashubian-support
 @khmer-support
 @korean-support
 @lao-support
 @latvian-support
 @lithuanian-support
 @low-saxon-support
+@macedonian-support
 @malay-support
 @malayalam-support
 @maori-support
 @marathi-support
 @mongolian-support
 @nepali-support
+@northern-sami-support
 @northern-sotho-support
 @norwegian-support
 @oriya-support
@@ -163,6 +167,7 @@ jfsutils
 @urdu-support
 @venda-support
 @vietnamese-support
+@walloon-support
 @welsh-support
 @xhosa-support
 @zulu-support
