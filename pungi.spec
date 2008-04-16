@@ -1,7 +1,7 @@
 %{!?python_sitelib: %define python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")}
 
 Name:           pungi
-Version:        1.2.13
+Version:        1.2.14
 Release:        1%{?dist}
 Summary:        Distribution compose tool
 
@@ -55,6 +55,11 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Wed Apr 16 2008 jkeating <jkeating@redhat.com> 1.2.14-1
+- Disable comps cleanup until xslt is fixed
+- Add support for yum repo costs
+- Adjust manifest for Fedora 9 (kernels, languages, flash)
+
 * Tue Apr 01 2008 Jesse Keating <jkeating@redhat.com> - 1.2.13-1
 - Use the yum api for merging comps.
 
