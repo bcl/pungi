@@ -107,7 +107,8 @@ def main():
         mypungi.topdir = os.path.join(config.get('default', 'destdir'),
                                       config.get('default', 'version'),
                                       config.get('default', 'flavor'),
-                                      'source', 'SRPM')
+                                      'source', 'SRPMS')
+        mypungi.doCreaterepo(comps=False)
         if opts.do_all or opts.do_createiso:
             mypungi.doCreateIsos(split=opts.nosplitmedia)
 

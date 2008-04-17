@@ -114,11 +114,13 @@ class Pungi(pypungi.PungiBase):
             # run the command
             pypungi._doRunCommand(repoview, self.logger)
         
-    def doCreaterepo(self):
+    def doCreaterepo(self, comps=True):
         """Run createrepo to generate repodata in the tree."""
 
 
-        compsfile = os.path.join(self.workdir, '%s-%s-comps.xml' % (self.config.get('default', 'name'), self.config.get('default', 'version')))
+        compsfile = None
+        if comps:
+            compsfile = os.path.join(self.workdir, '%s-%s-comps.xml' % (self.config.get('default', 'name'), self.config.get('default', 'version')))
         
         # setup the cache dirs
         for target in ['createrepocache', 'repoviewcache']:
@@ -283,7 +285,7 @@ class Pungi(pypungi.PungiBase):
         timber.dist_dir = os.path.join(self.config.get('default', 'destdir'),
                                        self.config.get('default', 'version'),
                                        self.config.get('default', 'flavor'),
-                                       'source', 'SRPM')
+                                       'source', 'SRPMS')
         timber.src_dir = os.path.join(self.config.get('default', 'destdir'),
                                       self.config.get('default', 'version'),
                                       self.config.get('default', 'flavor'),
@@ -550,7 +552,7 @@ cost=500
         dirs = os.listdir(self.archdir)
 
         for directory in dirs:
-            if directory.startswith('os-disc') or directory.startswith('SRPM-disc'):
+            if directory.startswith('os-disc') or directory.startswith('SRPMS-disc'):
                 if os.path.exists(os.path.join(self.workdir, directory)):
                     shutil.rmtree(os.path.join(self.workdir, directory))
                 shutil.move(os.path.join(self.archdir, directory), os.path.join(self.workdir, directory))
