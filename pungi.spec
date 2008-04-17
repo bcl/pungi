@@ -1,7 +1,7 @@
 %{!?python_sitelib: %define python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")}
 
 Name:           pungi
-Version:        1.2.15
+Version:        1.2.16
 Release:        1%{?dist}
 Summary:        Distribution compose tool
 
@@ -55,6 +55,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Wed Apr 16 2008 jkeating <jkeating@redhat.com> 1.2.16-1
+- Fix another issue with source repo stuff.
+
 * Wed Apr 16 2008 jkeating <jkeating@redhat.com> 1.2.15-1
 - Disable comps cleanup until xslt is fixed
 - Add support for yum repo costs

@@ -388,7 +388,8 @@ cost=500
         if not self.config.get('default', 'arch') == 'source':
             treesize = int(subprocess.Popen(mkisofs + ['-print-size', '-quiet', self.topdir], stdout=subprocess.PIPE).communicate()[0])
         else:
-            srcdir = os.path.join(self.config.get('default', 'destdir'), self.config.get('default', 'version'), 'source', 'SRPMS')
+            srcdir = os.path.join(self.config.get('default', 'destdir'), self.config.get('default', 'version'), 
+                                  self.config.get('default', 'flavor'), 'source', 'SRPMS')
 
             treesize = int(subprocess.Popen(mkisofs + ['-print-size', '-quiet', srcdir], stdout=subprocess.PIPE).communicate()[0])
         # Size returned is 2KiB clusters or some such.  This translates that to MiB.
