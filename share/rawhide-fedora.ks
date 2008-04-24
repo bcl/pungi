@@ -177,4 +177,13 @@ cracklib-python
 iscsi-initiator-utils
 memtest86+
 vnc-server
+# Size removals
+-gimp-help
+-java-1.6.0-openjdk-src
+-xorg-x11-docs
+-kernel-doc
+-java-1.5.0-gcj-src
+-java-1.5.0-gcj-devel
+-libgcj-src
+-*javadoc*
 %end
