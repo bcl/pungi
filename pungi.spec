@@ -1,7 +1,7 @@
 %{!?python_sitelib: %define python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")}
 
 Name:           pungi
-Version:        1.2.16
+Version:        1.2.17
 Release:        1%{?dist}
 Summary:        Distribution compose tool
 
@@ -55,6 +55,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Thu May 01 2008 Jesse Keating <jkeating@redhat.com> - 1.2.17-1
+- Add a config file for Fedora 9.
+
 * Wed Apr 16 2008 jkeating <jkeating@redhat.com> 1.2.16-1
 - Fix another issue with source repo stuff.
 
