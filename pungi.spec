@@ -1,7 +1,7 @@
 %{!?python_sitelib: %define python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")}
 
 Name:           pungi
-Version:        1.2.17
+Version:        1.2.18
 Release:        1%{?dist}
 Summary:        Distribution compose tool
 
@@ -55,6 +55,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Tue May 06 2008 Jesse Keating <jkeating@redhat.com> - 1.2.18-1
+- Manifest change for F9, drop syslog-ng
+
 * Thu May 01 2008 Jesse Keating <jkeating@redhat.com> - 1.2.17-1
 - Add a config file for Fedora 9.
 
