@@ -19,6 +19,7 @@ kernel*
 -kernel*debug*
 -kernel*-devel*
 -kernel-kdump*
+-syslog-ng
 # Hardware stuff
 @hardware-support
 @dial-up
