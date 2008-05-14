@@ -35,6 +35,7 @@ liferea
 esc
 thunderbird
 # apps
+@admin-tools
 @authoring-and-publishing
 @eclipse
 @editors
