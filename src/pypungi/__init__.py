@@ -18,7 +18,7 @@ import re
 import shutil
 import sys
 import gzip
-import pypungi
+import pypungi.util
 import logging
 import urlgrabber.progress
 import subprocess
@@ -46,7 +46,7 @@ class PungiBase(object):
 
         logdir = os.path.join(self.config.get('default', 'destdir'), 'logs')
 
-        _ensuredir(logdir, None, force=True) # Always allow logs to be written out
+        pypungi.util._ensuredir(logdir, None, force=True) # Always allow logs to be written out
 
         if self.config.get('default', 'flavor'):
             logfile = os.path.join(logdir, '%s.%s.log' % (self.config.get('default', 'flavor'),
@@ -60,81 +60,12 @@ class PungiBase(object):
                             filename=logfile)
 
 
-def _doRunCommand(command, logger, rundir='/tmp', output=subprocess.PIPE, error=subprocess.PIPE, env=None):
-    """Run a command and log the output.  Error out if we get something on stderr"""
-
-
-    logger.info("Running %s" % subprocess.list2cmdline(command))
-
-    p1 = subprocess.Popen(command, cwd=rundir, stdout=output, stderr=error, universal_newlines=True, env=env)
-    (out, err) = p1.communicate()
-
-    if out:
-        logger.debug(out)
-
-    if p1.returncode != 0:
-        logger.error("Got an error from %s" % command[0])
-        logger.error(err)
-        raise OSError, "Got an error from %s: %s" % (command[0], err)
-
-def _link(local, target, logger, force=False):
-    """Simple function to link or copy a package, removing target optionally."""
-
-    if os.path.exists(target) and force:
-        os.remove(target)
-
-    try:
-        os.link(local, target)
-    except OSError, e:
-        if e.errno != 18: # EXDEV
-            logger.error('Got an error linking from cache: %s' % e)
-            raise OSError, e
-
-        # Can't hardlink cross file systems
-        shutil.copy2(local, target)
-
-def _ensuredir(target, logger, force=False, clean=False):
-    """Ensure that a directory exists, if it already exists, only continue
-    if force is set."""
-    
-    # We have to check existance of a logger, as setting the logger could
-    # itself cause an issue.
-    def whoops(func, path, exc_info):
-        message = 'Could not remove %s' % path
-        if logger:
-            logger.error(message)
-        else:
-            sys.stderr(message)
-        sys.exit(1)
-    
-    if os.path.exists(target) and not os.path.isdir(target):
-        message = '%s exists but is not a directory.' % target
-        if logger:
-            logger.error(message)
-        else:
-            sys.stderr(message)
-        sys.exit(1)
-    
-    if not os.path.isdir(target):
-        os.makedirs(target)
-    elif force and clean:
-        shutil.rmtree(target, onerror=whoops)
-        os.makedirs(target)
-    elif force:
-        return
-    else:
-        message = 'Directory %s already exists.  Use --force to overwrite.' % target
-        if logger:
-            logger.error(message)
-        else:
-            sys.stderr(message)
-        sys.exit(1)
-
 class CallBack(urlgrabber.progress.TextMeter):
     """A call back function used with yum."""
 
     def progressbar(self, current, total, name=None):
         return
+
 
 class PungiYum(yum.YumBase):
     """Subclass of Yum"""
@@ -163,6 +94,7 @@ class PungiYum(yum.YumBase):
         # the logging.
         pass
 
+
 class Pungi(pypungi.PungiBase):
     def __init__(self, config, ksparser):
         pypungi.PungiBase.__init__(self, config)
@@ -186,7 +118,7 @@ class Pungi(pypungi.PungiBase):
         self.topdir = os.path.join(self.archdir, 'os')
         self.isodir = os.path.join(self.archdir, self.config.get('default','isodir'))
 
-        pypungi._ensuredir(self.workdir, self.logger, force=True)
+        pypungi.util._ensuredir(self.workdir, self.logger, force=True)
 
         self.common_files = []
         self.infofile = os.path.join(self.config.get('default', 'destdir'),
@@ -461,9 +393,9 @@ class Pungi(pypungi.PungiBase):
         # Ensure the pkgdir exists, force if requested, and make sure we clean it out
         if relpkgdir.endswith('SRPMS'):
             # Since we share source dirs with other arches don't clean, but do allow us to use it
-            pypungi._ensuredir(pkgdir, self.logger, force=True, clean=False)
+            pypungi.util._ensuredir(pkgdir, self.logger, force=True, clean=False)
         else:
-            pypungi._ensuredir(pkgdir, self.logger, force=self.config.getboolean('default', 'force'), clean=True)
+            pypungi.util._ensuredir(pkgdir, self.logger, force=self.config.getboolean('default', 'force'), clean=True)
 
         probs = self.ayum.downloadPkgs(polist)
 
@@ -483,7 +415,7 @@ class Pungi(pypungi.PungiBase):
 
             # Link downloaded package in (or link package from file repo)
             try:
-                pypungi._link(local, target, self.logger, force=True)
+                pypungi.util._link(local, target, self.logger, force=True)
                 continue
             except:
                 self.logger.error("Unable to link %s from the yum cache." % po.name)
@@ -518,7 +450,7 @@ class Pungi(pypungi.PungiBase):
         #compsfilter.append('/usr/share/pungi/comps-cleanup.xsl')
         #compsfilter.append(ourcompspath)
 
-        #pypungi._doRunCommand(compsfilter, self.logger)
+        #pypungi.util._doRunCommand(compsfilter, self.logger)
 
     def downloadSRPMs(self):
         """Cycle through the list of srpms and
@@ -599,7 +531,7 @@ class Pungi(pypungi.PungiBase):
             repoview.append(path)
     
             # run the command
-            pypungi._doRunCommand(repoview, self.logger)
+            pypungi.util._doRunCommand(repoview, self.logger)
         
     def doCreaterepo(self, comps=True):
         """Run createrepo to generate repodata in the tree."""
@@ -611,7 +543,7 @@ class Pungi(pypungi.PungiBase):
         
         # setup the cache dirs
         for target in ['createrepocache', 'repoviewcache']:
-            pypungi._ensuredir(os.path.join(self.config.get('default', 'cachedir'),
+            pypungi.util._ensuredir(os.path.join(self.config.get('default', 'cachedir'),
                                             target), 
                                self.logger, 
                                force=True)
@@ -652,7 +584,7 @@ class Pungi(pypungi.PungiBase):
 
         # run the command
         # TMPDIR is still broken with buildinstall.
-        pypungi._doRunCommand(buildinstall, self.logger) #, env={"TMPDIR": self.workdir})
+        pypungi.util._doRunCommand(buildinstall, self.logger) #, env={"TMPDIR": self.workdir})
 
         # write out the tree data for snake
         self.writeinfo('tree: %s' % self.mkrelative(self.topdir))
@@ -670,7 +602,7 @@ class Pungi(pypungi.PungiBase):
         pkgorder.append(self.config.get('default', 'product_path'))
 
         # run the command
-        pypungi._doRunCommand(pkgorder, self.logger, output=pkgorderfile)
+        pypungi.util._doRunCommand(pkgorder, self.logger, output=pkgorderfile)
         pkgorderfile.close()
 
     def doGetRelnotes(self):
@@ -689,7 +621,7 @@ class Pungi(pypungi.PungiBase):
         for pattern in self.config.get('default', 'relnotedirre').split():
             dirres.append(re.compile(pattern))
 
-        pypungi._ensuredir(docsdir, self.logger, force=self.config.getboolean('default', 'force'), clean=True)
+        pypungi.util._ensuredir(docsdir, self.logger, force=self.config.getboolean('default', 'force'), clean=True)
 
         # Expload the packages we list as relnote packages
         pkgs = os.listdir(os.path.join(self.topdir, self.config.get('default', 'product_path')))
@@ -720,7 +652,7 @@ class Pungi(pypungi.PungiBase):
                 for regex in fileres:
                     if regex.match(filename) and not os.path.exists(os.path.join(self.topdir, filename)):
                         self.logger.info("Linking release note file %s" % filename)
-                        pypungi._link(os.path.join(dirpath, filename), os.path.join(self.topdir, filename), self.logger)
+                        pypungi.util._link(os.path.join(dirpath, filename), os.path.join(self.topdir, filename), self.logger)
                         self.common_files.append(filename)
 
         # Walk the tree for our dirs
@@ -731,7 +663,6 @@ class Pungi(pypungi.PungiBase):
                         self.logger.info("Copying release note dir %s" % directory)
                         shutil.copytree(os.path.join(dirpath, directory), os.path.join(self.topdir, directory))
         
-
     def doSplittree(self):
         """Use anaconda-runtime's splittree to split the tree into appropriate
            sized chunks."""
@@ -784,7 +715,7 @@ class Pungi(pypungi.PungiBase):
 
         # this is stolen from splittree.py in anaconda-runtime.  Blame them if its ugly (:
         for i in range(timber.src_list[0], timber.src_list[-1] + 1):
-                pypungi._ensuredir('%s-disc%d/SRPMS' % (timber.dist_dir, i),
+                pypungi.util._ensuredir('%s-disc%d/SRPMS' % (timber.dist_dir, i),
                                    self.logger,
                                    force=self.config.getboolean('default', 'force'),
                                    clean=True)
@@ -806,7 +737,7 @@ class Pungi(pypungi.PungiBase):
         compsfile = os.path.join(self.workdir, '%s-%s-comps.xml' % (self.config.get('default', 'name'), self.config.get('default', 'version')))
 
         if not split:
-            pypungi._ensuredir('%s-disc1' % self.topdir, self.logger, 
+            pypungi.util._ensuredir('%s-disc1' % self.topdir, self.logger, 
                                clean=True) # rename this for single disc
             path = self.topdir
             basedir=None
@@ -845,7 +776,7 @@ cost=500
         anaruntime = '/usr/lib/anaconda-runtime/boot'
         discinfofile = os.path.join(self.topdir, '.discinfo') # we use this a fair amount
 
-        pypungi._ensuredir(self.isodir, self.logger,
+        pypungi.util._ensuredir(self.isodir, self.logger,
                            force=self.config.getboolean('default', 'force'),
                            clean=True) # This is risky...
 
@@ -944,15 +875,15 @@ cost=500
             extraargs.append(os.path.join(self.archdir, 'SRPMS'))
 
         # run the command
-        pypungi._doRunCommand(mkisofs + extraargs, self.logger)
+        pypungi.util._doRunCommand(mkisofs + extraargs, self.logger)
 
         # implant md5 for mediacheck on all but source arches
         if not self.config.get('default', 'arch') == 'source':
-            pypungi._doRunCommand(['/usr/bin/implantisomd5', isofile], self.logger)
+            pypungi.util._doRunCommand(['/usr/bin/implantisomd5', isofile], self.logger)
 
         # shove the sha1sum into a file
         sha1file = open(os.path.join(self.isodir, 'SHA1SUM'), 'a')
-        pypungi._doRunCommand(['/usr/bin/sha1sum', isoname], self.logger, rundir=self.isodir, output=sha1file)
+        pypungi.util._doRunCommand(['/usr/bin/sha1sum', isoname], self.logger, rundir=self.isodir, output=sha1file)
         sha1file.close()
 
         # return the .discinfo file
@@ -1004,15 +935,15 @@ cost=500
                 extraargs.append(os.path.join('%s-disc%s' % (self.topdir, disc)))
 
                 # run the command
-                pypungi._doRunCommand(mkisofs + extraargs, self.logger)
+                pypungi.util._doRunCommand(mkisofs + extraargs, self.logger)
 
                 # implant md5 for mediacheck on all but source arches
                 if not self.config.get('default', 'arch') == 'source':
-                    pypungi._doRunCommand(['/usr/bin/implantisomd5', isofile], self.logger)
+                    pypungi.util._doRunCommand(['/usr/bin/implantisomd5', isofile], self.logger)
 
                 # shove the sha1sum into a file
                 sha1file = open(os.path.join(self.isodir, 'SHA1SUM'), 'a')
-                pypungi._doRunCommand(['/usr/bin/sha1sum', isoname], self.logger, rundir=self.isodir, output=sha1file)
+                pypungi.util._doRunCommand(['/usr/bin/sha1sum', isoname], self.logger, rundir=self.isodir, output=sha1file)
                 sha1file.close()
 
                 # keep track of the CD images we've written
@@ -1029,11 +960,11 @@ cost=500
             isofile = os.path.join(self.isodir, isoname)
 
             # link the boot iso to the iso dir
-            pypungi._link(os.path.join(self.topdir, 'images', 'boot.iso'), isofile, self.logger)
+            pypungi.util._link(os.path.join(self.topdir, 'images', 'boot.iso'), isofile, self.logger)
 
             # shove the sha1sum into a file
             sha1file = open(os.path.join(self.isodir, 'SHA1SUM'), 'a')
-            pypungi._doRunCommand(['/usr/bin/sha1sum', isoname], self.logger, rundir=self.isodir, output=sha1file)
+            pypungi.util._doRunCommand(['/usr/bin/sha1sum', isoname], self.logger, rundir=self.isodir, output=sha1file)
             sha1file.close()
 
         # Do some clean up
