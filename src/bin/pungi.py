@@ -13,9 +13,8 @@
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 import os
+import pypungi
 import pypungi.config
-import pypungi.gather
-import pypungi.pungi
 import yum
 import pykickstart.parser
 import pykickstart.version
