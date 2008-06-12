@@ -76,19 +76,16 @@ def main():
             sys.exit(1)
 
     # Actually do work.
+    mypungi = pypungi.Pungi(config, ksparser)
+
     if not opts.sourceisos:
         if opts.do_all or opts.do_gather:
-            mygather = pypungi.gather.Gather(config, ksparser)
-            mygather.getPackageObjects()
-            mygather.downloadPackages()
-            mygather.makeCompsFile()
+            mypungi.getPackageObjects()
+            mypungi.downloadPackages()
+            mypungi.makeCompsFile()
             if not opts.nosource:
-                mygather.getSRPMList()
-                mygather.downloadSRPMs()
-
-            del mygather
-
-        mypungi = pypungi.pungi.Pungi(config)
+                mypungi.getSRPMList()
+                mypungi.downloadSRPMs()
 
         if opts.do_all or opts.do_createrepo:
            mypungi.doCreaterepo()
@@ -103,7 +100,6 @@ def main():
     # Do things slightly different for src.
     if opts.sourceisos:
         # we already have all the content gathered
-        mypungi = pypungi.pungi.Pungi(config)
         mypungi.topdir = os.path.join(config.get('default', 'destdir'),
                                       config.get('default', 'version'),
                                       config.get('default', 'flavor'),
