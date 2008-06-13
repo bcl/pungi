@@ -1,7 +1,7 @@
 %{!?python_sitelib: %define python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")}
 
 Name:           pungi
-Version:        1.2.18
+Version:        2.0.0
 Release:        1%{?dist}
 Summary:        Distribution compose tool
 
@@ -10,7 +10,7 @@ License:        GPLv2
 URL:            https://fedorahosted.org/pungi
 Source0:        https://fedorahosted.org/pungi/attachment/wiki/%{version}/%{name}-%{version}.tar.bz2
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
-Requires:       anaconda-runtime >= 11.4.0.67, yum => 3.2.13, repoview, createrepo >= 0.4.11
+Requires:       anaconda-runtime >= 11.4.1.5, yum => 3.2.13, repoview, createrepo >= 0.4.11
 BuildRequires:  python-devel
 
 BuildArch:      noarch
@@ -55,6 +55,13 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Fri Jun 13 2008 Jesse Keating <jkeating@redhat.com> - 2.0.0-1
+- New major release
+- Collapse the two classes into one Pungi class
+- Create a pypungi.util module for utility functions
+- Pass along repos/mirrorlists configured in ks file to buildinstall
+- Repo cost is now "cost" in pykickstart
+
 * Tue May 06 2008 Jesse Keating <jkeating@redhat.com> - 1.2.18-1
 - Manifest change for F9, drop syslog-ng
 
