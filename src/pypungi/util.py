@@ -15,6 +15,7 @@
 import subprocess
 import os
 import shutil
+import sys
 
 def _doRunCommand(command, logger, rundir='/tmp', output=subprocess.PIPE, error=subprocess.PIPE, env=None):
     """Run a command and log the output.  Error out if we get something on stderr"""
