@@ -178,11 +178,11 @@ class Pungi(pypungi.PungiBase):
             # add excludes and such here when pykickstart gets them
             if repo.mirrorlist:
                 thisrepo.mirrorlist = yum.parser.varReplace(repo.mirrorlist, self.ayum.conf.yumvar)
-                self.mirrorlists.extend('thisrepo.mirrorlist')
+                self.mirrorlists.append(thisrepo.mirrorlist)
                 self.logger.info('Mirrorlist for repo %s is %s' % (thisrepo.name, thisrepo.mirrorlist))
             else:
                 thisrepo.baseurl = yum.parser.varReplace(repo.baseurl, self.ayum.conf.yumvar)
-                self.repos.extend('thisrepo.baseurl')
+                self.repos.extend(thisrepo.baseurl)
                 self.logger.info('URL for repo %s is %s' % (thisrepo.name, thisrepo.baseurl))
             thisrepo.basecachedir = self.ayum.conf.cachedir
             thisrepo.enablegroups = True
@@ -584,12 +584,12 @@ class Pungi(pypungi.PungiBase):
             buildinstall.append('--bugurl')
             buildinstall.append(self.config.get('default', 'bugurl'))
 
-        buildinstall.append'--output')
+        buildinstall.append('--output')
         buildinstall.append(self.topdir)
 
         for mirrorlist in self.mirrorlists:
             buildinstall.append('--mirrorlist')
-            buildinstall.append(mirorrlist)
+            buildinstall.append(mirrorlist)
 
         buildinstall.append(self.topdir)
 
