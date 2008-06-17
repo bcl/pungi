@@ -173,12 +173,6 @@ jfsutils
 @welsh-support
 @xhosa-support
 @zulu-support
-# Compose Needs
-anaconda-runtime
-cracklib-python
-iscsi-initiator-utils
-memtest86+
-vnc-server
 # Size removals
 -gimp-help
 -java-1.6.0-openjdk-src
