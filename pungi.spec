@@ -49,6 +49,7 @@ rm -rf $RPM_BUILD_ROOT
   %{python_sitelib}/%{name}-%{version}-py2.5.egg-info
 %endif
 %{_bindir}/pungi
+%{_bindir}/pkgorder
 %{_datadir}/pungi
 %{_mandir}/man8/pungi.8.gz
 /var/cache/pungi
