@@ -11,6 +11,7 @@ setup(name='pungi',
       package_dir = {'': 'src'}, 
       packages = ['pypungi'],
       scripts = ['src/bin/pungi.py'],
+      scripts = ['src/bin/pkgorder'],
       data_files=[('/usr/share/pungi', glob.glob('share/*'))]
       )
 
