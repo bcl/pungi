@@ -23,8 +23,7 @@ import logging
 import urlgrabber.progress
 import subprocess
 import createrepo
-sys.path.append('/usr/lib/anaconda-runtime')
-import splittree
+import pypungi.splittree
 
 class PungiBase(object):
     """The base Pungi class.  Set up config items and logging here"""
@@ -610,7 +609,7 @@ class Pungi(pypungi.PungiBase):
 
         pkgorderfile = open(os.path.join(self.workdir, 'pkgorder-%s' % self.config.get('default', 'arch')), 'w')
         # setup the command
-        pkgorder = ['/usr/lib/anaconda-runtime/pkgorder']
+        pkgorder = ['/usr/bin/pkgorder']
         #pkgorder.append('TMPDIR=%s' % self.workdir)
         pkgorder.append(self.topdir)
         pkgorder.append(self.config.get('default', 'arch'))
