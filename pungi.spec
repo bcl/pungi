@@ -1,7 +1,7 @@
 %{!?python_sitelib: %define python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")}
 
 Name:           pungi
-Version:        2.0.0
+Version:        2.0.1
 Release:        1%{?dist}
 Summary:        Distribution compose tool
 
@@ -56,6 +56,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Tue Jun 24 2008 Jesse Keating <jkeating@redhat.com> - 2.0.1-1
+- Take on splittree and pkgorder from anaconda.
+
 * Fri Jun 13 2008 Jesse Keating <jkeating@redhat.com> - 2.0.0-1
 - New major release
 - Collapse the two classes into one Pungi class
