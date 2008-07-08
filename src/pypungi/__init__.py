@@ -605,8 +605,15 @@ class Pungi(pypungi.PungiBase):
                                         self.config.get('default', 'version'),
                                         self.config.get('default', 'arch'))
 
+        cachedir = self.config.get('default', 'cachedir')
+
         # setup the createrepo call
-        self._makeMetadata(self.topdir, self.config.get('default', 'cachedir'), compsfile, repoview=True, repoviewtitle=repoviewtitle)
+        self._makeMetadata(self.topdir, cachedir, compsfile, repoview=True, repoviewtitle=repoviewtitle)
+
+        # create repodata for debuginfo
+        if self.config.getboolean('default', 'debuginfo'):
+            path = os.path.join(self.archdir, 'debug')
+            self._makeMetadata(path, cachedir, repoview=False)
 
     def doBuildinstall(self):
         """Run anaconda-runtime's buildinstall on the tree."""
