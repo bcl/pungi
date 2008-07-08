@@ -207,10 +207,10 @@ class Pungi(pypungi.PungiBase):
         self.logger.info('Getting sacks for arches %s' % arches)
         self.ayum._getSacks(archlist=arches)
 
-    def _filtersrc(self, po):
+    def _filtersrcdebug(self, po):
         """Filter out package objects that are of 'src' arch."""
 
-        if po.arch == 'src':
+        if po.arch == 'src' or 'debuginfo' in po.name:
             return False
 
         return True
@@ -337,7 +337,7 @@ class Pungi(pypungi.PungiBase):
 
         # Search repos for things in our searchlist, supports globs
         (exactmatched, matched, unmatched) = yum.packages.parsePackages(self.ayum.pkgSack.returnPackages(), searchlist, casematch=1)
-        matches = filter(self._filtersrc, exactmatched + matched)
+        matches = filter(self._filtersrcdebug, exactmatched + matched)
 
         # Populate a dict of package objects to their names
         for match in matches:
