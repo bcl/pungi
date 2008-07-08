@@ -516,6 +516,14 @@ class Pungi(pypungi.PungiBase):
         # do the downloads
         self._downloadPackageList(srpmpolist, os.path.join('source', 'SRPMS'))
 
+    def downloadDebuginfo(self):
+        """Cycle through the list of debuginfo rpms and
+           download them."""
+
+        # do the downloads
+        self._downloadPackageList(self.debuginfolist, os.path.join(self.config.get('default', 'arch'),
+                                                           'debug'))
+
     def writeinfo(self, line):
         """Append a line to the infofile in self.infofile"""
 
