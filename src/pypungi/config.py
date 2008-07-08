@@ -42,4 +42,5 @@ class Config(SafeConfigParser):
         self.set('default', 'bugurl', 'http://bugzilla.redhat.com')
         self.set('default', 'discs', '1')
         self.set('default', 'cdsize', '650.0')
+        self.set('default', 'debuginfo', "True")
 
