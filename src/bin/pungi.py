@@ -74,6 +74,10 @@ def main():
             print >> sys.stderr, "Error: Cannot create cache dir %s" % cachedir
             sys.exit(1)
 
+    # Set debuginfo flag
+    if opts.nodebuginfo:
+        config.set('default', 'debuginfo', "False")
+
     # Actually do work.
     mypungi = pypungi.Pungi(config, ksparser)
 
@@ -82,6 +86,9 @@ def main():
             mypungi.getPackageObjects()
             mypungi.downloadPackages()
             mypungi.makeCompsFile()
+            if not opts.nodebuginfo:
+                mypungi.getDebuginfoList()
+                mypungi.downloadDebuginfo()
             if not opts.nosource:
                 mypungi.getSRPMList()
                 mypungi.downloadSRPMs()
@@ -146,6 +153,8 @@ if __name__ == '__main__':
           help='the number of discs you want to create (defaults to 1)')
         parser.add_option("--nosource", action="store_true", dest="nosource",
           help='disable gathering of source packages (optional)')
+        parser.add_option("--nodebuginfo", action="store_true", dest="nodebuginfo",
+          help='disable gathering of debuginfo packages (optional)')
         parser.add_option("--nosplitmedia", action="store_false", dest="nosplitmedia", default=True,
           help='disable creation of split media (optional)')
         parser.add_option("--sourceisos", default=False, action="store_true", dest="sourceisos",
