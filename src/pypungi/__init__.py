@@ -127,6 +127,7 @@ class Pungi(pypungi.PungiBase):
         self.ksparser = ksparser
         self.polist = []
         self.srpmlist = []
+        self.debuginfolist = []
         self.resolved_deps = {} # list the deps we've already resolved, short circuit.
         self.repos = []
         self.mirrorlists = []
@@ -377,6 +378,47 @@ class Pungi(pypungi.PungiBase):
             srpm = po.sourcerpm.split('.src.rpm')[0]
             if not srpm in self.srpmlist:
                 self.srpmlist.append(srpm)
+
+    def getDebuginfoList(self):
+        """Cycle through the list of package objects and find
+           debuginfo rpms for them.  Requires yum still
+           configured and a list of package objects"""
+
+        for po in self.polist:
+            debugname = '%s-debuginfo' % po.name
+            results = self.ayum.pkgSack.searchNevra(name=debugname,
+                                                    epoch=po.epoch,
+                                                    ver=po.version,
+                                                    rel=po.release,
+                                                    arch=po.arch)
+            if results:
+                if not results[0] in self.debuginfolist:
+                    self.logger.debug('Added %s found by name' % results[0].name)
+                    self.debuginfolist.append(results[0])
+            else:
+                srpm = po.sourcerpm.split('.src.rpm')[0]
+                sname, sver, srel = srpm.rsplit('-', 2)
+                debugname = '%s-debuginfo' % sname
+                srcresults = self.ayum.pkgSack.searchNevra(name=debugname,
+                                                           ver=sver,
+                                                           rel=srel,
+                                                           arch=po.arch)
+                if srcresults:
+                    if not srcresults[0] in self.debuginfolist:
+                        self.logger.debug('Added %s found by srpm' % srcresults[0].name)
+                        self.debuginfolist.append(srcresults[0])
+
+            if po.name == 'kernel' or po.name == 'glibc':
+                debugcommon = '%s-debuginfo-common' % po.name
+                commonresults = self.ayum.pkgSack.searchNevra(name=debugcommon,
+                                                              epoch=po.epoch,
+                                                              ver=po.version,
+                                                              rel=po.release,
+                                                              arch=po.arch)
+                if commonresults:
+                    if not commonresults[0] in self.debuginfolist:
+                        self.logger.debug('Added %s found by common' % commonresults[0].name)
+                        self.debuginfolist.append(commonresults[0])
 
     def _downloadPackageList(self, polist, relpkgdir):
         """Cycle through the list of package objects and
