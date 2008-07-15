@@ -16,6 +16,7 @@ import subprocess
 import os
 import shutil
 import sys
+import hashlib
 
 def _doRunCommand(command, logger, rundir='/tmp', output=subprocess.PIPE, error=subprocess.PIPE, env=None):
     """Run a command and log the output.  Error out if we get something on stderr"""
@@ -86,3 +87,29 @@ def _ensuredir(target, logger, force=False, clean=False):
         else:
             sys.stderr(message)
         sys.exit(1)
+
+def _doCheckSum(path, hash, logger, binary=True):
+    """Generate a checksum hash from a provided path.
+    Set binary to false if the file is not binary.
+    Return the hash"""
+
+    try:
+        func = getattr(hashlib, hash)
+    except AttributeError:
+        logger.error("Invalid hash type: %s" % hash)
+        return False
+
+    if binary:
+        flags = 'rb'
+    else:
+        flags = 'r'
+
+    try:
+        myfile = open(path, 'rb')
+    except IOError, e:
+        logger.error("Could not open file %s: %s" % (path, e))
+        return False
+
+    sum = func(myfile.read()).hexdigest()
+
+    return sum
