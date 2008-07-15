@@ -87,7 +87,6 @@ class PungiYum(yum.YumBase):
             logfile = os.path.join(logdir, '%s.log' % (self.pungiconfig.get('default', 'arch')))
 
         yum.logging.basicConfig(level=yum.logging.DEBUG, filename=logfile)
-        self.logger.error('foobar')
 
     def doFileLogSetup(self, uid, logfile):
         # This function overrides a yum function, allowing pungi to control
