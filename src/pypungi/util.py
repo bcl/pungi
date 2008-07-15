@@ -88,28 +88,31 @@ def _ensuredir(target, logger, force=False, clean=False):
             sys.stderr(message)
         sys.exit(1)
 
-def _doCheckSum(path, hash, logger, binary=True):
+def _doCheckSum(path, hash, logger):
     """Generate a checksum hash from a provided path.
-    Set binary to false if the file is not binary.
     Return the hash"""
 
+    # Try to figure out what hash we want to do
     try:
-        func = getattr(hashlib, hash)
-    except AttributeError:
+        sum = hashlib.new(hash)
+    except ValueError:
         logger.error("Invalid hash type: %s" % hash)
         return False
 
-    if binary:
-        flags = 'rb'
-    else:
-        flags = 'r'
-
+    # Try to open the file, using binary flag.
     try:
         myfile = open(path, 'rb')
     except IOError, e:
         logger.error("Could not open file %s: %s" % (path, e))
         return False
 
-    sum = func(myfile.read()).hexdigest()
+    # Loop through the file reading chunks at a time as to not
+    # put the entire file in memory.  That would suck for DVDs
+    while True:
+        chunk = myfile.read(8192) # magic number!  Taking suggestions for better blocksize
+        if not chunk:
+            break # we're done with the file
+        sum.update(chunk)
+    myfile.close()
 
-    return sum
+    return sum.hexdigest()
