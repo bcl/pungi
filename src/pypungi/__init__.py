@@ -839,6 +839,23 @@ cost=500
         repofile.write(repocontent)
         repofile.close()
 
+    def _doIsoSha1(self, path, shafile):
+        """Simple function to wrap creating sha1sums of iso files."""
+
+        try:
+            sha1file = open(shafile, 'a')
+        except IOError:
+            self.logger.error("Could not open sha1sum file: %s" % shafile)
+
+        self.logger.info("Generating sha1sum of %s" % path)
+        sha1sum = pypungi.util._doCheckSum(path, 'sha1', self.logger)
+        if sha1sum:
+            sha1file.write("%s  %s\n" % (sha1sum, os.path.basename(path)))
+        else:
+            self.logger.error('Failed to generate sha1sum for %s' % sha1file)
+            sys.exit(1)
+        sha1file.close()
+
     def doCreateIsos(self, split=True):
         """Create isos of the tree, optionally splitting the tree for split media."""
 
@@ -953,9 +970,8 @@ cost=500
             pypungi.util._doRunCommand(['/usr/bin/implantisomd5', isofile], self.logger)
 
         # shove the sha1sum into a file
-        sha1file = open(os.path.join(self.isodir, 'SHA1SUM'), 'a')
-        pypungi.util._doRunCommand(['/usr/bin/sha1sum', isoname], self.logger, rundir=self.isodir, output=sha1file)
-        sha1file.close()
+        sha1file = os.path.join(self.isodir, 'SHA1SUM')
+        self._doIsoSha1(isofile, sha1file)
 
         # return the .discinfo file
         if not self.config.get('default', 'arch') == 'source':
@@ -1013,9 +1029,8 @@ cost=500
                     pypungi.util._doRunCommand(['/usr/bin/implantisomd5', isofile], self.logger)
 
                 # shove the sha1sum into a file
-                sha1file = open(os.path.join(self.isodir, 'SHA1SUM'), 'a')
-                pypungi.util._doRunCommand(['/usr/bin/sha1sum', isoname], self.logger, rundir=self.isodir, output=sha1file)
-                sha1file.close()
+                sha1file = os.path.join(self.isodir, 'SHA1SUM')
+                self._doIsoSha1(isofile, sha1file)
 
                 # keep track of the CD images we've written
                 isolist.append(self.mkrelative(isofile))
@@ -1034,9 +1049,8 @@ cost=500
             pypungi.util._link(os.path.join(self.topdir, 'images', 'boot.iso'), isofile, self.logger)
 
             # shove the sha1sum into a file
-            sha1file = open(os.path.join(self.isodir, 'SHA1SUM'), 'a')
-            pypungi.util._doRunCommand(['/usr/bin/sha1sum', isoname], self.logger, rundir=self.isodir, output=sha1file)
-            sha1file.close()
+            sha1file = os.path.join(self.isodir, 'SHA1SUM')
+            self._doIsoSha1(isofile, sha1file)
 
         # Do some clean up
         dirs = os.listdir(self.archdir)
