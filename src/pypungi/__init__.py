@@ -23,6 +23,7 @@ import logging
 import urlgrabber.progress
 import subprocess
 import createrepo
+import ConfigParser
 import pypungi.splittree
 
 class PungiBase(object):
@@ -659,6 +660,57 @@ class Pungi(pypungi.PungiBase):
 
         # write out the tree data for snake
         self.writeinfo('tree: %s' % self.mkrelative(self.topdir))
+
+        # Write out checksums for verifytree
+        # First open the treeinfo file so that we can config parse it
+        treeinfofile = os.path.join(self.topdir, '.treeinfo')
+
+        try:
+            treefile = open(treeinfofile, 'r')
+        except IOError:
+            self.logger.error("Could not read .treeinfo file: %s" % treefile)
+            sys.exit(1)
+
+        # Create a ConfigParser object out of the contents so that we can
+        # write it back out later and not worry about formatting
+        treeinfo = ConfigParser.SafeConfigParser()
+        treeinfo.readfp(treefile)
+        treefile.close()
+        treeinfo.add_section('checksums')
+
+        # Create a function to use with os.path.walk to sum the files
+        # basepath is used to make the sum output relative
+        sums = []
+        def getsum(basepath, dir, files):
+            for file in files:
+                path = os.path.join(dir, file)
+                # don't bother summing directories.  Won't work.
+                if os.path.isdir(path):
+                    continue
+                sum = pypungi.util._doCheckSum(path, 'sha1', self.logger)
+                outpath = path.replace(basepath, '')
+                sums.append((outpath, sum))
+
+        # Walk the os/images path to get sums of all the files
+        os.path.walk(os.path.join(self.topdir, 'images'), getsum, self.topdir)
+
+        # Get a checksum of repomd.xml since it has within it sums for other files
+        repomd = os.path.join(self.topdir, 'repodata', 'repomd.xml')
+        sum = pypungi.util._doCheckSum(repomd, 'sha1', self.logger)
+        sums.append((os.path.join('repodata', 'repomd.xml'), sum))
+
+        # Now add the sums, and write the config out
+        try:
+            treefile = open(treeinfofile, 'w')
+        except IOError:
+            self.logger.error("Could not open .treeinfo for writing: %s" % treefile)
+            sys.exit(1)
+
+        for path, sum in sums:
+            treeinfo.set('checksums', path, sum)
+
+        treeinfo.write(treefile)
+        treefile.close()
 
     def doPackageorder(self):
         """Run anaconda-runtime's pkgorder on the tree, used for splitting media."""
