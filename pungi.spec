@@ -1,7 +1,7 @@
 %{!?python_sitelib: %define python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")}
 
 Name:           pungi
-Version:        2.0.2
+Version:        2.0.3
 Release:        1%{?dist}
 Summary:        Distribution compose tool
 
@@ -56,6 +56,10 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Tue Jul 15 2008 Jesse Keating <jkeating@redhat.com> 2.0.3-1
+- Checksum various files from buildinstall output and put them in .treeinfo
+- Use new hashsum utility to generate sha1sums
+
 * Fri Jul 11 2008 Jesse Keating <jkeating@redhat.com> 2.0.2-1
 - add ability to gather debuginfo.  It is default.
 
