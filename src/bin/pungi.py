@@ -148,9 +148,6 @@ if __name__ == '__main__':
         parser.add_option("--bugurl", dest="bugurl", type="string",
           action="callback", callback=set_config, callback_args=(config, ),
           help='the url for your bug system (defaults to http://bugzilla.redhat.com)')
-        parser.add_option("--discs", dest="discs", type="string",
-          action="callback", callback=set_config, callback_args=(config, ),
-          help='the number of discs you want to create (defaults to 1)')
         parser.add_option("--nosource", action="store_true", dest="nosource",
           help='disable gathering of source packages (optional)')
         parser.add_option("--nodebuginfo", action="store_true", dest="nodebuginfo",
