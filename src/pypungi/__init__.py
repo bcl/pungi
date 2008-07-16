@@ -613,6 +613,9 @@ class Pungi(pypungi.PungiBase):
         # create repodata for debuginfo
         if self.config.getboolean('default', 'debuginfo'):
             path = os.path.join(self.archdir, 'debug')
+            if not os.path.isdir(path):
+                self.logger.debug("No debuginfo for %s" % self.config.get('default', 'arch'))
+                return
             self._makeMetadata(path, cachedir, repoview=False)
 
     def doBuildinstall(self):
