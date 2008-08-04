@@ -90,7 +90,7 @@ def _ensuredir(target, logger, force=False, clean=False):
 
 def _doCheckSum(path, hash, logger):
     """Generate a checksum hash from a provided path.
-    Return the hash"""
+    Return a string of type:hash"""
 
     # Try to figure out what hash we want to do
     try:
@@ -115,4 +115,4 @@ def _doCheckSum(path, hash, logger):
         sum.update(chunk)
     myfile.close()
 
-    return sum.hexdigest()
+    return '%s:%s' % (hash, sum.hexdigest())
