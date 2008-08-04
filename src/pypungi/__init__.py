@@ -1039,7 +1039,7 @@ cost=500
             shutil.move('%s-disc1' % self.topdir, os.path.join(self.workdir, 'os-unified'))
 
         # Write out a line describing the media
-        self.writeinfo('media: %s' % isofile)
+        self.writeinfo('media: %s' % self.mkrelative(isofile))
 
         if self.config.getint('default', 'discs') > 1:
             if self.config.get('default', 'arch') == 'source':
@@ -1090,7 +1090,7 @@ cost=500
                 isolist.append(self.mkrelative(isofile))
 
             # Write out a line describing the CD set
-            self.writeinfo('mediaset: %s' % ' '.join(isolist))
+            self.writeinfo('mediaset: %s' % ' '.join(self.mkrelative(iso) for iso in isolist))
 
         # Now link the boot iso
         if not self.config.get('default', 'arch') == 'source' and \
