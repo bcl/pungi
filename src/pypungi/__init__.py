@@ -694,7 +694,7 @@ class Pungi(pypungi.PungiBase):
                 sums.append((outpath, sum))
 
         # Walk the os/images path to get sums of all the files
-        os.path.walk(os.path.join(self.topdir, 'images'), getsum, self.topdir)
+        os.path.walk(os.path.join(self.topdir, 'images'), getsum, self.topdir + '/')
 
         # Get a checksum of repomd.xml since it has within it sums for other files
         repomd = os.path.join(self.topdir, 'repodata', 'repomd.xml')
