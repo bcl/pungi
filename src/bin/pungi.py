@@ -82,6 +82,8 @@ def main():
     mypungi = pypungi.Pungi(config, ksparser)
 
     if not opts.sourceisos:
+        if opts.do_all or opts.do_gather or opts.do_buildinstall:
+            mypungi._inityum() # initialize the yum object for things that need it
         if opts.do_all or opts.do_gather:
             mypungi.getPackageObjects()
             mypungi.downloadPackages()

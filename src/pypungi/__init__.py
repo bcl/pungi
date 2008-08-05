@@ -129,10 +129,13 @@ class Pungi(pypungi.PungiBase):
         self.srpmlist = []
         self.debuginfolist = []
         self.resolved_deps = {} # list the deps we've already resolved, short circuit.
-        self.repos = []
-        self.mirrorlists = []
+
+    def _inityum(self):
+        """Initialize the yum object.  Only needed for certain actions."""
 
         # Create a yum object to use
+        self.repos = []
+        self.mirrorlists = []
         self.ayum = PungiYum(config)
         self.ayum.doLoggingSetup(6, 6)
         yumconf = yum.config.YumConf()
