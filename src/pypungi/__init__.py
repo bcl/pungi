@@ -695,6 +695,10 @@ class Pungi(pypungi.PungiBase):
 
         # Walk the os/images path to get sums of all the files
         os.path.walk(os.path.join(self.topdir, 'images'), getsum, self.topdir + '/')
+        
+        # Capture PPC images
+        if self.config.get('default', 'arch') == 'ppc':
+            os.path.walk(os.path.join(self.topdir, 'ppc'), getsum, self.topdir + '/')
 
         # Get a checksum of repomd.xml since it has within it sums for other files
         repomd = os.path.join(self.topdir, 'repodata', 'repomd.xml')
