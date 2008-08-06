@@ -136,7 +136,7 @@ class Pungi(pypungi.PungiBase):
         # Create a yum object to use
         self.repos = []
         self.mirrorlists = []
-        self.ayum = PungiYum(config)
+        self.ayum = PungiYum(self.config)
         self.ayum.doLoggingSetup(6, 6)
         yumconf = yum.config.YumConf()
         yumconf.debuglevel = 6
@@ -170,11 +170,11 @@ class Pungi(pypungi.PungiBase):
 
         # deal with our repos
         try:
-            ksparser.handler.repo.methodToRepo()
+            self.ksparser.handler.repo.methodToRepo()
         except:
             pass
 
-        for repo in ksparser.handler.repo.repoList:
+        for repo in self.ksparser.handler.repo.repoList:
             self.logger.info('Adding repo %s' % repo.name)
             thisrepo = yum.yumRepo.YumRepository(repo.name)
             thisrepo.name = repo.name
