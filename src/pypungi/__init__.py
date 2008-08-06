@@ -1097,7 +1097,7 @@ cost=500
                 isolist.append(self.mkrelative(isofile))
 
             # Write out a line describing the CD set
-            self.writeinfo('mediaset: %s' % ' '.join(self.mkrelative(iso) for iso in isolist))
+            self.writeinfo('mediaset: %s' % ' '.join(isolist))
 
         # Now link the boot iso
         if not self.config.get('default', 'arch') == 'source' and \
