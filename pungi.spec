@@ -1,7 +1,7 @@
 %{!?python_sitelib: %define python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")}
 
 Name:           pungi
-Version:        2.0.3
+Version:        2.0.4
 Release:        1%{?dist}
 Summary:        Distribution compose tool
 
@@ -56,6 +56,14 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Mon Aug 11 2008 Jesse Keating <jkeating@redhat.com> 2.0.4-1
+- Remove unused discs option
+- Don't try to make debuginfo repo for source arch
+- Change the checksum output for images checksumming
+- Get ppc boot images in checksum list
+- Only get repodata and init yum object when needed
+- Fix path issues in info files
+
 * Tue Jul 15 2008 Jesse Keating <jkeating@redhat.com> 2.0.3-1
 - Checksum various files from buildinstall output and put them in .treeinfo
 - Use new hashsum utility to generate sha1sums
