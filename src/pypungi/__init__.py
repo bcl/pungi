@@ -74,7 +74,7 @@ class PungiYum(yum.YumBase):
         self.pungiconfig = config
         yum.YumBase.__init__(self)
 
-    def doLoggingSetup(self, debuglevel, errorlevel):
+    def doLoggingSetup(self, debuglevel, errorlevel, syslog_ident=None, syslog_facility=None):
         """Setup the logging facility."""
 
         logdir = os.path.join(self.pungiconfig.get('default', 'destdir'), 'logs')
