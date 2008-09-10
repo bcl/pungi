@@ -911,7 +911,7 @@ cost=500
         self.logger.info("Generating sha1sum of %s" % path)
         sha1sum = pypungi.util._doCheckSum(path, 'sha1', self.logger)
         if sha1sum:
-            sha1file.write("%s  %s\n" % (sha1sum, os.path.basename(path)))
+            sha1file.write("%s *%s\n" % (sha1sum, os.path.basename(path)))
         else:
             self.logger.error('Failed to generate sha1sum for %s' % sha1file)
             sys.exit(1)
