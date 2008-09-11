@@ -298,13 +298,13 @@ class Pungi(pypungi.PungiBase):
         # of the package objects it would bring in.  To be used later if
         # we match the conditional.
         for condreq, cond in groupobj.conditional_packages.iteritems():
-            pkgs = self.ayum.pkgSack.searchNames(name=condreq)
+            pkgs = self.ayum.pkgSack.searchNevra(name=condreq)
             if pkgs:
                 pkgs = self.ayum.bestPackagesFromList(pkgs, arch=self.ayum.compatarch)
             if self.ayum.tsInfo.conditionals.has_key(cond):
-                self.ayum.tsInfo.conditionals[cond].extend([pkg.name for pkg in pkgs])
+                self.ayum.tsInfo.conditionals[cond].extend(pkgs)
             else:
-                self.ayum.tsInfo.conditionals[cond] = [pkg.name for pkg in pkgs]
+                self.ayum.tsInfo.conditionals[cond] = pkgs
 
         return packages
 
