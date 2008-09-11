@@ -191,7 +191,7 @@ if __name__ == "__main__":
                    "graphical-internet", "editors", 
                    "gnome-desktop", "sound-and-video", "printing",
                    "fonts", "hardware-support", "admin-tools",
-                   "java", "legacy-fonts"])
+                   "java", "legacy-fonts", "input-methods"])
 
     addGroups(ds, ["office", "games", "graphics", "authoring-and-publishing"])
 
