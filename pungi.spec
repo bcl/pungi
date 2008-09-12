@@ -1,7 +1,7 @@
 %{!?python_sitelib: %define python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")}
 
 Name:           pungi
-Version:        2.0.4
+Version:        2.0.5
 Release:        1%{?dist}
 Summary:        Distribution compose tool
 
@@ -10,7 +10,7 @@ License:        GPLv2
 URL:            https://fedorahosted.org/pungi
 Source0:        https://fedorahosted.org/pungi/attachment/wiki/%{version}/%{name}-%{version}.tar.bz2
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
-Requires:       anaconda-runtime >= 11.4.1.5, yum => 3.2.13, repoview, createrepo >= 0.4.11
+Requires:       anaconda-runtime >= 11.4.1.5, yum => 3.2.19, repoview, createrepo >= 0.4.11
 BuildRequires:  python-devel
 
 BuildArch:      noarch
@@ -56,6 +56,11 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Thu Sep 11 2008 Jesse Keating <jkeating@redhat.com> - 2.0.5-1
+- Add input-methods to pkgorder.  It's a new group, need to get ordering right.
+- Make sure we output sha1sums in binary mode.  This helps windows.
+- Yum api changed, follow so that we don't break.
+
 * Mon Aug 11 2008 Jesse Keating <jkeating@redhat.com> 2.0.4-1
 - Remove unused discs option
 - Don't try to make debuginfo repo for source arch
