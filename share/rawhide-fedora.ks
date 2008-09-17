@@ -87,6 +87,7 @@ jfsutils
 @belarusian-support
 @bengali-support
 @bhutanese-support
+@burmese-support
 @bosnian-support
 @brazilian-support
 @breton-support
@@ -121,8 +122,10 @@ jfsutils
 @italian-support
 @japanese-support
 @kannada-support
+@kashmiri-support
 @kashubian-support
 @khmer-support
+@konkani-support
 @korean-support
 @lao-support
 @latvian-support
@@ -147,6 +150,7 @@ jfsutils
 @russian-support
 @samoan-support
 @serbian-support
+@sindhi-support
 @sinhala-support
 @slovak-support
 @slovenian-support
