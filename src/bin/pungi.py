@@ -130,6 +130,9 @@ if __name__ == '__main__':
 
         def set_config(option, opt_str, value, parser, config):
             config.set('default', option.dest, value)
+            # When setting name, also set the iso_basename.
+            if option.dest == 'name':
+                config.set('default', 'iso_basename', value)
 
         # Pulled in from config file to be cli options as part of pykickstart conversion
         parser.add_option("--name", dest="name", type="string",
