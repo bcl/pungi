@@ -329,7 +329,7 @@ class Pungi(pypungi.PungiBase):
         self.ayum.conf.exclude.extend(self.ksparser.handler.packages.excludedList)
         self.ayum.excludePackages()
         
-        # Always add the core groiup
+        # Always add the core group
         self.ksparser.handler.packages.add(['@core'])
 
         # Check to see if we need the base group
