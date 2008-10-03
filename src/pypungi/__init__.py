@@ -26,6 +26,13 @@ import createrepo
 import ConfigParser
 import pypungi.splittree
 
+class MyConfigParser(ConfigParser.ConfigParser):
+    """A subclass of ConfigParser which does not lowercase options"""
+
+    def optionxform(self, optionstr):
+        return optionstr
+
+
 class PungiBase(object):
     """The base Pungi class.  Set up config items and logging here"""
 
@@ -678,7 +685,7 @@ class Pungi(pypungi.PungiBase):
 
         # Create a ConfigParser object out of the contents so that we can
         # write it back out later and not worry about formatting
-        treeinfo = ConfigParser.SafeConfigParser()
+        treeinfo = MyConfigParser()
         treeinfo.readfp(treefile)
         treefile.close()
         treeinfo.add_section('checksums')
