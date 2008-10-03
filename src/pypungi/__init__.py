@@ -315,6 +315,16 @@ class Pungi(pypungi.PungiBase):
 
         return packages
 
+    def _addDefaultGroups(self):
+        """Cycle through the groups and return at list of the ones that ara
+           default."""
+
+        # This is mostly stolen from anaconda.
+        groups = map(lambda x: x.groupid,
+            filter(lambda x: x.default, self.ayum.comps.groups))
+        self.logger.debug('Add default groups %s' % groups)
+        return groups
+
     def getPackageObjects(self):
         """Cycle through the list of packages, get package object
            matches, and resolve deps.
@@ -331,6 +341,11 @@ class Pungi(pypungi.PungiBase):
         
         # Always add the core group
         self.ksparser.handler.packages.add(['@core'])
+
+        # Check to see if we want all the defaults
+        if self.ksparser.handler.packages.default:
+            for group in self._addDefaultGroups():
+                self.ksparser.handler.packages.add(['@%s' % group])
 
         # Check to see if we need the base group
         if self.ksparser.handler.packages.addBase:
