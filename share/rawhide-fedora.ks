@@ -11,20 +11,16 @@ repo --name=rawhide-source  --mirrorlist=http://mirrors.fedoraproject.org/mirror
 
 # Package manifest for the compose.  Uses repo group metadata to translate groups.
 # (@base is added by default unless you add --nobase to %packages)
-%packages
+# (default groups for the configured repos are added by --default)
+%packages --default
 # core
 tcsh
-@base-x
 kernel*
 -kernel*debug*
 -kernel*-devel*
 -kernel-kdump*
 -syslog-ng
-# Hardware stuff
-@hardware-support
-@dial-up
 # Desktop Packages
-@gnome-desktop
 @kde-desktop
 echo-icon-theme
 tracker
@@ -35,20 +31,11 @@ liferea
 esc
 thunderbird
 # apps
-@admin-tools
 @authoring-and-publishing
 @eclipse
-@editors
 joe
 emacs
-@games
-@graphical-internet
-@graphics
-@java
-@office
-@sound-and-video
 k3b
-@text-internet
 @system-tools
 wireshark-gnome
 # Devel packages
@@ -66,7 +53,6 @@ wireshark-gnome
 @mysql
 @network-server
 @news-server
-@printing
 @server-cfg
 @smb-server
 @sql-server
