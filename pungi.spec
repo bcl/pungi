@@ -1,7 +1,7 @@
 %{!?python_sitelib: %define python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")}
 
 Name:           pungi
-Version:        2.0.5
+Version:        2.0.6
 Release:        1%{?dist}
 Summary:        Distribution compose tool
 
@@ -56,6 +56,12 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Thu Oct 09 2008 Jesse Keating <jkeating@redhat.com> - 2.0.6-1
+- Handle %packages --default to pick up the default groups.
+- Set iso name to be the same as --name
+- Make sure we don't include the 'sha1:' in the iso SHA1SUM file.
+- Fix .treeinfo to have proper case in file names
+
 * Thu Sep 11 2008 Jesse Keating <jkeating@redhat.com> - 2.0.5-1
 - Add input-methods to pkgorder.  It's a new group, need to get ordering right.
 - Make sure we output sha1sums in binary mode.  This helps windows.
