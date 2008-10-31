@@ -39,7 +39,7 @@ class Config(SafeConfigParser):
         self.set('default', 'version', time.strftime('%Y%m%d', time.localtime()))
         self.set('default', 'flavor', '')
         self.set('default', 'destdir', os.getcwd())
-        self.set('default', 'bugurl', 'http://bugzilla.redhat.com')
+        self.set('default', 'bugurl', 'https://bugzilla.redhat.com')
         self.set('default', 'cdsize', '650.0')
         self.set('default', 'debuginfo', "True")
 
