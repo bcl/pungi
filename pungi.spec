@@ -1,7 +1,7 @@
 %{!?python_sitelib: %define python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")}
 
 Name:           pungi
-Version:        2.0.6
+Version:        2.0.7
 Release:        1%{?dist}
 Summary:        Distribution compose tool
 
@@ -56,6 +56,10 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Tue Nov 4 2008 Jesse Keating <jkeating@redhat.com> - 2.0.7-1
+- Fix splittree to actually use the iso size defined in kickstarts
+- Use https url for bugzilla by default.
+
 * Thu Oct 09 2008 Jesse Keating <jkeating@redhat.com> - 2.0.6-1
 - Handle %packages --default to pick up the default groups.
 - Set iso name to be the same as --name
