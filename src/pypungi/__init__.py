@@ -824,7 +824,7 @@ class Pungi(pypungi.PungiBase):
 
         timber = splittree.Timber()
         timber.arch = self.config.get('default', 'arch')
-        timber.target_size = self.config.getfloat('default', 'cdsize') * 1024 * 1024
+        timber.disc_size = self.config.getfloat('default', 'cdsize')
         timber.total_discs = self.config.getint('default', 'discs')
         timber.bin_discs = self.config.getint('default', 'discs')
         timber.src_discs = 0
@@ -834,6 +834,7 @@ class Pungi(pypungi.PungiBase):
         timber.src_dir = os.path.join(self.config.get('default', 'destdir'), self.config.get('default', 'version'), 'source', 'SRPMS')
         timber.product_path = self.config.get('default', 'product_path')
         timber.common_files = self.common_files
+        timber.comps_size = 0
         #timber.reserve_size =  
 
         self.logger.info("Running splittree.")
