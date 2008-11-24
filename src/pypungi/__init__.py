@@ -850,6 +850,7 @@ class Pungi(pypungi.PungiBase):
 
         timber = splittree.Timber()
         timber.arch = self.config.get('default', 'arch')
+        timber.target_size = self.config.getfloat('default', 'cdsize') * 1024 * 1024
         #timber.total_discs = self.config.getint('default', 'discs')
         #timber.bin_discs = self.config.getint('default', 'discs')
         timber.src_discs = self.config.getint('default', 'discs')
