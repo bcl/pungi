@@ -47,25 +47,25 @@ def main():
     ksparser.readKickstart(opts.config)
 
     if opts.sourceisos:
-        config.set('default', 'arch', 'source')
+        config.set('pungi', 'arch', 'source')
 
     for part in ksparser.handler.partition.partitions:
         if part.mountpoint == 'iso':
-            config.set('default', 'cdsize', str(part.size))
+            config.set('pungi', 'cdsize', str(part.size))
             
-    config.set('default', 'force', str(opts.force))
+    config.set('pungi', 'force', str(opts.force))
 
     # Set up our directories
-    if not os.path.exists(config.get('default', 'destdir')):
+    if not os.path.exists(config.get('pungi', 'destdir')):
         try:
-            os.makedirs(config.get('default', 'destdir'))
+            os.makedirs(config.get('pungi', 'destdir'))
         except OSError, e:
-            print >> sys.stderr, "Error: Cannot create destination dir %s" % config.get('default', 'destdir')
+            print >> sys.stderr, "Error: Cannot create destination dir %s" % config.get('pungi', 'destdir')
             sys.exit(1)
     else:
         print >> sys.stdout, "Warning: Reusing existing destination directory."
 
-    cachedir = config.get('default', 'cachedir')
+    cachedir = config.get('pungi', 'cachedir')
 
     if not os.path.exists(cachedir):
         try:
@@ -76,7 +76,7 @@ def main():
 
     # Set debuginfo flag
     if opts.nodebuginfo:
-        config.set('default', 'debuginfo', "False")
+        config.set('pungi', 'debuginfo', "False")
 
     # Actually do work.
     mypungi = pypungi.Pungi(config, ksparser)
@@ -108,9 +108,9 @@ def main():
     # Do things slightly different for src.
     if opts.sourceisos:
         # we already have all the content gathered
-        mypungi.topdir = os.path.join(config.get('default', 'destdir'),
-                                      config.get('default', 'version'),
-                                      config.get('default', 'flavor'),
+        mypungi.topdir = os.path.join(config.get('pungi', 'destdir'),
+                                      config.get('pungi', 'version'),
+                                      config.get('pungi', 'flavor'),
                                       'source', 'SRPMS')
         mypungi.doCreaterepo(comps=False)
         if opts.do_all or opts.do_createiso:
@@ -129,10 +129,10 @@ if __name__ == '__main__':
         parser = OptionParser(version="%prog 2.0.8")
 
         def set_config(option, opt_str, value, parser, config):
-            config.set('default', option.dest, value)
+            config.set('pungi', option.dest, value)
             # When setting name, also set the iso_basename.
             if option.dest == 'name':
-                config.set('default', 'iso_basename', value)
+                config.set('pungi', 'iso_basename', value)
 
         # Pulled in from config file to be cli options as part of pykickstart conversion
         parser.add_option("--name", dest="name", type="string",
@@ -184,7 +184,7 @@ if __name__ == '__main__':
             parser.print_help()
             sys.exit(0)
             
-        if not config.get('default', 'flavor').isalnum() and not config.get('default', 'flavor') == '':
+        if not config.get('pungi', 'flavor').isalnum() and not config.get('pungi', 'flavor') == '':
             print >> sys.stderr, "Flavor must be alphanumeric."
             sys.exit(1)
 

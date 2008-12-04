@@ -41,25 +41,25 @@ class PungiBase(object):
 
         self.doLoggerSetup()
 
-        self.workdir = os.path.join(self.config.get('default', 'destdir'),
+        self.workdir = os.path.join(self.config.get('pungi', 'destdir'),
                                     'work',
-                                    self.config.get('default', 'flavor'),
-                                    self.config.get('default', 'arch'))
+                                    self.config.get('pungi', 'flavor'),
+                                    self.config.get('pungi', 'arch'))
 
 
 
     def doLoggerSetup(self):
         """Setup our logger"""
 
-        logdir = os.path.join(self.config.get('default', 'destdir'), 'logs')
+        logdir = os.path.join(self.config.get('pungi', 'destdir'), 'logs')
 
         pypungi.util._ensuredir(logdir, None, force=True) # Always allow logs to be written out
 
-        if self.config.get('default', 'flavor'):
-            logfile = os.path.join(logdir, '%s.%s.log' % (self.config.get('default', 'flavor'),
-                                                          self.config.get('default', 'arch')))
+        if self.config.get('pungi', 'flavor'):
+            logfile = os.path.join(logdir, '%s.%s.log' % (self.config.get('pungi', 'flavor'),
+                                                          self.config.get('pungi', 'arch')))
         else:
-            logfile = os.path.join(logdir, '%s.log' % (self.config.get('default', 'arch')))
+            logfile = os.path.join(logdir, '%s.log' % (self.config.get('pungi', 'arch')))
 
         # Create the root logger, that will log to our file
         logging.basicConfig(level=logging.DEBUG,
@@ -84,14 +84,14 @@ class PungiYum(yum.YumBase):
     def doLoggingSetup(self, debuglevel, errorlevel, syslog_ident=None, syslog_facility=None):
         """Setup the logging facility."""
 
-        logdir = os.path.join(self.pungiconfig.get('default', 'destdir'), 'logs')
+        logdir = os.path.join(self.pungiconfig.get('pungi', 'destdir'), 'logs')
         if not os.path.exists(logdir):
             os.makedirs(logdir)
-        if self.pungiconfig.get('default', 'flavor'):
-            logfile = os.path.join(logdir, '%s.%s.log' % (self.pungiconfig.get('default', 'flavor'),
-                                                          self.pungiconfig.get('default', 'arch')))
+        if self.pungiconfig.get('pungi', 'flavor'):
+            logfile = os.path.join(logdir, '%s.%s.log' % (self.pungiconfig.get('pungi', 'flavor'),
+                                                          self.pungiconfig.get('pungi', 'arch')))
         else:
-            logfile = os.path.join(logdir, '%s.log' % (self.pungiconfig.get('default', 'arch')))
+            logfile = os.path.join(logdir, '%s.log' % (self.pungiconfig.get('pungi', 'arch')))
 
         yum.logging.basicConfig(level=yum.logging.DEBUG, filename=logfile)
 
@@ -115,20 +115,20 @@ class Pungi(pypungi.PungiBase):
         console.setLevel(logging.INFO)
         self.logger.addHandler(console)
 
-        self.destdir = self.config.get('default', 'destdir')
+        self.destdir = self.config.get('pungi', 'destdir')
         self.archdir = os.path.join(self.destdir,
-                                   self.config.get('default', 'version'),
-                                   self.config.get('default', 'flavor'),
-                                   self.config.get('default', 'arch'))
+                                   self.config.get('pungi', 'version'),
+                                   self.config.get('pungi', 'flavor'),
+                                   self.config.get('pungi', 'arch'))
 
         self.topdir = os.path.join(self.archdir, 'os')
-        self.isodir = os.path.join(self.archdir, self.config.get('default','isodir'))
+        self.isodir = os.path.join(self.archdir, self.config.get('pungi','isodir'))
 
         pypungi.util._ensuredir(self.workdir, self.logger, force=True)
 
         self.common_files = []
-        self.infofile = os.path.join(self.config.get('default', 'destdir'),
-                                    self.config.get('default', 'version'),
+        self.infofile = os.path.join(self.config.get('pungi', 'destdir'),
+                                    self.config.get('pungi', 'version'),
                                     '.composeinfo')
 
         self.ksparser = ksparser
@@ -148,20 +148,20 @@ class Pungi(pypungi.PungiBase):
         yumconf = yum.config.YumConf()
         yumconf.debuglevel = 6
         yumconf.errorlevel = 6
-        yumconf.cachedir = self.config.get('default', 'cachedir')
+        yumconf.cachedir = self.config.get('pungi', 'cachedir')
         yumconf.persistdir = os.path.join(self.workdir, 'yumlib')
         yumconf.installroot = os.path.join(self.workdir, 'yumroot')
         yumconf.uid = os.geteuid()
         yumconf.cache = 0
         yumconf.failovermethod = 'priority'
         yumvars = yum.config._getEnvVar()
-        yumvars['releasever'] = self.config.get('default', 'version')
-        yumvars['basearch'] = yum.rpmUtils.arch.getBaseArch(myarch=self.config.get('default', 'arch'))
+        yumvars['releasever'] = self.config.get('pungi', 'version')
+        yumvars['basearch'] = yum.rpmUtils.arch.getBaseArch(myarch=self.config.get('pungi', 'arch'))
         yumconf.yumvar = yumvars
         self.ayum._conf = yumconf
         self.ayum.repos.setCacheDir(self.ayum.conf.cachedir)
 
-        arch = self.config.get('default', 'arch')
+        arch = self.config.get('pungi', 'arch')
         if arch == 'i386':
             yumarch = 'athlon'
         elif arch == 'ppc':
@@ -455,9 +455,9 @@ class Pungi(pypungi.PungiBase):
             downloads.sort()
         self.logger.info("Download list: %s" % downloads)
 
-        pkgdir = os.path.join(self.config.get('default', 'destdir'),
-                              self.config.get('default', 'version'),
-                              self.config.get('default', 'flavor'),
+        pkgdir = os.path.join(self.config.get('pungi', 'destdir'),
+                              self.config.get('pungi', 'version'),
+                              self.config.get('pungi', 'flavor'),
                               relpkgdir)
 
         # Ensure the pkgdir exists, force if requested, and make sure we clean it out
@@ -465,7 +465,7 @@ class Pungi(pypungi.PungiBase):
             # Since we share source dirs with other arches don't clean, but do allow us to use it
             pypungi.util._ensuredir(pkgdir, self.logger, force=True, clean=False)
         else:
-            pypungi.util._ensuredir(pkgdir, self.logger, force=self.config.getboolean('default', 'force'), clean=True)
+            pypungi.util._ensuredir(pkgdir, self.logger, force=self.config.getboolean('pungi', 'force'), clean=True)
 
         probs = self.ayum.downloadPkgs(polist)
 
@@ -497,14 +497,14 @@ class Pungi(pypungi.PungiBase):
         """Download the package objects obtained in getPackageObjects()."""
 
         self._downloadPackageList(self.polist,
-                                  os.path.join(self.config.get('default', 'arch'),
-                                               self.config.get('default', 'osdir'),
-                                               self.config.get('default', 'product_path')))
+                                  os.path.join(self.config.get('pungi', 'arch'),
+                                               self.config.get('pungi', 'osdir'),
+                                               self.config.get('pungi', 'product_path')))
 
     def makeCompsFile(self):
         """Gather any comps files we can from repos and merge them into one."""
 
-        ourcompspath = os.path.join(self.workdir, '%s-%s-comps.xml' % (self.config.get('default', 'name'), self.config.get('default', 'version')))
+        ourcompspath = os.path.join(self.workdir, '%s-%s-comps.xml' % (self.config.get('pungi', 'name'), self.config.get('pungi', 'version')))
 
         ourcomps = open(ourcompspath, 'w')
 
@@ -546,7 +546,7 @@ class Pungi(pypungi.PungiBase):
            download them."""
 
         # do the downloads
-        self._downloadPackageList(self.debuginfolist, os.path.join(self.config.get('default', 'arch'),
+        self._downloadPackageList(self.debuginfolist, os.path.join(self.config.get('pungi', 'arch'),
                                                            'debug'))
 
     def writeinfo(self, line):
@@ -560,7 +560,7 @@ class Pungi(pypungi.PungiBase):
     def mkrelative(self, subfile):
         """Return the relative path for 'subfile' underneath the version dir."""
 
-        basedir = os.path.join(self.destdir, self.config.get('default', 'version'))
+        basedir = os.path.join(self.destdir, self.config.get('pungi', 'version'))
         if subfile.startswith(basedir):
             return subfile.replace(basedir + os.path.sep, '')
         
@@ -617,29 +617,29 @@ class Pungi(pypungi.PungiBase):
 
         compsfile = None
         if comps:
-            compsfile = os.path.join(self.workdir, '%s-%s-comps.xml' % (self.config.get('default', 'name'), self.config.get('default', 'version')))
+            compsfile = os.path.join(self.workdir, '%s-%s-comps.xml' % (self.config.get('pungi', 'name'), self.config.get('pungi', 'version')))
         
         # setup the cache dirs
         for target in ['createrepocache', 'repoviewcache']:
-            pypungi.util._ensuredir(os.path.join(self.config.get('default', 'cachedir'),
+            pypungi.util._ensuredir(os.path.join(self.config.get('pungi', 'cachedir'),
                                             target), 
                                self.logger, 
                                force=True)
             
-        repoviewtitle = '%s %s - %s' % (self.config.get('default', 'name'), 
-                                        self.config.get('default', 'version'),
-                                        self.config.get('default', 'arch'))
+        repoviewtitle = '%s %s - %s' % (self.config.get('pungi', 'name'), 
+                                        self.config.get('pungi', 'version'),
+                                        self.config.get('pungi', 'arch'))
 
-        cachedir = self.config.get('default', 'cachedir')
+        cachedir = self.config.get('pungi', 'cachedir')
 
         # setup the createrepo call
         self._makeMetadata(self.topdir, cachedir, compsfile, repoview=True, repoviewtitle=repoviewtitle)
 
         # create repodata for debuginfo
-        if self.config.getboolean('default', 'debuginfo'):
+        if self.config.getboolean('pungi', 'debuginfo'):
             path = os.path.join(self.archdir, 'debug')
             if not os.path.isdir(path):
-                self.logger.debug("No debuginfo for %s" % self.config.get('default', 'arch'))
+                self.logger.debug("No debuginfo for %s" % self.config.get('pungi', 'arch'))
                 return
             self._makeMetadata(path, cachedir, repoview=False)
 
@@ -652,21 +652,21 @@ class Pungi(pypungi.PungiBase):
         #buildinstall.append('TMPDIR=%s' % self.workdir) # TMPDIR broken in buildinstall
 
         buildinstall.append('--product')
-        buildinstall.append(self.config.get('default', 'name'))
+        buildinstall.append(self.config.get('pungi', 'name'))
 
-        if not self.config.get('default', 'flavor') == "":
+        if not self.config.get('pungi', 'flavor') == "":
             buildinstall.append('--variant')
-            buildinstall.append(self.config.get('default', 'flavor'))
+            buildinstall.append(self.config.get('pungi', 'flavor'))
 
         buildinstall.append('--version')
-        buildinstall.append(self.config.get('default', 'version'))
+        buildinstall.append(self.config.get('pungi', 'version'))
 
         buildinstall.append('--release')
-        buildinstall.append('%s %s' % (self.config.get('default', 'name'), self.config.get('default', 'version')))
+        buildinstall.append('%s %s' % (self.config.get('pungi', 'name'), self.config.get('pungi', 'version')))
 
-        if self.config.has_option('default', 'bugurl'):
+        if self.config.has_option('pungi', 'bugurl'):
             buildinstall.append('--bugurl')
-            buildinstall.append(self.config.get('default', 'bugurl'))
+            buildinstall.append(self.config.get('pungi', 'bugurl'))
 
         buildinstall.append('--output')
         buildinstall.append(self.topdir)
@@ -722,7 +722,7 @@ class Pungi(pypungi.PungiBase):
         os.path.walk(os.path.join(self.topdir, 'images'), getsum, self.topdir + '/')
         
         # Capture PPC images
-        if self.config.get('default', 'arch') == 'ppc':
+        if self.config.get('pungi', 'arch') == 'ppc':
             os.path.walk(os.path.join(self.topdir, 'ppc'), getsum, self.topdir + '/')
 
         # Get a checksum of repomd.xml since it has within it sums for other files
@@ -747,13 +747,13 @@ class Pungi(pypungi.PungiBase):
         """Run anaconda-runtime's pkgorder on the tree, used for splitting media."""
 
 
-        pkgorderfile = open(os.path.join(self.workdir, 'pkgorder-%s' % self.config.get('default', 'arch')), 'w')
+        pkgorderfile = open(os.path.join(self.workdir, 'pkgorder-%s' % self.config.get('pungi', 'arch')), 'w')
         # setup the command
         pkgorder = ['/usr/bin/pkgorder']
         #pkgorder.append('TMPDIR=%s' % self.workdir)
         pkgorder.append(self.topdir)
-        pkgorder.append(self.config.get('default', 'arch'))
-        pkgorder.append(self.config.get('default', 'product_path'))
+        pkgorder.append(self.config.get('pungi', 'arch'))
+        pkgorder.append(self.config.get('pungi', 'product_path'))
 
         # run the command
         pypungi.util._doRunCommand(pkgorder, self.logger, output=pkgorderfile)
@@ -765,20 +765,20 @@ class Pungi(pypungi.PungiBase):
 
 
         docsdir = os.path.join(self.workdir, 'docs')
-        relnoterpms = self.config.get('default', 'relnotepkgs').split()
+        relnoterpms = self.config.get('pungi', 'relnotepkgs').split()
 
         fileres = []
-        for pattern in self.config.get('default', 'relnotefilere').split():
+        for pattern in self.config.get('pungi', 'relnotefilere').split():
             fileres.append(re.compile(pattern))
 
         dirres = []
-        for pattern in self.config.get('default', 'relnotedirre').split():
+        for pattern in self.config.get('pungi', 'relnotedirre').split():
             dirres.append(re.compile(pattern))
 
-        pypungi.util._ensuredir(docsdir, self.logger, force=self.config.getboolean('default', 'force'), clean=True)
+        pypungi.util._ensuredir(docsdir, self.logger, force=self.config.getboolean('pungi', 'force'), clean=True)
 
         # Expload the packages we list as relnote packages
-        pkgs = os.listdir(os.path.join(self.topdir, self.config.get('default', 'product_path')))
+        pkgs = os.listdir(os.path.join(self.topdir, self.config.get('pungi', 'product_path')))
 
         rpm2cpio = ['/usr/bin/rpm2cpio']
         cpio = ['cpio', '-imud']
@@ -787,7 +787,7 @@ class Pungi(pypungi.PungiBase):
             pkgname = pkg.rsplit('-', 2)[0]
             for relnoterpm in relnoterpms:
                 if pkgname == relnoterpm:
-                    extraargs = [os.path.join(self.topdir, self.config.get('default', 'product_path'), pkg)]
+                    extraargs = [os.path.join(self.topdir, self.config.get('pungi', 'product_path'), pkg)]
                     try:
                         p1 = subprocess.Popen(rpm2cpio + extraargs, cwd=docsdir, stdout=subprocess.PIPE)
                         (out, err) = subprocess.Popen(cpio, cwd=docsdir, stdin=p1.stdout, stdout=subprocess.PIPE, 
@@ -823,16 +823,16 @@ class Pungi(pypungi.PungiBase):
 
 
         timber = splittree.Timber()
-        timber.arch = self.config.get('default', 'arch')
-        timber.disc_size = self.config.getfloat('default', 'cdsize')
-        timber.total_discs = self.config.getint('default', 'discs')
-        timber.bin_discs = self.config.getint('default', 'discs')
+        timber.arch = self.config.get('pungi', 'arch')
+        timber.disc_size = self.config.getfloat('pungi', 'cdsize')
+        timber.total_discs = self.config.getint('pungi', 'discs')
+        timber.bin_discs = self.config.getint('pungi', 'discs')
         timber.src_discs = 0
-        timber.release_str = '%s %s' % (self.config.get('default', 'name'), self.config.get('default', 'version'))
-        timber.package_order_file = os.path.join(self.workdir, 'pkgorder-%s' % self.config.get('default', 'arch'))
+        timber.release_str = '%s %s' % (self.config.get('pungi', 'name'), self.config.get('pungi', 'version'))
+        timber.package_order_file = os.path.join(self.workdir, 'pkgorder-%s' % self.config.get('pungi', 'arch'))
         timber.dist_dir = self.topdir
-        timber.src_dir = os.path.join(self.config.get('default', 'destdir'), self.config.get('default', 'version'), 'source', 'SRPMS')
-        timber.product_path = self.config.get('default', 'product_path')
+        timber.src_dir = os.path.join(self.config.get('pungi', 'destdir'), self.config.get('pungi', 'version'), 'source', 'SRPMS')
+        timber.product_path = self.config.get('pungi', 'product_path')
         timber.common_files = self.common_files
         timber.comps_size = 0
         #timber.reserve_size =  
@@ -849,22 +849,22 @@ class Pungi(pypungi.PungiBase):
 
 
         timber = splittree.Timber()
-        timber.arch = self.config.get('default', 'arch')
-        timber.target_size = self.config.getfloat('default', 'cdsize') * 1024 * 1024
-        #timber.total_discs = self.config.getint('default', 'discs')
-        #timber.bin_discs = self.config.getint('default', 'discs')
-        timber.src_discs = self.config.getint('default', 'discs')
-        #timber.release_str = '%s %s' % (self.config.get('default', 'name'), self.config.get('default', 'version'))
-        #timber.package_order_file = os.path.join(self.config.get('default', 'destdir'), 'pkgorder-%s' % self.config.get('default', 'arch'))
-        timber.dist_dir = os.path.join(self.config.get('default', 'destdir'),
-                                       self.config.get('default', 'version'),
-                                       self.config.get('default', 'flavor'),
+        timber.arch = self.config.get('pungi', 'arch')
+        timber.target_size = self.config.getfloat('pungi', 'cdsize') * 1024 * 1024
+        #timber.total_discs = self.config.getint('pungi', 'discs')
+        #timber.bin_discs = self.config.getint('pungi', 'discs')
+        timber.src_discs = self.config.getint('pungi', 'discs')
+        #timber.release_str = '%s %s' % (self.config.get('pungi', 'name'), self.config.get('pungi', 'version'))
+        #timber.package_order_file = os.path.join(self.config.get('pungi', 'destdir'), 'pkgorder-%s' % self.config.get('pungi', 'arch'))
+        timber.dist_dir = os.path.join(self.config.get('pungi', 'destdir'),
+                                       self.config.get('pungi', 'version'),
+                                       self.config.get('pungi', 'flavor'),
                                        'source', 'SRPMS')
-        timber.src_dir = os.path.join(self.config.get('default', 'destdir'),
-                                      self.config.get('default', 'version'),
-                                      self.config.get('default', 'flavor'),
+        timber.src_dir = os.path.join(self.config.get('pungi', 'destdir'),
+                                      self.config.get('pungi', 'version'),
+                                      self.config.get('pungi', 'flavor'),
                                       'source', 'SRPMS')
-        #timber.product_path = self.config.get('default', 'product_path')
+        #timber.product_path = self.config.get('pungi', 'product_path')
         #timber.reserve_size =  
         # Set this ourselves, for creating our dirs ourselves
         timber.src_list = range(1, timber.src_discs + 1)
@@ -873,7 +873,7 @@ class Pungi(pypungi.PungiBase):
         for i in range(timber.src_list[0], timber.src_list[-1] + 1):
                 pypungi.util._ensuredir('%s-disc%d/SRPMS' % (timber.dist_dir, i),
                                    self.logger,
-                                   force=self.config.getboolean('default', 'force'),
+                                   force=self.config.getboolean('pungi', 'force'),
                                    clean=True)
                 timber.linkFiles(timber.dist_dir,
                                "%s-disc%d" %(timber.dist_dir, i),
@@ -890,7 +890,7 @@ class Pungi(pypungi.PungiBase):
         discinfo = open(os.path.join(self.topdir, '.discinfo'), 'r').readlines()
         mediaid = discinfo[0].rstrip('\n')
 
-        compsfile = os.path.join(self.workdir, '%s-%s-comps.xml' % (self.config.get('default', 'name'), self.config.get('default', 'version')))
+        compsfile = os.path.join(self.workdir, '%s-%s-comps.xml' % (self.config.get('pungi', 'name'), self.config.get('pungi', 'version')))
 
         if not split:
             pypungi.util._ensuredir('%s-disc1' % self.topdir, self.logger, 
@@ -901,11 +901,11 @@ class Pungi(pypungi.PungiBase):
             path = '%s-disc1' % self.topdir
             basedir = path
             split=[]
-            for disc in range(1, self.config.getint('default', 'discs') + 1):
+            for disc in range(1, self.config.getint('pungi', 'discs') + 1):
                 split.append('%s-disc%s' % (self.topdir, disc))
             
         # set up the process
-        self._makeMetadata(path, self.config.get('default', 'cachedir'), compsfile, repoview=False, 
+        self._makeMetadata(path, self.config.get('pungi', 'cachedir'), compsfile, repoview=False, 
                                                  baseurl='media://%s' % mediaid, 
                                                  output='%s-disc1' % self.topdir, 
                                                  basedir=basedir, split=split, update=False)
@@ -919,7 +919,7 @@ mediaid=%s
 metadata_expire=-1
 gpgcheck=0
 cost=500
-""" % (self.config.get('default', 'name'), self.config.get('default', 'version'), mediaid)
+""" % (self.config.get('pungi', 'name'), self.config.get('pungi', 'version'), mediaid)
 
         repofile.write(repocontent)
         repofile.close()
@@ -950,7 +950,7 @@ cost=500
         discinfofile = os.path.join(self.topdir, '.discinfo') # we use this a fair amount
 
         pypungi.util._ensuredir(self.isodir, self.logger,
-                           force=self.config.getboolean('default', 'force'),
+                           force=self.config.getboolean('pungi', 'force'),
                            clean=True) # This is risky...
 
         # setup the base command
@@ -976,73 +976,73 @@ cost=500
 
         # Check the size of the tree
         # This size checking method may be bunk, accepting patches...
-        if not self.config.get('default', 'arch') == 'source':
+        if not self.config.get('pungi', 'arch') == 'source':
             treesize = int(subprocess.Popen(mkisofs + ['-print-size', '-quiet', self.topdir], stdout=subprocess.PIPE).communicate()[0])
         else:
-            srcdir = os.path.join(self.config.get('default', 'destdir'), self.config.get('default', 'version'), 
-                                  self.config.get('default', 'flavor'), 'source', 'SRPMS')
+            srcdir = os.path.join(self.config.get('pungi', 'destdir'), self.config.get('pungi', 'version'), 
+                                  self.config.get('pungi', 'flavor'), 'source', 'SRPMS')
 
             treesize = int(subprocess.Popen(mkisofs + ['-print-size', '-quiet', srcdir], stdout=subprocess.PIPE).communicate()[0])
         # Size returned is 2KiB clusters or some such.  This translates that to MiB.
         treesize = treesize * 2048 / 1024 / 1024
 
-        cdsize = self.config.getfloat('default', 'cdsize')
+        cdsize = self.config.getfloat('pungi', 'cdsize')
 
         # Do some math to figure out how many discs we'd need
         if treesize < cdsize or not split:
-            self.config.set('default', 'discs', '1')
+            self.config.set('pungi', 'discs', '1')
         else:
             discs = int(treesize / cdsize + 1)
-            self.config.set('default', 'discs', str(discs))
+            self.config.set('pungi', 'discs', str(discs))
 
-        if not self.config.get('default', 'arch') == 'source':
+        if not self.config.get('pungi', 'arch') == 'source':
             self.doCreateMediarepo(split=False)
 
         if treesize > 700: # we're larger than a 700meg CD
-            isoname = '%s-%s-%s-DVD.iso' % (self.config.get('default', 'iso_basename'), self.config.get('default', 'version'), 
-                self.config.get('default', 'arch'))
+            isoname = '%s-%s-%s-DVD.iso' % (self.config.get('pungi', 'iso_basename'), self.config.get('pungi', 'version'), 
+                self.config.get('pungi', 'arch'))
         else:
-            isoname = '%s-%s-%s.iso' % (self.config.get('default', 'iso_basename'), self.config.get('default', 'version'), 
-                self.config.get('default', 'arch'))
+            isoname = '%s-%s-%s.iso' % (self.config.get('pungi', 'iso_basename'), self.config.get('pungi', 'version'), 
+                self.config.get('pungi', 'arch'))
 
         isofile = os.path.join(self.isodir, isoname)
 
-        if not self.config.get('default', 'arch') == 'source':
+        if not self.config.get('pungi', 'arch') == 'source':
             # move the main repodata out of the way to use the split repodata
-            if os.path.isdir(os.path.join(self.config.get('default', 'destdir'), 
-                                          'repodata-%s' % self.config.get('default', 'arch'))):
-                shutil.rmtree(os.path.join(self.config.get('default', 'destdir'), 
-                                           'repodata-%s' % self.config.get('default', 'arch')))
+            if os.path.isdir(os.path.join(self.config.get('pungi', 'destdir'), 
+                                          'repodata-%s' % self.config.get('pungi', 'arch'))):
+                shutil.rmtree(os.path.join(self.config.get('pungi', 'destdir'), 
+                                           'repodata-%s' % self.config.get('pungi', 'arch')))
                 
-            shutil.move(os.path.join(self.topdir, 'repodata'), os.path.join(self.config.get('default', 'destdir'), 
-                'repodata-%s' % self.config.get('default', 'arch')))
+            shutil.move(os.path.join(self.topdir, 'repodata'), os.path.join(self.config.get('pungi', 'destdir'), 
+                'repodata-%s' % self.config.get('pungi', 'arch')))
             shutil.copytree('%s-disc1/repodata' % self.topdir, os.path.join(self.topdir, 'repodata'))
 
         # setup the extra mkisofs args
         extraargs = []
 
-        if self.config.get('default', 'arch') == 'i386' or self.config.get('default', 'arch') == 'x86_64':
+        if self.config.get('pungi', 'arch') == 'i386' or self.config.get('pungi', 'arch') == 'x86_64':
             extraargs.extend(x86bootargs)
-        elif self.config.get('default', 'arch') == 'ia64':
+        elif self.config.get('pungi', 'arch') == 'ia64':
             extraargs.extend(ia64bootargs)
-        elif self.config.get('default', 'arch') == 'ppc':
+        elif self.config.get('pungi', 'arch') == 'ppc':
             extraargs.extend(ppcbootargs)
             extraargs.append(os.path.join(self.topdir, "ppc/mac"))
-        elif self.config.get('default', 'arch') == 'sparc':
+        elif self.config.get('pungi', 'arch') == 'sparc':
             extraargs.extend(sparcbootargs)
 
         extraargs.append('-V')
         if treesize > 700:
-            extraargs.append('%s %s %s DVD' % (self.config.get('default', 'name'),
-                self.config.get('default', 'version'), self.config.get('default', 'arch')))
+            extraargs.append('%s %s %s DVD' % (self.config.get('pungi', 'name'),
+                self.config.get('pungi', 'version'), self.config.get('pungi', 'arch')))
         else:
-            extraargs.append('%s %s %s' % (self.config.get('default', 'name'),
-                self.config.get('default', 'version'), self.config.get('default', 'arch')))
+            extraargs.append('%s %s %s' % (self.config.get('pungi', 'name'),
+                self.config.get('pungi', 'version'), self.config.get('pungi', 'arch')))
 
         extraargs.append('-o')
         extraargs.append(isofile)
         
-        if not self.config.get('default', 'arch') == 'source':
+        if not self.config.get('pungi', 'arch') == 'source':
             extraargs.append(self.topdir)
         else:
             extraargs.append(os.path.join(self.archdir, 'SRPMS'))
@@ -1051,7 +1051,7 @@ cost=500
         pypungi.util._doRunCommand(mkisofs + extraargs, self.logger)
 
         # implant md5 for mediacheck on all but source arches
-        if not self.config.get('default', 'arch') == 'source':
+        if not self.config.get('pungi', 'arch') == 'source':
             pypungi.util._doRunCommand(['/usr/bin/implantisomd5', isofile], self.logger)
 
         # shove the sha1sum into a file
@@ -1059,47 +1059,47 @@ cost=500
         self._doIsoSha1(isofile, sha1file)
 
         # return the .discinfo file
-        if not self.config.get('default', 'arch') == 'source':
+        if not self.config.get('pungi', 'arch') == 'source':
             shutil.rmtree(os.path.join(self.topdir, 'repodata')) # remove our copied repodata
-            shutil.move(os.path.join(self.config.get('default', 'destdir'), 
-                'repodata-%s' % self.config.get('default', 'arch')), os.path.join(self.topdir, 'repodata'))
+            shutil.move(os.path.join(self.config.get('pungi', 'destdir'), 
+                'repodata-%s' % self.config.get('pungi', 'arch')), os.path.join(self.topdir, 'repodata'))
             
         # Move the unified disk out
-        if not self.config.get('default', 'arch') == 'source':
+        if not self.config.get('pungi', 'arch') == 'source':
             shutil.rmtree(os.path.join(self.workdir, 'os-unified'), ignore_errors=True)
             shutil.move('%s-disc1' % self.topdir, os.path.join(self.workdir, 'os-unified'))
 
         # Write out a line describing the media
         self.writeinfo('media: %s' % self.mkrelative(isofile))
 
-        if self.config.getint('default', 'discs') > 1:
-            if self.config.get('default', 'arch') == 'source':
+        if self.config.getint('pungi', 'discs') > 1:
+            if self.config.get('pungi', 'arch') == 'source':
                 self.doSplitSRPMs()
             else:
                 self.doPackageorder()
                 self.doSplittree()
                 self.doCreateMediarepo(split=True)
-            for disc in range(1, self.config.getint('default', 'discs') + 1): # cycle through the CD isos
-                isoname = '%s-%s-%s-disc%s.iso' % (self.config.get('default', 'iso_basename'), self.config.get('default', 'version'), 
-                    self.config.get('default', 'arch'), disc)
+            for disc in range(1, self.config.getint('pungi', 'discs') + 1): # cycle through the CD isos
+                isoname = '%s-%s-%s-disc%s.iso' % (self.config.get('pungi', 'iso_basename'), self.config.get('pungi', 'version'), 
+                    self.config.get('pungi', 'arch'), disc)
                 isofile = os.path.join(self.isodir, isoname)
 
                 extraargs = []
 
                 if disc == 1: # if this is the first disc, we want to set boot flags
-                    if self.config.get('default', 'arch') == 'i386' or self.config.get('default', 'arch') == 'x86_64':
+                    if self.config.get('pungi', 'arch') == 'i386' or self.config.get('pungi', 'arch') == 'x86_64':
                         extraargs.extend(x86bootargs)
-                    elif self.config.get('default', 'arch') == 'ia64':
+                    elif self.config.get('pungi', 'arch') == 'ia64':
                         extraargs.extend(ia64bootargs)
-                    elif self.config.get('default', 'arch') == 'ppc':
+                    elif self.config.get('pungi', 'arch') == 'ppc':
                         extraargs.extend(ppcbootargs)
                         extraargs.append(os.path.join('%s-disc%s' % (self.topdir, disc), "ppc/mac"))
-                    elif self.config.get('default', 'arch') == 'sparc':
+                    elif self.config.get('pungi', 'arch') == 'sparc':
                         extraargs.extend(sparcbootargs)
 
                 extraargs.append('-V')
-                extraargs.append('%s %s %s Disc %s' % (self.config.get('default', 'name'),
-                    self.config.get('default', 'version'), self.config.get('default', 'arch'), disc))
+                extraargs.append('%s %s %s Disc %s' % (self.config.get('pungi', 'name'),
+                    self.config.get('pungi', 'version'), self.config.get('pungi', 'arch'), disc))
 
                 extraargs.append('-o')
                 extraargs.append(isofile)
@@ -1110,7 +1110,7 @@ cost=500
                 pypungi.util._doRunCommand(mkisofs + extraargs, self.logger)
 
                 # implant md5 for mediacheck on all but source arches
-                if not self.config.get('default', 'arch') == 'source':
+                if not self.config.get('pungi', 'arch') == 'source':
                     pypungi.util._doRunCommand(['/usr/bin/implantisomd5', isofile], self.logger)
 
                 # shove the sha1sum into a file
@@ -1124,10 +1124,10 @@ cost=500
             self.writeinfo('mediaset: %s' % ' '.join(isolist))
 
         # Now link the boot iso
-        if not self.config.get('default', 'arch') == 'source' and \
+        if not self.config.get('pungi', 'arch') == 'source' and \
         os.path.exists(os.path.join(self.topdir, 'images', 'boot.iso')):
-            isoname = '%s-%s-%s-netinst.iso' % (self.config.get('default', 'iso_basename'),
-                self.config.get('default', 'version'), self.config.get('default', 'arch'))
+            isoname = '%s-%s-%s-netinst.iso' % (self.config.get('pungi', 'iso_basename'),
+                self.config.get('pungi', 'version'), self.config.get('pungi', 'arch'))
             isofile = os.path.join(self.isodir, isoname)
 
             # link the boot iso to the iso dir
