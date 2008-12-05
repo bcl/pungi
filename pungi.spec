@@ -1,7 +1,7 @@
 %{!?python_sitelib: %define python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")}
 
 Name:           pungi
-Version:        2.0.8
+Version:        2.0.9
 Release:        1%{?dist}
 Summary:        Distribution compose tool
 
@@ -56,6 +56,10 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Thu Dec 04 2008 Jesse Keating <jkeating@redhat.com> - 2.0.9-1
+- Fix for python-2.6 ('default' is no longer a valid config section)
+- Fix splitting srpms
+
 * Tue Nov 4 2008 Jesse Keating <jkeating@redhat.com> - 2.0.8-1
 - Set default disc size to 695
 
