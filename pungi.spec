@@ -46,7 +46,7 @@ rm -rf $RPM_BUILD_ROOT
 # For noarch packages: sitelib
 %{python_sitelib}/pypungi
 %if 0%{?fedora} >= 9
-  %{python_sitelib}/%{name}-%{version}-py2.5.egg-info
+  %{python_sitelib}/%{name}-%{version}-py?.?.egg-info
 %endif
 %{_bindir}/pungi
 %{_bindir}/pkgorder
