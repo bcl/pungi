@@ -185,6 +185,9 @@ if __name__ == "__main__":
     # hack, hack, hack... make sure iscsi ends up on disc1 (#208832)
     addPackages(ds, ["kernel-*","mkinitrd","mdadm"])
 
+    # add the packages anaconda forces on us
+    addPackages(ds, ["authconfig", "chkconfig", "mkinitrd", "rhpl", "system-config-firewall-tui"])
+
     addGroups(ds, ["core", "base", "text-internet"])
 
     addGroups(ds, ["base-x", "dial-up",
