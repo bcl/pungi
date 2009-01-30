@@ -1039,8 +1039,7 @@ cost=500
             extraargs.append('%s %s %s' % (self.config.get('pungi', 'name'),
                 self.config.get('pungi', 'version'), self.config.get('pungi', 'arch')))
 
-        extraargs.append('-o')
-        extraargs.append(isofile)
+        extraargs.extend(['-o', isofile])
         
         if not self.config.get('pungi', 'arch') == 'source':
             extraargs.append(self.topdir)
