@@ -1054,9 +1054,12 @@ cost=500
         if not self.config.get('pungi', 'arch') == 'source':
             pypungi.util._doRunCommand(['/usr/bin/implantisomd5', isofile], self.logger)
 
-        # shove the sha1sum into a file
-        sha1file = os.path.join(self.isodir, 'SHA1SUM')
-        self._doIsoChecksum(isofile, sha1file)
+        # shove the checksum into a file
+        csumfile = os.path.join(self.isodir, '%s-%s-%s-CHECKSUM' % (
+                                self.config.get('pungi', 'iso_basename'),
+                                self.config.get('pungi', 'version'),
+                                self.config.get('pungi', 'arch')))
+        self._doIsoChecksum(isofile, csumfile)
 
         # return the .discinfo file
         if not self.config.get('pungi', 'arch') == 'source':
@@ -1113,9 +1116,8 @@ cost=500
                 if not self.config.get('pungi', 'arch') == 'source':
                     pypungi.util._doRunCommand(['/usr/bin/implantisomd5', isofile], self.logger)
 
-                # shove the sha1sum into a file
-                sha1file = os.path.join(self.isodir, 'SHA1SUM')
-                self._doIsoChecksum(isofile, sha1file)
+                # shove the checksum into a file
+                self._doIsoChecksum(isofile, csumfile)
 
                 # keep track of the CD images we've written
                 isolist.append(self.mkrelative(isofile))
@@ -1133,9 +1135,8 @@ cost=500
             # link the boot iso to the iso dir
             pypungi.util._link(os.path.join(self.topdir, 'images', 'boot.iso'), isofile, self.logger)
 
-            # shove the sha1sum into a file
-            sha1file = os.path.join(self.isodir, 'SHA1SUM')
-            self._doIsoChecksum(isofile, sha1file)
+            # shove the checksum into a file
+            self._doIsoChecksum(isofile, csumfile)
 
         # Do some clean up
         dirs = os.listdir(self.archdir)
