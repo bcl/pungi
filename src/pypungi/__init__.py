@@ -715,7 +715,7 @@ class Pungi(pypungi.PungiBase):
                 # don't bother summing directories.  Won't work.
                 if os.path.isdir(path):
                     continue
-                sum = pypungi.util._doCheckSum(path, 'sha1', self.logger)
+                sum = pypungi.util._doCheckSum(path, 'sha256', self.logger)
                 outpath = path.replace(basepath, '')
                 sums.append((outpath, sum))
 
@@ -728,7 +728,7 @@ class Pungi(pypungi.PungiBase):
 
         # Get a checksum of repomd.xml since it has within it sums for other files
         repomd = os.path.join(self.topdir, 'repodata', 'repomd.xml')
-        sum = pypungi.util._doCheckSum(repomd, 'sha1', self.logger)
+        sum = pypungi.util._doCheckSum(repomd, 'sha256', self.logger)
         sums.append((os.path.join('repodata', 'repomd.xml'), sum))
 
         # Now add the sums, and write the config out
