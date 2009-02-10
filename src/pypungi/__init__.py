@@ -925,22 +925,22 @@ cost=500
         repofile.write(repocontent)
         repofile.close()
 
-    def _doIsoChecksum(self, path, shafile):
-        """Simple function to wrap creating sha1sums of iso files."""
+    def _doIsoChecksum(self, path, csumfile):
+        """Simple function to wrap creating checksums of iso files."""
 
         try:
-            sha1file = open(shafile, 'a')
+            checkfile = open(csumfile, 'a')
         except IOError:
-            self.logger.error("Could not open sha1sum file: %s" % shafile)
+            self.logger.error("Could not open checksum file: %s" % csumfile)
 
-        self.logger.info("Generating sha1sum of %s" % path)
-        sha1sum = pypungi.util._doCheckSum(path, 'sha1', self.logger)
-        if sha1sum:
-            sha1file.write("%s *%s\n" % (sha1sum.replace('sha1:', ''), os.path.basename(path)))
+        self.logger.info("Generating checksum of %s" % path)
+        checksum = pypungi.util._doCheckSum(path, 'sha1', self.logger)
+        if checksum:
+            checkfile.write("%s *%s\n" % (checksum.replace('sha1:', ''), os.path.basename(path)))
         else:
-            self.logger.error('Failed to generate sha1sum for %s' % sha1file)
+            self.logger.error('Failed to generate checksum for %s' % checkfile)
             sys.exit(1)
-        sha1file.close()
+        checkfile.close()
 
     def doCreateIsos(self, split=True):
         """Create isos of the tree, optionally splitting the tree for split media."""
