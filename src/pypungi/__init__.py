@@ -925,7 +925,7 @@ cost=500
         repofile.write(repocontent)
         repofile.close()
 
-    def _doIsoSha1(self, path, shafile):
+    def _doIsoChecksum(self, path, shafile):
         """Simple function to wrap creating sha1sums of iso files."""
 
         try:
@@ -1056,7 +1056,7 @@ cost=500
 
         # shove the sha1sum into a file
         sha1file = os.path.join(self.isodir, 'SHA1SUM')
-        self._doIsoSha1(isofile, sha1file)
+        self._doIsoChecksum(isofile, sha1file)
 
         # return the .discinfo file
         if not self.config.get('pungi', 'arch') == 'source':
@@ -1115,7 +1115,7 @@ cost=500
 
                 # shove the sha1sum into a file
                 sha1file = os.path.join(self.isodir, 'SHA1SUM')
-                self._doIsoSha1(isofile, sha1file)
+                self._doIsoChecksum(isofile, sha1file)
 
                 # keep track of the CD images we've written
                 isolist.append(self.mkrelative(isofile))
@@ -1135,7 +1135,7 @@ cost=500
 
             # shove the sha1sum into a file
             sha1file = os.path.join(self.isodir, 'SHA1SUM')
-            self._doIsoSha1(isofile, sha1file)
+            self._doIsoChecksum(isofile, sha1file)
 
         # Do some clean up
         dirs = os.listdir(self.archdir)
