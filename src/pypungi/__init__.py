@@ -571,7 +571,7 @@ class Pungi(pypungi.PungiBase):
         conf = createrepo.MetaDataConfig()
         conf.cachedir = os.path.join(cachedir, 'createrepocache')
         conf.update = update
-        self.unique_md_filenames
+        conf.unique_md_filenames = True
         if output:
             conf.outputdir = output
         else:
