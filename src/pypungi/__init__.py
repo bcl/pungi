@@ -934,9 +934,9 @@ cost=500
             self.logger.error("Could not open checksum file: %s" % csumfile)
 
         self.logger.info("Generating checksum of %s" % path)
-        checksum = pypungi.util._doCheckSum(path, 'sha1', self.logger)
+        checksum = pypungi.util._doCheckSum(path, 'sha256', self.logger)
         if checksum:
-            checkfile.write("%s *%s\n" % (checksum.replace('sha1:', ''), os.path.basename(path)))
+            checkfile.write("%s *%s\n" % (checksum.replace('sha256:', ''), os.path.basename(path)))
         else:
             self.logger.error('Failed to generate checksum for %s' % checkfile)
             sys.exit(1)
