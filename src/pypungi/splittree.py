@@ -26,6 +26,7 @@ import getopt
 import time
 import types
 import rpm
+import subprocess
 
 global _ts
 _ts = None
@@ -105,21 +106,19 @@ self.reserve_size : Additional size needed to be reserved on the first disc.
         self.logfile = []
 
 
-    def getSize(self, path, blocksize=None):
-        """Gets the size as reported by du -sL"""
 
-        if blocksize:
-            p = os.popen("du -slL --block-size=1 %s" % path, 'r')
-            thesize = p.read()
-            p.close()
-            thesize = long(string.split(thesize)[0])
-            return thesize
-        else:
-            p = os.popen("du -slLh %s" % path, 'r')
-            thesize = p.read()
-            p.close()
-            thesize = string.split(thesize)[0]
-            return thesize
+    def getIsoSize(self, path):
+        """Gets the size that a path would take in iso form"""
+
+        call = ['/usr/bin/genisoimage', '-U', '-J', '-R', '-T', '-m',
+                'repoview', '-m', 'images/boot.iso', '-print-size',
+                '-quiet', path]
+
+        isosize = int(subprocess.Popen(call,
+                                       stdout=subprocess.PIPE,
+                                       stderr=subprocess.PIPE).communicate()[0])
+
+        return isosize * 2048
 
 
 
@@ -131,7 +130,7 @@ self.reserve_size : Additional size needed to be reserved on the first disc.
         if lastpkg:
             self.logfile.append("Last package on disc%d : %s" % (disc, lastpkg))
 
-        discsize = self.getSize("%s-disc%d" % (self.dist_dir, disc))
+        discsize = self.getIsoSize("%s-disc%d" % (self.dist_dir, disc))
         self.logfile.append("%s-disc%d size: %s" % (self.arch, disc, discsize))
 
 
@@ -295,8 +294,8 @@ self.reserve_size : Additional size needed to be reserved on the first disc.
             if not packages.has_key(rpm_nvr):
                 continue
             for file_name in packages[rpm_nvr]:
-                curused = self.getSize("%s-disc%s" % (self.dist_dir, disc), blocksize=1)
-                filesize = self.getSize("%s/%s/%s" % (self.dist_dir, pkgdir, file_name), blocksize=1)
+                curused = self.getIsoSize("%s-disc%s" % (self.dist_dir, disc))
+                filesize = os.stat("%s/%s/%s" % (self.dist_dir, pkgdir, file_name)).st_size
                 newsize = filesize + curused
 
                 # compensate for the size of the comps package which has yet to be created
@@ -346,7 +345,7 @@ self.reserve_size : Additional size needed to be reserved on the first disc.
 
         sizes = []
         for i in range(0, len(self.src_list)):
-            sizes.append([self.getSize("%s-disc%d" % (self.dist_dir, self.src_list[i]), blocksize=1), self.src_list[i]])
+            sizes.append([self.getIsoSize("%s-disc%d" % (self.dist_dir, self.src_list[i])), self.src_list[i]])
         sizes.sort()
         return sizes[0]
 
@@ -364,7 +363,7 @@ self.reserve_size : Additional size needed to be reserved on the first disc.
         for srpm in os.listdir("%s" % self.src_dir):
             if not srpm.endswith('.rpm'):
                 continue
-            srpm_size = self.getSize("%s/%s" % (self.src_dir, srpm), blocksize=1)
+            srpm_size = os.stat("%s/%s" % (self.src_dir, srpm)).st_size
             srpm_list.append([srpm_size, srpm])
 
         srpm_list.sort()
@@ -375,12 +374,12 @@ self.reserve_size : Additional size needed to be reserved on the first disc.
             # if it isn't, pull it out of the list. If there's only
             # one disk make loud noises over the overflow
             for disc in self.src_list:
-                if self.getSize("%s-disc%s" % (self.dist_dir, disc), blocksize=1) > self.target_size:
+                if self.getIsoSize("%s-disc%s" % (self.dist_dir, disc)) > self.target_size:
                     if len(self.src_list) < 2:
                         self.logfile.append("Overflowing %s on disc%d" % (srpm_list[i][1], disc))
                         break
                     else:
-                        discsize = self.getSize("%s-disc%d" % (self.dist_dir, disc))
+                        discsize = self.getIsoSize("%s-disc%d" % (self.dist_dir, disc))
                         self.logfile.append("%s-disc%d size: %s" % (self.arch, disc, discsize))
                         self.src_list.pop(self.src_list.index(disc))
             os.link("%s/%s" % (self.src_dir, srpm_list[i][1]),
