@@ -1,7 +1,7 @@
 %{!?python_sitelib: %define python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")}
 
 Name:           pungi
-Version:        2.0.9
+Version:        2.0.10
 Release:        1%{?dist}
 Summary:        Distribution compose tool
 
@@ -56,6 +56,14 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Wed Feb 11 2009 Jesse Keating <jkeating@redhat.com> - 2.0.10-1
+- Fix CD1 overflow issue
+- Name the checksum file after the isos being generated.
+- Use sha256 for checksums
+- Use unique md file names for repodata.
+- Do not include boot.iso on any disc
+- Add the packages that anaconda forces to be installed into the pkgorder
+
 * Thu Dec 04 2008 Jesse Keating <jkeating@redhat.com> - 2.0.9-1
 - Fix for python-2.6 ('default' is no longer a valid config section)
 - Fix splitting srpms
