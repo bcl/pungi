@@ -148,8 +148,8 @@ self.reserve_size : Additional size needed to be reserved on the first disc.
             self.release_str = file.readline()[:-1]
             self.real_arch = file.readline()[:-1]
 
-            if self.real_arch != self.arch:
-                raise RuntimeError, "CRITICAL ERROR : self.real_arch is not the same as self.arch"
+            #if self.real_arch != self.arch:
+            #    raise RuntimeError, "CRITICAL ERROR : self.real_arch is not the same as self.arch"
 
             # skip the disc number line from the unified tree
             file.readline()
