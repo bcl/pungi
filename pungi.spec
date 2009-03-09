@@ -1,7 +1,7 @@
 %{!?python_sitelib: %define python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")}
 
 Name:           pungi
-Version:        2.0.10
+Version:        2.0.11
 Release:        1%{?dist}
 Summary:        Distribution compose tool
 
@@ -56,6 +56,10 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Mon Mar 09 2009 Jesse Keating <jkeating@redhat.com> - 2.0.11-1
+- Fix size estimation in splittree
+- Disable arch test in splittree for now
+
 * Wed Feb 11 2009 Jesse Keating <jkeating@redhat.com> - 2.0.10-1
 - Fix CD1 overflow issue
 - Name the checksum file after the isos being generated.
