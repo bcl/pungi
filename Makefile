@@ -19,7 +19,7 @@ tag:
 #	@hg push
 
 Changelog:
-	(GIT_DIR=.git git-log > .changelog.tmp && mv .changelog.tmp Changelog; rm -f .changelog.tmp) || (touch Changelog; echo 'git directory not found: installing possibly empty changelog.' >&2)
+	(GIT_DIR=.git git log > .changelog.tmp && mv .changelog.tmp Changelog; rm -f .changelog.tmp) || (touch Changelog; echo 'git directory not found: installing possibly empty changelog.' >&2)
 
 archive:
 	@rm -f Changelog
