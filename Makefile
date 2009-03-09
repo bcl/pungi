@@ -23,6 +23,7 @@ Changelog:
 
 archive:
 	@rm -f Changelog
+	@rm -f MANIFEST
 	@make Changelog
 	@rm -rf ${PKGNAME}-$(VERSION)/
 	@python setup.py sdist --formats=bztar > /dev/null
