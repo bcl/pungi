@@ -1,7 +1,7 @@
 %{!?python_sitelib: %define python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")}
 
 Name:           pungi
-Version:        2.0.11
+Version:        2.0.12
 Release:        1%{?dist}
 Summary:        Distribution compose tool
 
@@ -56,6 +56,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Wed Mar 11 2009 Jesse Keating <jkeating@redhat.com> - 2.0.12-1
+- Update for yum API change
+
 * Mon Mar 09 2009 Jesse Keating <jkeating@redhat.com> - 2.0.11-1
 - Fix size estimation in splittree
 - Disable arch test in splittree for now
