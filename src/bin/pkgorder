@@ -2,7 +2,7 @@
 #
 # pkgorder
 #
-# Copyright (C) 2005  Red Hat, Inc.  All rights reserved.
+# Copyright (C) 2005,2006,2007,2008,2009  Red Hat, Inc.  All rights reserved.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -18,6 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 # Author(s): Paul Nasrat <pnasrat@redhat.com>
+#            Jesse Keating <jkeating@redhat.com>
 #
 
 import os.path
@@ -193,7 +194,7 @@ if __name__ == "__main__":
     addGroups(ds, ["base-x", "dial-up",
                    "graphical-internet", "editors", 
                    "gnome-desktop", "sound-and-video", "printing",
-                   "fonts", "hardware-support", "admin-tools",
+                   "fonts", "hardware-support", "admin-tools", "online-docs",
                    "java", "legacy-fonts", "input-methods"])
 
     addGroups(ds, ["office", "games", "graphics", "authoring-and-publishing"])
