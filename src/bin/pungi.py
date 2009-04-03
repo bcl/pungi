@@ -86,10 +86,24 @@ def main():
             mypungi._inityum() # initialize the yum object for things that need it
         if opts.do_all or opts.do_gather:
             mypungi.getPackageObjects()
-            if not opts.nosource or opts.selfhosting:
+            if not opts.nosource or opts.selfhosting or opts.fulltree:
+                mypungi.createSourceHashes()
                 mypungi.getSRPMList()
             if opts.selfhosting:
                 mypungi.resolvePackageBuildDeps()
+            if opts.fulltree:
+                mypungi.completePackageSet()
+            if opts.selfhosting and opts.fulltree:
+                # OUCH.
+                while 1:
+                    plen = len(mypungi.srpmpolist)
+                    mypungi.resolvePackageBuildDeps()
+                    if plen == len(mypungi.srpmpolist):
+                        break
+                    plen = len(mypungi.srpmpolist)
+                    mypungi.completePackageSet()
+                    if plen == len(mypungi.srpmpolist):
+                        break
             mypungi.downloadPackages()
             mypungi.makeCompsFile()
             if not opts.nodebuginfo:
@@ -158,6 +172,8 @@ if __name__ == '__main__':
           help='the url for your bug system (defaults to http://bugzilla.redhat.com)')
         parser.add_option("--selfhosting", action="store_true", dest="selfhosting",
           help='build a self-hosting tree by following build dependencies (optional)')
+        parser.add_option("--fulltree", action="store_true", dest="fulltree",
+          help='build a tree that includes all packages built from corresponding source rpms (optional)')
         parser.add_option("--nosource", action="store_true", dest="nosource",
           help='disable gathering of source packages (optional)')
         parser.add_option("--nodebuginfo", action="store_true", dest="nodebuginfo",
