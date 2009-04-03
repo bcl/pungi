@@ -133,7 +133,7 @@ class Pungi(pypungi.PungiBase):
 
         self.ksparser = ksparser
         self.polist = []
-        self.srpmlist = []
+        self.srpmpolist = []
         self.debuginfolist = []
         self.resolved_deps = {} # list the deps we've already resolved, short circuit.
 
@@ -425,15 +425,29 @@ class Pungi(pypungi.PungiBase):
         self.polist = final_pkgobjs.keys()
         self.logger.info('Finished gathering package objects.')
 
+    def getSRPMPo(self, po):
+        """Given a package object, get a package object for the
+           corresponding source rpm. Requires yum still configured
+           and a valid package object."""
+        srpm = po.sourcerpm.split('.src.rpm')[0]
+        (sname, sver, srel) = srpm.rsplit('-', 2)
+        try:
+            srpmpo = self.ayum.pkgSack.searchNevra(name=sname, ver=sver, rel=srel, arch='src')[0]
+            return srpmpo
+        except IndexError:
+            print >> sys.stderr, "Error: Cannot find a source rpm for %s" % srpm
+            sys.exit(1)
+
     def getSRPMList(self):
         """Cycle through the list of package objects and
            find the sourcerpm for them.  Requires yum still
            configured and a list of package objects"""
  
         for po in self.polist:
-            srpm = po.sourcerpm.split('.src.rpm')[0]
-            if not srpm in self.srpmlist:
-                self.srpmlist.append(srpm)
+            srpmpo = self.getSRPMPo(po)
+            if not srpmpo in self.srpmpolist:
+                self.logger.info("Adding source package %s.%s" % (srpmpo.name, srpmpo.arch))
+                self.srpmpolist.append(srpmpo)
 
     def getDebuginfoList(self):
         """Cycle through the list of package objects and find
@@ -557,20 +571,8 @@ class Pungi(pypungi.PungiBase):
         """Cycle through the list of srpms and
            find the package objects for them, Then download them."""
 
-        srpmpolist = []
-
-        for srpm in self.srpmlist:
-            (sname, sver, srel) = srpm.rsplit('-', 2)
-            try:
-                srpmpo = self.ayum.pkgSack.searchNevra(name=sname, ver=sver, rel=srel, arch='src')[0]
-                if not srpmpo in srpmpolist:
-                    srpmpolist.append(srpmpo)
-            except IndexError:
-                print >> sys.stderr, "Error: Cannot find a source rpm for %s" % srpm
-                sys.exit(1)
-
         # do the downloads
-        self._downloadPackageList(srpmpolist, os.path.join('source', 'SRPMS'))
+        self._downloadPackageList(self.srpmpolist, os.path.join('source', 'SRPMS'))
 
     def downloadDebuginfo(self):
         """Cycle through the list of debuginfo rpms and
