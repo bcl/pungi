@@ -453,8 +453,6 @@ class Pungi(pypungi.PungiBase):
         """Make the package lists self hosting. Requires yum
            still configured, a list of package objects, and a
            a list of source rpms."""
-        for srpm in self.srpmpolist:
-            self.ayum.tsInfo.addInstall(srpm)
         deppass = 1
         checked_srpms = []
         while 1:
