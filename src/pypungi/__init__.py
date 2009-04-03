@@ -490,6 +490,32 @@ class Pungi(pypungi.PungiBase):
             if len(prev) == len(self.ayum.tsInfo.getMembers()):
                 break
 
+    def completePackageSet(self):
+        """Cycle through all package objects, and add any
+           that correspond to a source rpm that we are including.
+           Requires yum still configured and a list of package
+           objects."""
+        thepass = 1
+        while 1:
+            prevlen = len(self.srpmpolist)
+            self.logger.info("Completing package set, pass %d" % (thepass,))
+            for srpm in self.srpmpolist[len(self.srpms_fulltree):]:
+                for po in self.bin_by_src[srpm]:
+                    if po not in self.polist:
+                        self.logger.info("Adding %s.%s to complete package set" % (po.name, po.arch))
+                        self.polist.append(po)
+                        self.getPackageDeps(po)
+            for txmbr in self.ayum.tsInfo:
+                if txmbr.po.arch != 'src' and txmbr.po not in self.polist:
+                    self.polist.append(txmbr.po)
+            self.srpms_fulltree = list(self.srpmpolist)
+            # Now that we've resolved deps, refresh the source rpm list
+            self.getSRPMList()
+            if len(self.srpmpolist) == prevlen:
+                self.logger.info("Completion finished in %d passes" % (thepass,))
+                break
+            thepass = thepass + 1
+
     def getDebuginfoList(self):
         """Cycle through the list of package objects and find
            debuginfo rpms for them.  Requires yum still
