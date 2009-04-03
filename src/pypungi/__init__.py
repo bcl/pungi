@@ -449,6 +449,29 @@ class Pungi(pypungi.PungiBase):
                 self.logger.info("Adding source package %s.%s" % (srpmpo.name, srpmpo.arch))
                 self.srpmpolist.append(srpmpo)
 
+    def resolvePackageBuildDeps(self):
+        """Make the package lists self hosting. Requires yum
+           still configured, a list of package objects, and a
+           a list of source rpms."""
+        for srpm in self.srpmpolist:
+            self.ayum.tsInfo.addInstall(srpm)
+        deppass = 1
+        checked_srpms = []
+        while 1:
+            self.logger.info("Resolving build dependencies, pass %d" % (deppass))
+            prev = list(self.ayum.tsInfo.getMembers())
+            for srpm in self.srpmpolist[len(checked_srpms):]:
+                self.getPackageDeps(srpm)
+            for txmbr in self.ayum.tsInfo:
+                if txmbr.po.arch != 'src' and txmbr.po not in self.polist:
+                    self.polist.append(txmbr.po)
+            # Now that we've resolved deps, refresh the source rpm list
+            checked_srpms = list(self.srpmpolist)
+            self.getSRPMList()
+            deppass = deppass + 1
+            if len(prev) == len(self.ayum.tsInfo.getMembers()):
+                break
+
     def getDebuginfoList(self):
         """Cycle through the list of package objects and find
            debuginfo rpms for them.  Requires yum still
