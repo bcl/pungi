@@ -135,6 +135,9 @@ class Pungi(pypungi.PungiBase):
         self.polist = []
         self.srpmpolist = []
         self.debuginfolist = []
+        self.srpms_build = []
+        self.srpms_fulltree = []
+        self.last_po = 0
         self.resolved_deps = {} # list the deps we've already resolved, short circuit.
 
     def _inityum(self):
@@ -438,33 +441,50 @@ class Pungi(pypungi.PungiBase):
             print >> sys.stderr, "Error: Cannot find a source rpm for %s" % srpm
             sys.exit(1)
 
+    def createSourceHashes(self):
+        """Create two dicts - one that maps binary POs to source POs, and
+           one that maps a single source PO to all binary POs it produces.
+           Requires yum still configured."""
+        self.src_by_bin = {}
+        self.bin_by_src = {}
+        self.logger.info("Generating source <-> binary package mappings")
+        (dummy1, everything, dummy2) = yum.packages.parsePackages(self.ayum.pkgSack.returnPackages(), ['*'])
+        for po in everything:
+            if po.arch == 'src':
+                continue
+            srpmpo = self.getSRPMPo(po)
+            self.src_by_bin[po] = srpmpo
+            if self.bin_by_src.has_key(srpmpo):
+                self.bin_by_src[srpmpo].append(po)
+            else:
+                self.bin_by_src[srpmpo] = [po]
+
     def getSRPMList(self):
         """Cycle through the list of package objects and
            find the sourcerpm for them.  Requires yum still
            configured and a list of package objects"""
- 
-        for po in self.polist:
-            srpmpo = self.getSRPMPo(po)
+        for po in self.polist[self.last_po:]:
+            srpmpo = self.src_by_bin[po]
             if not srpmpo in self.srpmpolist:
                 self.logger.info("Adding source package %s.%s" % (srpmpo.name, srpmpo.arch))
                 self.srpmpolist.append(srpmpo)
+        self.last_po = len(self.polist)
 
     def resolvePackageBuildDeps(self):
         """Make the package lists self hosting. Requires yum
            still configured, a list of package objects, and a
            a list of source rpms."""
         deppass = 1
-        checked_srpms = []
         while 1:
             self.logger.info("Resolving build dependencies, pass %d" % (deppass))
             prev = list(self.ayum.tsInfo.getMembers())
-            for srpm in self.srpmpolist[len(checked_srpms):]:
+            for srpm in self.srpmpolist[len(self.srpms_build):]:
                 self.getPackageDeps(srpm)
             for txmbr in self.ayum.tsInfo:
                 if txmbr.po.arch != 'src' and txmbr.po not in self.polist:
                     self.polist.append(txmbr.po)
+            self.srpms_build = list(self.srpmpolist)
             # Now that we've resolved deps, refresh the source rpm list
-            checked_srpms = list(self.srpmpolist)
             self.getSRPMList()
             deppass = deppass + 1
             if len(prev) == len(self.ayum.tsInfo.getMembers()):
