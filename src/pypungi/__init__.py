@@ -325,6 +325,33 @@ class Pungi(pypungi.PungiBase):
         self.logger.debug('Add default groups %s' % groups)
         return groups
 
+    def _deselectPackage(self, pkg, *args):
+        """Stolen from anaconda; Remove a package from the transaction set"""
+        sp = pkg.rsplit(".", 2)
+        txmbrs = []
+        if len(sp) == 2:
+            txmbrs = self.ayum.tsInfo.matchNaevr(name=sp[0], arch=sp[1])
+
+        if len(txmbrs) == 0:
+            exact, match, unmatch = yum.packages.parsePackages(self.ayum.pkgSack.returnPackages(), [pkg], casematch=1)
+            for p in exact + match:
+                txmbrs.append(p)
+
+        if len(txmbrs) > 0:
+            for x in txmbrs:
+                self.ayum.tsInfo.remove(x.pkgtup)
+                # we also need to remove from the conditionals
+                # dict so that things don't get pulled back in as a result
+                # of them.  yes, this is ugly.  conditionals should die.
+                for req, pkgs in self.ayum.tsInfo.conditionals.iteritems():
+                    if x in pkgs:
+                        pkgs.remove(x)
+                        self.ayum.tsInfo.conditionals[req] = pkgs
+            return len(txmbrs)
+        else:
+            self.logger.debug("no such package %s to remove" %(pkg,))
+            return 0
+
     def getPackageObjects(self):
         """Cycle through the list of packages, get package object
            matches, and resolve deps.
@@ -336,7 +363,6 @@ class Pungi(pypungi.PungiBase):
         matchdict = {} # A dict of objects to names
 
         # First remove the excludes
-        self.ayum.conf.exclude.extend(self.ksparser.handler.packages.excludedList)
         self.ayum.excludePackages()
         
         # Always add the core group
@@ -381,6 +407,9 @@ class Pungi(pypungi.PungiBase):
 
         if len(self.ayum.tsInfo) == 0:
             raise yum.Errors.MiscError, 'No packages found to download.'
+
+        # Deselect things we don't want from the ks
+        map(self._deselectPackage, self.ksparser.handler.packages.excludedList)
 
         moretoprocess = True
         while moretoprocess: # Our fun loop
