@@ -300,7 +300,11 @@ self.reserve_size : Additional size needed to be reserved on the first disc.
 
                 # compensate for the size of the comps package which has yet to be created
                 if disc == 1:
-                    maxsize = self.target_size - self.comps_size - self.reserve_size
+                    if self.arch == 'ppc' or self.arch == 'ppc64':
+                        # ppc has about 15 megs of overhead in the isofs.
+                        maxsize = self.target_size - self.comps_size - self.reserve_size - 15728640
+                    else:
+                        maxsize = self.target_size - self.comps_size - self.reserve_size
                 else:
                     maxsize = self.target_size
                     
