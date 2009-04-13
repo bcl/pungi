@@ -59,6 +59,7 @@ rm -rf $RPM_BUILD_ROOT
 * Mon Apr 13 2009 Jesse Keating <jkeating@redhat.com> - 2.0.14-1
 - Fix package excludes in kickstart files
 - Correctly account for ppc bootable isofs overhead
+- Wire in support for composing 'full' trees with all subpackages
 
 * Tue Mar 24 2009 Jesse Keating <jkeating@redhat.com> - 2.0.13-1
 - Add online-docs to pkgorder
