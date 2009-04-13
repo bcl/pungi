@@ -1,7 +1,7 @@
 %{!?python_sitelib: %define python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")}
 
 Name:           pungi
-Version:        2.0.13
+Version:        2.0.14
 Release:        1%{?dist}
 Summary:        Distribution compose tool
 
@@ -56,6 +56,10 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Mon Apr 13 2009 Jesse Keating <jkeating@redhat.com> - 2.0.14-1
+- Fix package excludes in kickstart files
+- Correctly account for ppc bootable isofs overhead
+
 * Tue Mar 24 2009 Jesse Keating <jkeating@redhat.com> - 2.0.13-1
 - Add online-docs to pkgorder
 
