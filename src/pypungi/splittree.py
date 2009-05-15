@@ -440,7 +440,7 @@ self.reserve_size : Additional size needed to be reserved on the first disc.
         # Recalculate this here in case the disc_size changed.
         self.target_size = self.disc_size * 1024.0 * 1024
 
-        self.createSplitDirs()
+        self.createFirstSplitDir()
         self.splitRPMS()
         if (self.src_discs != 0):
             self.splitSRPMS()
