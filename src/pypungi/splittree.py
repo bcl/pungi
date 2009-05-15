@@ -241,8 +241,57 @@ self.reserve_size : Additional size needed to be reserved on the first disc.
                                self.common_files)
                 self.createDiscInfo(i)
 
-                
-        
+
+
+    def createFirstSplitDir(self):
+        """Create a the first split dir to overflow into, linking common files
+           as well as the files needed on the first disc"""
+
+        # Set the bin_list to 1 to start with.  We'll add more as needed.
+        self.bin_list = [1]
+        p = os.popen('find %s/ -type f -not -name .discinfo -not -name "*\.rpm" -not -name "boot.iso"' % self.dist_dir, 'r')
+        filelist = p.read()
+        p.close()
+        filelist = string.split(filelist)
+
+        p = os.popen('find %s/ -type d -not -name SRPMS' % self.dist_dir, 'r')
+        dirlist = p.read()
+        p.close()
+        dirlist = string.split(dirlist)
+
+        dont_create = []
+        # we need to clean up the dirlist first. We don't want everything yet
+        for j in range(0, len(dirlist)):
+            dirlist[j] = string.replace(dirlist[j], self.dist_dir, '')
+
+
+        # now create the dirs for disc1
+        for j in range(0, len(dirlist)):
+            os.makedirs("%s-disc1/%s" % (self.dist_dir, dirlist[j]))
+
+        for j in range(0, len(filelist)):
+            filelist[j] = string.replace(filelist[j], self.dist_dir, '')
+            try:
+                os.link(os.path.normpath("%s/%s" % (self.dist_dir, filelist[j])),
+                        os.path.normpath("%s-disc1/%s" % (self.dist_dir, filelist[j])))
+            except OSError, (errno, msg):
+                pass
+
+        self.createDiscInfo(1)
+
+
+
+    def createSplitDir(self):
+        """Create a new split dir to overflow into, linking common files"""
+
+        i = self.bin_list[-1] + 1
+        self.bin_list.append(i)
+        os.makedirs("%s-disc%d/%s" % (self.dist_dir, i, self.product_path))
+        self.linkFiles(self.dist_dir, "%s-disc%d" %(self.dist_dir, i), self.common_files)
+        self.createDiscInfo(i)
+
+
+
     def splitRPMS(self, reportSize = 1):
         """Creates links in the split dirs for the RPMs"""
         
