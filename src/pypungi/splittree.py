@@ -365,21 +365,13 @@ self.reserve_size : Additional size needed to be reserved on the first disc.
                 # move to the next disc if true
                 if newsize > maxsize:
                     self.reportSizes(disc, firstpkg=firstpackage, lastpkg=lastpackage)
-                    # try it, if we are already on the last disc then complain loudly
-                    try:
-                        nextdisc=self.bin_list.index(disc+1)
-                        disc = self.bin_list[nextdisc]
-                        os.link("%s/%s/%s" % (self.dist_dir, pkgdir, file_name),
-                                "%s-disc%d/%s/%s" % (self.dist_dir, disc, pkgdir, file_name))
-                        packagenum = 1
-                        firstpackage = file_name
-                        
-                    except:
-                        # back down to the last RPM disc and complain about the overflow
-                        disc = disc - 1
-                        self.logfile.append("No more discs to put packages, overflowing on disc%d" % disc)
-                        continue
-                    
+                    # Create a new split dir to copy into
+                    self.createSplitDir()
+                    disc = self.bin_list[-1]
+                    os.link("%s/%s/%s" % (self.dist_dir, pkgdir, file_name),
+                            "%s-disc%d/%s/%s" % (self.dist_dir, disc, pkgdir, file_name))
+                    packagenum = 1
+                    firstpackage = file_name
                 else:
                     os.link("%s/%s/%s" % (self.dist_dir, pkgdir, file_name),
                             "%s-disc%d/%s/%s" % (self.dist_dir, disc, pkgdir, file_name))
