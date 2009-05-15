@@ -926,8 +926,6 @@ class Pungi(pypungi.PungiBase):
         timber = splittree.Timber()
         timber.arch = self.config.get('pungi', 'arch')
         timber.disc_size = self.config.getfloat('pungi', 'cdsize')
-        timber.total_discs = self.config.getint('pungi', 'discs')
-        timber.bin_discs = self.config.getint('pungi', 'discs')
         timber.src_discs = 0
         timber.release_str = '%s %s' % (self.config.get('pungi', 'name'), self.config.get('pungi', 'version'))
         timber.package_order_file = os.path.join(self.workdir, 'pkgorder-%s' % self.config.get('pungi', 'arch'))
@@ -1087,15 +1085,6 @@ cost=500
         # Size returned is 2KiB clusters or some such.  This translates that to MiB.
         treesize = treesize * 2048 / 1024 / 1024
 
-        cdsize = self.config.getfloat('pungi', 'cdsize')
-
-        # Do some math to figure out how many discs we'd need
-        if treesize < cdsize or not split:
-            self.config.set('pungi', 'discs', '1')
-        else:
-            discs = int(treesize / cdsize + 1)
-            self.config.set('pungi', 'discs', str(discs))
-
         if not self.config.get('pungi', 'arch') == 'source':
             self.doCreateMediarepo(split=False)
 
@@ -1175,14 +1164,23 @@ cost=500
         # Write out a line describing the media
         self.writeinfo('media: %s' % self.mkrelative(isofile))
 
-        if self.config.getint('pungi', 'discs') > 1:
+        # See if our tree size is big enough and we want to make split media
+        if treesize > 700 and split:
+            discs = 0
             if self.config.get('pungi', 'arch') == 'source':
                 self.doSplitSRPMs()
             else:
                 self.doPackageorder()
                 self.doSplittree()
+                # Figure out how many discs splittree made for us
+                dirs = os.listdir(self.archdir)
+                for dir in dirs:
+                    if dir.startswith('%s-disc' % os.path.basename(self.topdir)):
+                        discs += 1
+                # Set the number of discs for future use
+                self.config.set('pungi', 'discs', str(discs))
                 self.doCreateMediarepo(split=True)
-            for disc in range(1, self.config.getint('pungi', 'discs') + 1): # cycle through the CD isos
+            for disc in range(1, discs + 1): # cycle through the CD isos
                 isoname = '%s-%s-%s-disc%s.iso' % (self.config.get('pungi', 'iso_basename'), self.config.get('pungi', 'version'), 
                     self.config.get('pungi', 'arch'), disc)
                 isofile = os.path.join(self.isodir, isoname)
