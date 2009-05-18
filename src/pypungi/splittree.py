@@ -292,6 +292,15 @@ self.reserve_size : Additional size needed to be reserved on the first disc.
 
 
 
+    def createSRPMSplitDir(self):
+        """Create a new SRPM split dir to overflow into, linking common files"""
+
+        i = self.src_list[-1]
+        os.makedirs("%s-disc%d/SRPMS" % (self.dist_dir, i))
+        self.linkFiles(self.dist_dir, "%s-disc%d" %(self.dist_dir, i), self.common_files)
+
+
+
     def splitRPMS(self, reportSize = 1):
         """Creates links in the split dirs for the RPMs"""
         
@@ -398,12 +407,11 @@ self.reserve_size : Additional size needed to be reserved on the first disc.
 
     def splitSRPMS(self):
         """Puts the srpms onto the SRPM split discs. The packages are
-        ordered by size, and placed one by one on the disc with the
-        most space available"""
+        ordered by size, and placed one by one on the disc with
+        space available"""
 
         srpm_list = []
 
-        srpm_disc_list = self.src_list
         # create a list of [[size, srpm]]
         for srpm in os.listdir("%s" % self.src_dir):
             if not srpm.endswith('.rpm'):
@@ -414,24 +422,36 @@ self.reserve_size : Additional size needed to be reserved on the first disc.
         srpm_list.sort()
         srpm_list.reverse()
 
+        # Make the first src disc dir
+        self.src_list = [1]
+        self.createSRPMSplitDir()
+        # Create a dict of src discs to current size.
+        src_dict = {1: 0}
+
         for i in range(0, len(srpm_list)):
             # make sure that the src disc is within the size limits,
-            # if it isn't, pull it out of the list. If there's only
-            # one disk make loud noises over the overflow
-            for disc in self.src_list:
-                if self.getIsoSize("%s-disc%s" % (self.dist_dir, disc)) > self.target_size:
-                    if len(self.src_list) < 2:
-                        self.logfile.append("Overflowing %s on disc%d" % (srpm_list[i][1], disc))
-                        break
-                    else:
-                        discsize = self.getIsoSize("%s-disc%d" % (self.dist_dir, disc))
-                        self.logfile.append("%s-disc%d size: %s" % (self.arch, disc, discsize))
-                        self.src_list.pop(self.src_list.index(disc))
+            # if it isn't, make a new one.
+            srpmsize = srpm_list[i][0]
+            fit = None
+
+            for disc in src_dict.keys():
+                if src_dict[disc] + srpmsize < self.target_size:
+                    fit = disc
+                    continue
+
+            if not fit:
+                # We couldn't find a disc to fit on, make a new one
+                self.src_list.append(self.src_list[-1] + 1)
+                self.createSRPMSplitDir()
+                fit = src_list[-1]
+
+            # now link the srpm to the disc we found (or created) that had room
             os.link("%s/%s" % (self.src_dir, srpm_list[i][1]),
-                    "%s-disc%d/SRPMS/%s" % (self.dist_dir, self.getLeastUsedTree()[1], srpm_list[i][1]))
+                    "%s-disc%d/SRPMS/%s" % (self.dist_dir, fit, srpm_list[i][1]))
+            src_dict[fit] = src_dict.setdefault(fit, 0) + srpmsize
         
-        for i in range(0, len(srpm_disc_list)):
-            self.reportSizes(srpm_disc_list[i])
+        for i in range(0, len(src_list)):
+            self.reportSizes(src_list[i])
 
 
     def main(self):
