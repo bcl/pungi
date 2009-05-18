@@ -952,7 +952,6 @@ class Pungi(pypungi.PungiBase):
         timber.target_size = self.config.getfloat('pungi', 'cdsize') * 1024 * 1024
         #timber.total_discs = self.config.getint('pungi', 'discs')
         #timber.bin_discs = self.config.getint('pungi', 'discs')
-        timber.src_discs = self.config.getint('pungi', 'discs')
         #timber.release_str = '%s %s' % (self.config.get('pungi', 'name'), self.config.get('pungi', 'version'))
         #timber.package_order_file = os.path.join(self.config.get('pungi', 'destdir'), 'pkgorder-%s' % self.config.get('pungi', 'arch'))
         timber.dist_dir = os.path.join(self.config.get('pungi', 'destdir'),
@@ -965,18 +964,6 @@ class Pungi(pypungi.PungiBase):
                                       'source', 'SRPMS')
         #timber.product_path = self.config.get('pungi', 'product_path')
         #timber.reserve_size =  
-        # Set this ourselves, for creating our dirs ourselves
-        timber.src_list = range(1, timber.src_discs + 1)
-
-        # this is stolen from splittree.py in anaconda-runtime.  Blame them if its ugly (:
-        for i in range(timber.src_list[0], timber.src_list[-1] + 1):
-                pypungi.util._ensuredir('%s-disc%d/SRPMS' % (timber.dist_dir, i),
-                                   self.logger,
-                                   force=self.config.getboolean('pungi', 'force'),
-                                   clean=True)
-                timber.linkFiles(timber.dist_dir,
-                               "%s-disc%d" %(timber.dist_dir, i),
-                               timber.common_files)
 
         self.logger.info("Splitting SRPMs")
         timber.splitSRPMS()
@@ -1169,6 +1156,12 @@ cost=500
             discs = 0
             if self.config.get('pungi', 'arch') == 'source':
                 self.doSplitSRPMs()
+                dirs = os.listdir(self.archdir)
+                for dir in dirs:
+                    if dir.startswith('%s-disc' % os.path.basename(self.topdir)):
+                        discs += 1
+                # Set the number of discs for future use
+                self.config.set('pungi', 'discs', str(discs))
             else:
                 self.doPackageorder()
                 self.doSplittree()

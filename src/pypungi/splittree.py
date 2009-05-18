@@ -443,15 +443,15 @@ self.reserve_size : Additional size needed to be reserved on the first disc.
                 # We couldn't find a disc to fit on, make a new one
                 self.src_list.append(self.src_list[-1] + 1)
                 self.createSRPMSplitDir()
-                fit = src_list[-1]
+                fit = self.src_list[-1]
 
             # now link the srpm to the disc we found (or created) that had room
             os.link("%s/%s" % (self.src_dir, srpm_list[i][1]),
                     "%s-disc%d/SRPMS/%s" % (self.dist_dir, fit, srpm_list[i][1]))
             src_dict[fit] = src_dict.setdefault(fit, 0) + srpmsize
         
-        for i in range(0, len(src_list)):
-            self.reportSizes(src_list[i])
+        for i in range(0, len(self.src_list)):
+            self.reportSizes(self.src_list[i])
 
 
     def main(self):
