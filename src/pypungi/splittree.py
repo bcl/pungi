@@ -249,7 +249,7 @@ self.reserve_size : Additional size needed to be reserved on the first disc.
 
         # Set the bin_list to 1 to start with.  We'll add more as needed.
         self.bin_list = [1]
-        p = os.popen('find %s/ -type f -not -name .discinfo -not -name "*\.rpm" -not -name "boot.iso"' % self.dist_dir, 'r')
+        p = os.popen('find %s/ -type f -not -name .discinfo -not -name "*\.rpm" -not -name "*boot.iso"' % self.dist_dir, 'r')
         filelist = p.read()
         p.close()
         filelist = string.split(filelist)
