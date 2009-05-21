@@ -1,7 +1,7 @@
 %{!?python_sitelib: %define python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")}
 
 Name:           pungi
-Version:        2.0.15
+Version:        2.0.16
 Release:        1%{?dist}
 Summary:        Distribution compose tool
 
@@ -56,6 +56,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Thu May 21 2009 Jesse Keating <jkeating@redhat.com> - 2.0.16-1
+- Fix boot.iso being on DVD images
+
 * Tue May 19 2009 Jesse Keating <jkeating@redhat.com> - 2.0.15-1
 - Split media on demand rather than via guess work.
 
