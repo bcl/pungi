@@ -180,66 +180,6 @@ self.reserve_size : Additional size needed to be reserved on the first disc.
                 os.link(src, dest)
             except OSError, (errno, msg):
                 pass
-            
-
-
-    def createSplitDirs(self):
-        """Figures out which discs are for RPMs, which are for SRPMs,
-        and which are shared. Also creates links for files on disc1
-        and files which are common across all discs"""
-
-        if self.bin_discs > self.total_discs or self.src_discs > self.total_discs:
-            raise RuntimeError, "CRITICAL ERROR : Number of discs specified exceeds the total number of discs"
-
-        # get a list of discs for each type of disc. shared_list will
-        # be returned for sorting out which discs SRPMS can land on
-        self.bin_list = range(1, self.bin_discs + 1)
-        self.src_list = range(self.total_discs - self.src_discs + 1, self.total_discs + 1)
-        self.shared_list = range(self.total_discs - self.src_discs + 1, self.bin_discs + 1)
-
-
-        for i in range(self.bin_list[0], self.bin_list[-1] + 1):
-            if i == 1:
-                p = os.popen('find %s/ -type f -not -name .discinfo -not -name "*\.rpm" -not -name "boot.iso"' % self.dist_dir, 'r')
-                filelist = p.read()
-                p.close()
-                filelist = string.split(filelist)
-                
-                p = os.popen('find %s/ -type d -not -name SRPMS' % self.dist_dir, 'r')
-                dirlist = p.read()
-                p.close()
-                dirlist = string.split(dirlist)
-                
-                dont_create = []
-                # we need to clean up the dirlist first. We don't want everything yet
-                for j in range(0, len(dirlist)):
-                    dirlist[j] = string.replace(dirlist[j], self.dist_dir, '')
-
-
-                # now create the dirs for disc1
-                for j in range(0, len(dirlist)):
-                    os.makedirs("%s-disc%d/%s" % (self.dist_dir, i, dirlist[j]))
-                                
-                for j in range(0, len(filelist)):
-                    filelist[j] = string.replace(filelist[j], self.dist_dir, '')
-                    try:
-                        os.link(os.path.normpath("%s/%s" % (self.dist_dir, filelist[j])),
-                                os.path.normpath("%s-disc%d/%s" % (self.dist_dir, i, filelist[j])))
-                    except OSError, (errno, msg):
-                        pass
-
-            else:
-                os.makedirs("%s-disc%d/%s" % (self.dist_dir, i, self.product_path))
-                self.linkFiles(self.dist_dir, "%s-disc%d" %(self.dist_dir, i), self.common_files)
-            self.createDiscInfo(i)
-            
-        if (self.src_discs != 0):
-            for i in range(self.src_list[0], self.src_list[-1] + 1):
-                os.makedirs("%s-disc%d/SRPMS" % (self.dist_dir, i))
-                self.linkFiles(self.dist_dir,
-                               "%s-disc%d" %(self.dist_dir, i),
-                               self.common_files)
-                self.createDiscInfo(i)
 
 
 
@@ -392,16 +332,6 @@ self.reserve_size : Additional size needed to be reserved on the first disc.
 
             self.reportSizes(disc, firstpkg=firstpackage, lastpkg=lastpackage)
 
-        
-
-    def getLeastUsedTree(self):
-        """Returns the least full tree to use for SRPMS"""
-
-        sizes = []
-        for i in range(0, len(self.src_list)):
-            sizes.append([self.getIsoSize("%s-disc%d" % (self.dist_dir, self.src_list[i])), self.src_list[i]])
-        sizes.sort()
-        return sizes[0]
 
 
 
