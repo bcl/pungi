@@ -46,7 +46,7 @@ import yum
 class PackageOrderer(yum.YumBase):
     def __init__(self, arch=None):
         yum.YumBase.__init__(self)
-        self.arch = arch
+        self._arch = arch
 
     def _transactionDataFactory(self):
         return yum.transactioninfo.SortableTransactionData()
@@ -71,7 +71,7 @@ class PackageOrderer(yum.YumBase):
         self.repos.setCache(0) 
         self.doRepoSetup()
 
-        self.doSackSetup(rpmUtils.arch.getArchList(self.arch))
+        self.doSackSetup(rpmUtils.arch.getArchList(self._arch))
         self.doTsSetup()
         self.doGroupSetup()
         self.repos.populateSack('enabled', 'filelists')
