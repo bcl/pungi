@@ -141,21 +141,21 @@ self.reserve_size : Additional size needed to be reserved on the first disc.
 
         # if start_time isn't set then we haven't got this info yet
         if not self.start_time:
-            file = open("%s/.discinfo" % (self.dist_dir), 'r')
-            self.start_time = file.readline()[:-1]
-            self.release_str = file.readline()[:-1]
-            self.real_arch = file.readline()[:-1]
+            infofile = open("%s/.discinfo" % (self.dist_dir), 'r')
+            self.start_time = infofile.readline()[:-1]
+            self.release_str = infofile.readline()[:-1]
+            self.real_arch = infofile.readline()[:-1]
 
             #if self.real_arch != self.arch:
             #    raise RuntimeError, "CRITICAL ERROR : self.real_arch is not the same as self.arch"
 
             # skip the disc number line from the unified tree
-            file.readline()
+            infofile.readline()
 
             # basedir, packagedir, and pixmapdir
-            self.dir_info = [file.readline()[:-1], file.readline()[:-1], file.readline()[:-1]]
+            self.dir_info = [infofile.readline()[:-1], infofile.readline()[:-1], infofile.readline()[:-1]]
 
-            file.close()
+            infofile.close()
 
         discinfo_file = open("%s-disc%d/.discinfo" % (self.dist_dir, discnumber), 'w')
         discinfo_file.write("%s\n" % self.start_time)
@@ -171,9 +171,9 @@ self.reserve_size : Additional size needed to be reserved on the first disc.
     def linkFiles(self, src_dir, dest_dir, filelist):
         """Creates hardlinks from files in the unified dir to files in the split dirs. This is not for RPMs or SRPMs"""
 
-        for file in filelist:
-            src = "%s/%s" % (src_dir, file)
-            dest = "%s/%s" % (dest_dir, file)
+        for srcfile in filelist:
+            src = "%s/%s" % (src_dir, srcfile)
+            dest = "%s/%s" % (dest_dir, srcfile)
             try:
                 os.link(src, dest)
             except OSError, (errno, msg):
@@ -267,12 +267,12 @@ self.reserve_size : Additional size needed to be reserved on the first disc.
         orderedlist = []
 
         # read the ordered pacakge list into orderedlist
-        file = open(self.package_order_file, 'r')
-        for pkg_nvr in file.readlines():
+        orderfile = open(self.package_order_file, 'r')
+        for pkg_nvr in orderfile.readlines():
             pkg_nvr = string.rstrip(pkg_nvr)
             if pkg_nvr[0:8] != "warning:":
                 orderedlist.append(pkg_nvr)
-        file.close()
+        orderfile.close()
 
         # last package is the last package placed on the disc
         firstpackage = ''
