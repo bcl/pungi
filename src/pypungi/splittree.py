@@ -23,8 +23,6 @@ import os
 import os.path
 import string
 import getopt
-import time
-import types
 import rpm
 import subprocess
 
@@ -199,7 +197,6 @@ self.reserve_size : Additional size needed to be reserved on the first disc.
         p.close()
         dirlist = string.split(dirlist)
 
-        dont_create = []
         # we need to clean up the dirlist first. We don't want everything yet
         for j in range(0, len(dirlist)):
             dirlist[j] = string.replace(dirlist[j], self.dist_dir, '')
@@ -256,7 +253,7 @@ self.reserve_size : Additional size needed to be reserved on the first disc.
             filesize = os.path.getsize("%s/%s/%s" % (self.dist_dir, pkgdir, filename))
             try:
                 pkg_nvr = nvra("%s/%s/%s" %(self.dist_dir, pkgdir, filename))
-            except rpm.error, e:
+            except rpm.error:
                 continue
 
             if packages.has_key(pkg_nvr):
@@ -405,8 +402,6 @@ def usage(theerror):
 
 
 if "__main__" == __name__:
-    import getopt
-
     timber = Timber()
 
     theargs = ["arch=", "total-discs=", "bin-discs=", 'disc-size=',
