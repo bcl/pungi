@@ -42,45 +42,45 @@ def nvra(pkgfile):
     os.close(fd)
     return "%s-%s-%s.%s.rpm" %(h['name'], h['version'], h['release'],
                                h['arch'])
-    
+
 
 class Timber:
     """Split trees like no other"""
     def __init__(self):
-        
+
         """self.release_str : the name and version of the product"
-     
+
 self.package_order_file : the location of the file which has
 the package ordering
-        
+
 self.arch : the arch the tree is intended for
-        
+
 self.real_arch : the arch found in the unified tree's
 .discinfo file
-        
+
 self.dist_dir : the loaction of the unified tree
 
 self.src_dir : the location of the unified SRPM dir
-        
+
 self.start_time : the timestamp that's in .discinfo files
-        
+
 self.dir_info : The info other than start_time that goes
 into the .discinfo files. The info should already exist
 after running buildinstall in the unified tree
-        
+
 self.total_discs : total number of discs
-        
+
 self.total_bin_discs : total number of discs with RPMs
-        
+
 self.total_srpm_discs : total number of discs with SRPMs
-        
+
 self.reverse_sort_srpms : sort the srpms in reverse order to
 fit. Usually only needed if we share a disc between SRPMs
 and RPMs. Set to 1 to turn on.
 
 self.reserve_size : Additional size needed to be reserved on the first disc.
 """
-        
+
         self.reserve_size = 0
         self.disc_size = 640.0
         self.target_size = self.disc_size * 1024.0 * 1024
@@ -124,7 +124,7 @@ self.reserve_size : Additional size needed to be reserved on the first disc.
 
     def reportSizes(self, disc, firstpkg=None, lastpkg=None):
         """appends to self.logfile"""
-        
+
         if firstpkg:
             self.logfile.append("First package on disc%d: %s" % (disc, firstpkg))
         if lastpkg:
@@ -134,7 +134,7 @@ self.reserve_size : Additional size needed to be reserved on the first disc.
         self.logfile.append("%s-disc%d size: %s" % (self.arch, disc, discsize))
 
 
-        
+
     def createDiscInfo(self, discnumber):
         """creates the .discinfo files in the split trees"""
 
@@ -153,7 +153,7 @@ self.reserve_size : Additional size needed to be reserved on the first disc.
 
             # skip the disc number line from the unified tree
             file.readline()
-            
+
             # basedir, packagedir, and pixmapdir
             self.dir_info = [file.readline()[:-1], file.readline()[:-1], file.readline()[:-1]]
 
@@ -168,8 +168,8 @@ self.reserve_size : Additional size needed to be reserved on the first disc.
             discinfo_file.write(self.dir_info[i] + '\n')
         discinfo_file.close()
 
-        
-            
+
+
     def linkFiles(self, src_dir, dest_dir, filelist):
         """Creates hardlinks from files in the unified dir to files in the split dirs. This is not for RPMs or SRPMs"""
 
@@ -243,11 +243,11 @@ self.reserve_size : Additional size needed to be reserved on the first disc.
 
     def splitRPMS(self, reportSize = 1):
         """Creates links in the split dirs for the RPMs"""
-        
+
         packages = {}
 
         pkgdir = "%s" %(self.product_path,)
-            
+
         rpmlist = os.listdir("%s/%s" %(self.dist_dir, pkgdir))
         rpmlist.sort()
 
@@ -258,7 +258,7 @@ self.reserve_size : Additional size needed to be reserved on the first disc.
                 pkg_nvr = nvra("%s/%s/%s" %(self.dist_dir, pkgdir, filename))
             except rpm.error, e:
                 continue
-            
+
             if packages.has_key(pkg_nvr):
                 # append in case we have multiple packages with the
                 # same n-v-r. Ex: the kernel has multiple n-v-r's for
@@ -266,9 +266,9 @@ self.reserve_size : Additional size needed to be reserved on the first disc.
                 packages[pkg_nvr].append(filename)
             else:
                 packages[pkg_nvr] = [filename]
-                
+
         orderedlist = []
-        
+
         # read the ordered pacakge list into orderedlist
         file = open(self.package_order_file, 'r')
         for pkg_nvr in file.readlines():
@@ -280,7 +280,7 @@ self.reserve_size : Additional size needed to be reserved on the first disc.
         # last package is the last package placed on the disc
         firstpackage = ''
         lastpackage = ''
-        
+
         # packagenum resets when we change discs. It's used to
         # determine the first package in the split tree and that's
         # about it
@@ -305,7 +305,7 @@ self.reserve_size : Additional size needed to be reserved on the first disc.
                         maxsize = self.target_size - self.comps_size - self.reserve_size
                 else:
                     maxsize = self.target_size
-                    
+
                 packagenum = packagenum + 1
 
                 if packagenum == 1:
@@ -379,7 +379,7 @@ self.reserve_size : Additional size needed to be reserved on the first disc.
             os.link("%s/%s" % (self.src_dir, srpm_list[i][1]),
                     "%s-disc%d/SRPMS/%s" % (self.dist_dir, fit, srpm_list[i][1]))
             src_dict[fit] = src_dict.setdefault(fit, 0) + srpmsize
-        
+
         for i in range(0, len(self.src_list)):
             self.reportSizes(self.src_list[i])
 
@@ -403,10 +403,10 @@ def usage(theerror):
     print """Usage: %s --arch=i386 --total-discs=8 --bin-discs=4 --src-discs=4 --release-string="distro name" --pkgorderfile=/tmp/pkgorder.12345 --distdir=/usr/src/someunifiedtree --srcdir=/usr/src/someunifiedtree/SRPMS --productpath=product""" % sys.argv[0]
     sys.exit(1)
 
-        
+
 if "__main__" == __name__:
     import getopt
-    
+
     timber = Timber()
 
     theargs = ["arch=", "total-discs=", "bin-discs=", 'disc-size=',
@@ -463,7 +463,7 @@ if "__main__" == __name__:
         timber.src_dir = options["--srcdir"]
     else:
         usage("You forgot to specify --srcdir")
-    
+
     if options.has_key("--productpath"):
         timber.product_path = options["--productpath"]
 
@@ -474,7 +474,7 @@ if "__main__" == __name__:
         timber.disc_size = float(options["--disc-size"])
 
     logfile = timber.main()
-    
+
     for logentry in range(0, len(logfile)):
         print logfile[logentry]
 
