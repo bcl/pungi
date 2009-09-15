@@ -111,7 +111,10 @@ def printMatchingPkgs(fpattern):
 def addPackages(ds, pkgLst):
     ds.initActionTs()
     for pkg in pkgLst:
-        ds.install(pattern=pkg)
+        try:
+            ds.install(pattern=pkg)
+        except yum.Errors.InstallError, e:
+            print >> sys.stderr, "Error adding %s: %s" % (pkg, e)
     ds.resolveDeps()
     processTransaction(ds)
 
