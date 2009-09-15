@@ -255,6 +255,7 @@ class Pungi(pypungi.PungiBase):
 
         reqs = po.requires
         provs = po.provides
+        added = []
 
         for req in reqs:
             if self.resolved_deps.has_key(req):
@@ -275,8 +276,10 @@ class Pungi(pypungi.PungiBase):
             for dep in depsack.returnNewestByNameArch():
                 self.ayum.tsInfo.addInstall(dep)
                 self.logger.info('Added %s.%s for %s.%s' % (dep.name, dep.arch, po.name, po.arch))
-           
+                added.append(dep)
             self.resolved_deps[req] = None
+        for add in added:
+            self.getPackageDeps(add)
 
     def getPackagesFromGroup(self, group):
         """Get a list of package names from a ksparser group object
@@ -483,6 +486,7 @@ class Pungi(pypungi.PungiBase):
             for txmbr in self.ayum.tsInfo:
                 if txmbr.po.arch != 'src' and txmbr.po not in self.polist:
                     self.polist.append(txmbr.po)
+                    self.getPackageDeps(txmbr.po)
             self.srpms_build = list(self.srpmpolist)
             # Now that we've resolved deps, refresh the source rpm list
             self.getSRPMList()
@@ -508,6 +512,7 @@ class Pungi(pypungi.PungiBase):
             for txmbr in self.ayum.tsInfo:
                 if txmbr.po.arch != 'src' and txmbr.po not in self.polist:
                     self.polist.append(txmbr.po)
+                    self.getPackageDeps(po)
             self.srpms_fulltree = list(self.srpmpolist)
             # Now that we've resolved deps, refresh the source rpm list
             self.getSRPMList()
