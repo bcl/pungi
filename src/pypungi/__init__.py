@@ -501,7 +501,7 @@ class Pungi(pypungi.PungiBase):
             self.logger.info("Completing package set, pass %d" % (thepass,))
             for srpm in self.srpmpolist[len(self.srpms_fulltree):]:
                 for po in self.bin_by_src[srpm]:
-                    if po not in self.polist:
+                    if po not in self.polist and 'debuginfo' not in po.name:
                         self.logger.info("Adding %s.%s to complete package set" % (po.name, po.arch))
                         self.polist.append(po)
                         self.getPackageDeps(po)
