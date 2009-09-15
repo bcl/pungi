@@ -192,7 +192,7 @@ if __name__ == "__main__":
     addPackages(ds, ["kernel-*","dracut","mdadm"])
 
     # add the packages anaconda forces on us
-    addPackages(ds, ["authconfig", "chkconfig", "dracut", "rhpl", "system-config-firewall-tui"])
+    addPackages(ds, ["authconfig", "chkconfig", "dracut", "system-config-firewall-tui"])
 
     addGroups(ds, ["core", "base", "text-internet"])
 
