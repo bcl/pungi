@@ -219,7 +219,7 @@ if __name__ == "__main__":
 
     #Everthing else but kernels
     for po in ds.pkgSack.returnPackages():
-        if po.name.find("kernel") == -1:
+        if po.name.find("kernel-*") == -1:
             member = ds.tsInfo.addInstall(po)
 
     ds.resolveDeps()
