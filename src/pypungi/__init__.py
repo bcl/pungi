@@ -206,6 +206,8 @@ class Pungi(pypungi.PungiBase):
                 thisrepo.cost = repo.cost
             if repo.ignoregroups:
                 thisrepo.enablegroups = 0
+            if repo.proxy:
+                thisrepo.proxy = repo.proxy
             self.ayum.repos.add(thisrepo)
             self.ayum.repos.enableRepo(thisrepo.id)
             self.ayum._getRepos(thisrepo=thisrepo.id, doSetup = True)
