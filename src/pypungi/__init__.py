@@ -1142,6 +1142,11 @@ cost=500
                                 self.config.get('pungi', 'iso_basename'),
                                 self.config.get('pungi', 'version'),
                                 self.config.get('pungi', 'arch')))
+        # Write a line about what checksums are used.
+        # sha256sum is magic...
+        file = open(csumfile, 'w')
+        file.write('# The image checksum(s) are generated with sha256sum.\n')
+        file.close()
         self._doIsoChecksum(isofile, csumfile)
 
         # return the .discinfo file
