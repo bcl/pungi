@@ -1,7 +1,7 @@
 %{!?python_sitelib: %define python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")}
 
 Name:           pungi
-Version:        2.0.20
+Version:        2.1.0
 Release:        1%{?dist}
 Summary:        Distribution compose tool
 
@@ -56,6 +56,12 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Wed Apr 14 2010 Jesse Keating <jkeating@redhat.com> - 2.1.0-1
+- Update paths for new anaconda layout
+- Drop hints about checksum type
+- Add proxy support from the repo line in the kickstart file
+- Catch all kernel packages
+
 * Tue Sep 15 2009 Jesse Keating <jkeating@redhat.com> - 2.0.20-1
 - One more upstream pkgorder fix
 
