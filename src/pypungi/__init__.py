@@ -756,7 +756,7 @@ class Pungi(pypungi.PungiBase):
 
 
         # setup the buildinstall call
-        buildinstall = ['/usr/lib/anaconda-runtime/buildinstall']
+        buildinstall = ['/usr/libexec/anaconda/buildinstall']
         #buildinstall.append('TMPDIR=%s' % self.workdir) # TMPDIR broken in buildinstall
 
         buildinstall.append('--product')
@@ -1039,7 +1039,7 @@ cost=500
 
 
         isolist=[]
-        anaruntime = '/usr/lib/anaconda-runtime/boot'
+        anaruntime = '/usr/share/anaconda/boot'
         discinfofile = os.path.join(self.topdir, '.discinfo') # we use this a fair amount
 
         pypungi.util._ensuredir(self.isodir, self.logger,

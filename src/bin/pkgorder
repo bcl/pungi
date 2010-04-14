@@ -30,10 +30,7 @@ import string
 import sys
 import yum
 
-sys.path.append("/usr/lib/anaconda")
-sys.path.append("/usr/lib/booty")
-
-import anaconda_log
+from pyanaconda import anaconda_log
 import logging
 logger = logging.getLogger("anaconda")
 handler = logging.StreamHandler()
