@@ -30,7 +30,6 @@ import string
 import sys
 import yum
 
-from pyanaconda import anaconda_log
 import logging
 logger = logging.getLogger("anaconda")
 handler = logging.StreamHandler()
