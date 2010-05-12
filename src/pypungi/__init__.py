@@ -986,8 +986,10 @@ class Pungi(pypungi.PungiBase):
         compsfile = os.path.join(self.workdir, '%s-%s-comps.xml' % (self.config.get('pungi', 'name'), self.config.get('pungi', 'version')))
 
         if not split:
-            pypungi.util._ensuredir('%s-disc1' % self.topdir, self.logger, 
-                               clean=True) # rename this for single disc
+            pypungi.util._ensuredir('%s-disc1' % self.topdir, self.logger,
+                                    force=self.config.getboolean('pungi',
+                                                                 'force'),
+                                    clean=True) # rename this for single disc
             path = self.topdir
             basedir=None
         else:
