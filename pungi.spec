@@ -1,7 +1,7 @@
 %{!?python_sitelib: %define python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")}
 
 Name:           pungi
-Version:        2.1.0
+Version:        2.1.1
 Release:        1%{?dist}
 Summary:        Distribution compose tool
 
@@ -56,6 +56,11 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Fri Jun 04 2010 Jesse Keating <jkeating@redhat.com> - 2.1.1-1
+- Don't do multilib gathering.
+- fixes --force when compose fails during split-tree process. (npetrov)
+- fix pkgorder (npetrov)
+
 * Wed Apr 14 2010 Jesse Keating <jkeating@redhat.com> - 2.1.0-1
 - Update paths for new anaconda layout
 - Drop hints about checksum type
