@@ -175,7 +175,18 @@ class Pungi(pypungi.PungiBase):
             yumarch = arch
 
         self.ayum.compatarch = yumarch
-        arches = yum.rpmUtils.arch.getArchList(yumarch)
+        # Filter out all the multilib arches, anaconda won't use them.
+        full_archlist = set(yum.rpmUtils.arch.getArchList(yumarch))
+        compat_archinfo = yum.rpmUtils.arch.getMultiArchInfo(yumarch)
+        if not compat_archinfo:
+            arches = list(full_archlist)
+        else:
+            compat_archlist = set(yum.rpmUtils.arch.getArchList(compat_archinfo[0]))
+            newarchlist = list(full_archlist.difference(compat_archlist))
+            if 'noarch' not in newarchlist:
+                newarchlist.append('noarch')
+            arches = newarchlist
+
         arches.append('src') # throw source in there, filter it later
 
         # deal with our repos
