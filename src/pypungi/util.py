@@ -41,6 +41,11 @@ def _link(local, target, logger, force=False):
     if os.path.exists(target) and force:
         os.remove(target)
 
+    #check for broken links
+    if force and os.path.islink(target):
+        if not os.path.exists(os.readlink(target)):
+            os.remove(target)
+
     try:
         os.link(local, target)
     except OSError, e:

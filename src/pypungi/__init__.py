@@ -925,7 +925,11 @@ class Pungi(pypungi.PungiBase):
                 for regex in fileres:
                     if regex.match(filename) and not os.path.exists(os.path.join(self.topdir, filename)):
                         self.logger.info("Linking release note file %s" % filename)
-                        pypungi.util._link(os.path.join(dirpath, filename), os.path.join(self.topdir, filename), self.logger)
+                        pypungi.util._link(os.path.join(dirpath, filename),
+                                           os.path.join(self.topdir, filename),
+                                           self.logger,
+                                           force=self.config.getboolean('pungi',
+                                                                        'force'))
                         self.common_files.append(filename)
 
         # Walk the tree for our dirs
