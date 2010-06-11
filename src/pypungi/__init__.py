@@ -336,13 +336,16 @@ class Pungi(pypungi.PungiBase):
 
         return packages
 
-    def _addDefaultGroups(self):
+    def _addDefaultGroups(self, excludeGroups=[]):
         """Cycle through the groups and return at list of the ones that ara
            default."""
 
         # This is mostly stolen from anaconda.
         groups = map(lambda x: x.groupid,
             filter(lambda x: x.default, self.ayum.comps.groups))
+        
+        groups = [x for x in groups if x not in excludeGroups]
+        
         self.logger.debug('Add default groups %s' % groups)
         return groups
 
@@ -382,16 +385,21 @@ class Pungi(pypungi.PungiBase):
         final_pkgobjs = {} # The final list of package objects
         searchlist = [] # The list of package names/globs to search for
         matchdict = {} # A dict of objects to names
+        excludeGroups = [] #A list of groups for removal defined in the ks file
 
         # First remove the excludes
         self.ayum.excludePackages()
         
+        # Get the groups set for removal
+        for group in self.ksparser.handler.packages.excludedGroupList:
+            excludeGroups.append(str(group)[1:])
+
         # Always add the core group
         self.ksparser.handler.packages.add(['@core'])
 
         # Check to see if we want all the defaults
         if self.ksparser.handler.packages.default:
-            for group in self._addDefaultGroups():
+            for group in self._addDefaultGroups(excludeGroups):
                 self.ksparser.handler.packages.add(['@%s' % group])
 
         # Check to see if we need the base group
