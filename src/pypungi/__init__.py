@@ -343,9 +343,9 @@ class Pungi(pypungi.PungiBase):
         # This is mostly stolen from anaconda.
         groups = map(lambda x: x.groupid,
             filter(lambda x: x.default, self.ayum.comps.groups))
-        
+
         groups = [x for x in groups if x not in excludeGroups]
-        
+
         self.logger.debug('Add default groups %s' % groups)
         return groups
 
