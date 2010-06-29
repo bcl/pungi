@@ -162,6 +162,8 @@ class Pungi(pypungi.PungiBase):
         yumvars['basearch'] = yum.rpmUtils.arch.getBaseArch(myarch=self.config.get('pungi', 'arch'))
         yumconf.yumvar = yumvars
         self.ayum._conf = yumconf
+        # I have no idea why this fixes a traceback, but James says it does.
+        del self.ayum.prerepoconf
         self.ayum.repos.setCacheDir(self.ayum.conf.cachedir)
 
         arch = self.config.get('pungi', 'arch')
