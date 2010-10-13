@@ -184,8 +184,9 @@ if __name__ == "__main__":
     ds = PackageOrderer(arch=arch)
     ds.setup(fn=config, excludes=options.excludeList, root = testpath)
     
-    # hack, hack, hack... make sure iscsi ends up on disc1 (#208832)
-    addPackages(ds, ["kernel-*","dracut","mdadm"])
+    # hack, hack, hack... make sure initrd stuff ends up on disc1
+    # bugs #208832 #642557
+    addPackages(ds, ["kernel-*","dracut","mdadm","lvm"])
 
     # add the packages anaconda forces on us
     addPackages(ds, ["authconfig", "chkconfig", "dracut", "system-config-firewall-tui"])
