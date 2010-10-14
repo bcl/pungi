@@ -186,7 +186,9 @@ if __name__ == "__main__":
     
     # hack, hack, hack... make sure initrd stuff ends up on disc1
     # bugs #208832 #642557
-    addPackages(ds, ["kernel-*","dracut","mdadm","lvm"])
+    addPackages(ds, ["kernel-*", "dracut", "mdadm", "lvm2", "device-mapper",
+                     "plymouth", "cryptsetup-luks", "dmraid", "kbd",
+                     "plymouth-scripts", "dracut-network"])
 
     # add the packages anaconda forces on us
     addPackages(ds, ["authconfig", "chkconfig", "dracut", "system-config-firewall-tui"])
