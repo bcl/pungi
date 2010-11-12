@@ -120,7 +120,7 @@ def main():
            mypungi.doBuildinstall()
 
         if opts.do_all or opts.do_createiso:
-           mypungi.doCreateIsos(split=opts.nosplitmedia)
+           mypungi.doCreateIsos()
 
     # Do things slightly different for src.
     if opts.sourceisos:
@@ -178,8 +178,6 @@ if __name__ == '__main__':
           help='disable gathering of source packages (optional)')
         parser.add_option("--nodebuginfo", action="store_true", dest="nodebuginfo",
           help='disable gathering of debuginfo packages (optional)')
-        parser.add_option("--nosplitmedia", action="store_false", dest="nosplitmedia", default=True,
-          help='disable creation of split media (optional)')
         parser.add_option("--sourceisos", default=False, action="store_true", dest="sourceisos",
           help='Create the source isos (other arch runs must be done)')
         parser.add_option("--force", default=False, action="store_true",
