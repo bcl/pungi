@@ -10,7 +10,7 @@ setup(name='pungi',
       license='GPLv2',
       package_dir = {'': 'src'}, 
       packages = ['pypungi'],
-      scripts = ['src/bin/pungi.py', 'src/bin/pkgorder'],
+      scripts = ['src/bin/pungi.py'],
       data_files=[('/usr/share/pungi', glob.glob('share/*'))]
       )
 
