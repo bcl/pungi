@@ -24,7 +24,6 @@ import urlgrabber.progress
 import subprocess
 import createrepo
 import ConfigParser
-import pypungi.splittree
 
 class MyConfigParser(ConfigParser.ConfigParser):
     """A subclass of ConfigParser which does not lowercase options"""
@@ -693,7 +692,7 @@ class Pungi(pypungi.PungiBase):
             return subfile.replace(basedir + os.path.sep, '')
         
     def _makeMetadata(self, path, cachedir, comps=False, repoview=False, repoviewtitle=False,
-                      baseurl=False, output=False, basedir=False, split=False, update=True):
+                      baseurl=False, output=False, basedir=False, update=True):
         """Create repodata and repoview."""
         
         conf = createrepo.MetaDataConfig()
@@ -712,12 +711,7 @@ class Pungi(pypungi.PungiBase):
             conf.basedir = basedir
         if baseurl:
             conf.baseurl = baseurl
-        if split:
-            conf.split = True
-            conf.directories = split
-            repomatic = createrepo.SplitMetaDataGenerator(conf)
-        else:
-            repomatic = createrepo.MetaDataGenerator(conf)
+        repomatic = createrepo.MetaDataGenerator(conf)
         self.logger.info('Making repodata')
         repomatic.doPkgMetadata()
         repomatic.doRepoMetadata()
@@ -872,22 +866,6 @@ class Pungi(pypungi.PungiBase):
         treeinfo.write(treefile)
         treefile.close()
 
-    def doPackageorder(self):
-        """Run anaconda-runtime's pkgorder on the tree, used for splitting media."""
-
-
-        pkgorderfile = open(os.path.join(self.workdir, 'pkgorder-%s' % self.config.get('pungi', 'arch')), 'w')
-        # setup the command
-        pkgorder = ['/usr/bin/pkgorder']
-        #pkgorder.append('TMPDIR=%s' % self.workdir)
-        pkgorder.append(self.topdir)
-        pkgorder.append(self.config.get('pungi', 'arch'))
-        pkgorder.append(self.config.get('pungi', 'product_path'))
-
-        # run the command
-        pypungi.util._doRunCommand(pkgorder, self.logger, output=pkgorderfile)
-        pkgorderfile.close()
-
     def doGetRelnotes(self):
         """Get extra files from packages in the tree to put in the topdir of
            the tree."""
@@ -950,59 +928,8 @@ class Pungi(pypungi.PungiBase):
                         self.logger.info("Copying release note dir %s" % directory)
                         shutil.copytree(os.path.join(dirpath, directory), os.path.join(self.topdir, directory))
         
-    def doSplittree(self):
-        """Use anaconda-runtime's splittree to split the tree into appropriate
-           sized chunks."""
-
-
-        timber = splittree.Timber()
-        timber.arch = self.config.get('pungi', 'arch')
-        timber.disc_size = self.config.getfloat('pungi', 'cdsize')
-        timber.src_discs = 0
-        timber.release_str = '%s %s' % (self.config.get('pungi', 'name'), self.config.get('pungi', 'version'))
-        timber.package_order_file = os.path.join(self.workdir, 'pkgorder-%s' % self.config.get('pungi', 'arch'))
-        timber.dist_dir = self.topdir
-        timber.src_dir = os.path.join(self.config.get('pungi', 'destdir'), self.config.get('pungi', 'version'), 'source', 'SRPMS')
-        timber.product_path = self.config.get('pungi', 'product_path')
-        timber.common_files = self.common_files
-        timber.comps_size = 0
-        #timber.reserve_size =  
-
-        self.logger.info("Running splittree.")
-
-        output = timber.main()
-        if output:
-            self.logger.debug("Output from splittree: %s" % '\n'.join(output))
-
-    def doSplitSRPMs(self):
-        """Use anaconda-runtime's splittree to split the srpms into appropriate
-           sized chunks."""
-
-
-        timber = splittree.Timber()
-        timber.arch = self.config.get('pungi', 'arch')
-        timber.target_size = self.config.getfloat('pungi', 'cdsize') * 1024 * 1024
-        #timber.total_discs = self.config.getint('pungi', 'discs')
-        #timber.bin_discs = self.config.getint('pungi', 'discs')
-        #timber.release_str = '%s %s' % (self.config.get('pungi', 'name'), self.config.get('pungi', 'version'))
-        #timber.package_order_file = os.path.join(self.config.get('pungi', 'destdir'), 'pkgorder-%s' % self.config.get('pungi', 'arch'))
-        timber.dist_dir = os.path.join(self.config.get('pungi', 'destdir'),
-                                       self.config.get('pungi', 'version'),
-                                       self.config.get('pungi', 'flavor'),
-                                       'source', 'SRPMS')
-        timber.src_dir = os.path.join(self.config.get('pungi', 'destdir'),
-                                      self.config.get('pungi', 'version'),
-                                      self.config.get('pungi', 'flavor'),
-                                      'source', 'SRPMS')
-        #timber.product_path = self.config.get('pungi', 'product_path')
-        #timber.reserve_size =  
-
-        self.logger.info("Splitting SRPMs")
-        timber.splitSRPMS()
-        self.logger.info("splitSRPMS complete")
-
-    def doCreateMediarepo(self, split=False):
-        """Create the split metadata for the isos"""
+    def doCreateMediarepo(self):
+        """Create the metadata for the iso"""
 
 
         discinfo = open(os.path.join(self.topdir, '.discinfo'), 'r').readlines()
@@ -1010,25 +937,18 @@ class Pungi(pypungi.PungiBase):
 
         compsfile = os.path.join(self.workdir, '%s-%s-comps.xml' % (self.config.get('pungi', 'name'), self.config.get('pungi', 'version')))
 
-        if not split:
-            pypungi.util._ensuredir('%s-disc1' % self.topdir, self.logger,
-                                    force=self.config.getboolean('pungi',
-                                                                 'force'),
-                                    clean=True) # rename this for single disc
-            path = self.topdir
-            basedir=None
-        else:
-            path = '%s-disc1' % self.topdir
-            basedir = path
-            split=[]
-            for disc in range(1, self.config.getint('pungi', 'discs') + 1):
-                split.append('%s-disc%s' % (self.topdir, disc))
+        pypungi.util._ensuredir('%s-disc1' % self.topdir, self.logger,
+                                force=self.config.getboolean('pungi',
+                                                             'force'),
+                                clean=True) # rename this for single disc
+        path = self.topdir
+        basedir=None
             
         # set up the process
         self._makeMetadata(path, self.config.get('pungi', 'cachedir'), compsfile, repoview=False, 
                                                  baseurl='media://%s' % mediaid, 
                                                  output='%s-disc1' % self.topdir, 
-                                                 basedir=basedir, split=split, update=False)
+                                                 basedir=basedir, update=False)
 
         # Write out a repo file for the disc to be used on the installed system
         self.logger.info('Creating media repo file.')
@@ -1061,8 +981,8 @@ cost=500
             sys.exit(1)
         checkfile.close()
 
-    def doCreateIsos(self, split=True):
-        """Create isos of the tree, optionally splitting the tree for split media."""
+    def doCreateIsos(self):
+        """Create iso of the tree."""
 
 
         isolist=[]
@@ -1107,7 +1027,7 @@ cost=500
         treesize = treesize * 2048 / 1024 / 1024
 
         if not self.config.get('pungi', 'arch') == 'source':
-            self.doCreateMediarepo(split=False)
+            self.doCreateMediarepo()
 
         if treesize > 700: # we're larger than a 700meg CD
             isoname = '%s-%s-%s-DVD.iso' % (self.config.get('pungi', 'iso_basename'), self.config.get('pungi', 'version'), 
@@ -1119,7 +1039,7 @@ cost=500
         isofile = os.path.join(self.isodir, isoname)
 
         if not self.config.get('pungi', 'arch') == 'source':
-            # move the main repodata out of the way to use the split repodata
+            # move the main repodata out of the way to use the media repodata
             if os.path.isdir(os.path.join(self.config.get('pungi', 'destdir'), 
                                           'repodata-%s' % self.config.get('pungi', 'arch'))):
                 shutil.rmtree(os.path.join(self.config.get('pungi', 'destdir'), 
@@ -1189,71 +1109,6 @@ cost=500
 
         # Write out a line describing the media
         self.writeinfo('media: %s' % self.mkrelative(isofile))
-
-        # See if our tree size is big enough and we want to make split media
-        if treesize > 700 and split:
-            discs = 0
-            if self.config.get('pungi', 'arch') == 'source':
-                self.doSplitSRPMs()
-                dirs = os.listdir(self.archdir)
-                for dir in dirs:
-                    if dir.startswith('%s-disc' % os.path.basename(self.topdir)):
-                        discs += 1
-                # Set the number of discs for future use
-                self.config.set('pungi', 'discs', str(discs))
-            else:
-                self.doPackageorder()
-                self.doSplittree()
-                # Figure out how many discs splittree made for us
-                dirs = os.listdir(self.archdir)
-                for dir in dirs:
-                    if dir.startswith('%s-disc' % os.path.basename(self.topdir)):
-                        discs += 1
-                # Set the number of discs for future use
-                self.config.set('pungi', 'discs', str(discs))
-                self.doCreateMediarepo(split=True)
-            for disc in range(1, discs + 1): # cycle through the CD isos
-                isoname = '%s-%s-%s-disc%s.iso' % (self.config.get('pungi', 'iso_basename'), self.config.get('pungi', 'version'), 
-                    self.config.get('pungi', 'arch'), disc)
-                isofile = os.path.join(self.isodir, isoname)
-
-                extraargs = []
-
-                if disc == 1: # if this is the first disc, we want to set boot flags
-                    if self.config.get('pungi', 'arch') == 'i386' or self.config.get('pungi', 'arch') == 'x86_64':
-                        extraargs.extend(x86bootargs)
-                    elif self.config.get('pungi', 'arch') == 'ia64':
-                        extraargs.extend(ia64bootargs)
-                    elif self.config.get('pungi', 'arch') == 'ppc':
-                        extraargs.extend(ppcbootargs)
-                        extraargs.append(os.path.join('%s-disc%s' % (self.topdir, disc), "ppc/mac"))
-                    elif self.config.get('pungi', 'arch') == 'sparc':
-                        extraargs.extend(sparcbootargs)
-
-                extraargs.append('-V')
-                extraargs.append('%s %s %s Disc %s' % (self.config.get('pungi', 'name'),
-                    self.config.get('pungi', 'version'), self.config.get('pungi', 'arch'), disc))
-
-                extraargs.append('-o')
-                extraargs.append(isofile)
-
-                extraargs.append(os.path.join('%s-disc%s' % (self.topdir, disc)))
-
-                # run the command
-                pypungi.util._doRunCommand(mkisofs + extraargs, self.logger)
-
-                # implant md5 for mediacheck on all but source arches
-                if not self.config.get('pungi', 'arch') == 'source':
-                    pypungi.util._doRunCommand(['/usr/bin/implantisomd5', isofile], self.logger)
-
-                # shove the checksum into a file
-                self._doIsoChecksum(isofile, csumfile)
-
-                # keep track of the CD images we've written
-                isolist.append(self.mkrelative(isofile))
-
-            # Write out a line describing the CD set
-            self.writeinfo('mediaset: %s' % ' '.join(isolist))
 
         # Now link the boot iso
         if not self.config.get('pungi', 'arch') == 'source' and \
