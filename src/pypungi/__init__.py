@@ -928,42 +928,6 @@ class Pungi(pypungi.PungiBase):
                         self.logger.info("Copying release note dir %s" % directory)
                         shutil.copytree(os.path.join(dirpath, directory), os.path.join(self.topdir, directory))
         
-    def doCreateMediarepo(self):
-        """Create the metadata for the iso"""
-
-
-        discinfo = open(os.path.join(self.topdir, '.discinfo'), 'r').readlines()
-        mediaid = discinfo[0].rstrip('\n')
-
-        compsfile = os.path.join(self.workdir, '%s-%s-comps.xml' % (self.config.get('pungi', 'name'), self.config.get('pungi', 'version')))
-
-        pypungi.util._ensuredir('%s-disc1' % self.topdir, self.logger,
-                                force=self.config.getboolean('pungi',
-                                                             'force'),
-                                clean=True) # rename this for single disc
-        path = self.topdir
-        basedir=None
-            
-        # set up the process
-        self._makeMetadata(path, self.config.get('pungi', 'cachedir'), compsfile, repoview=False, 
-                                                 baseurl='media://%s' % mediaid, 
-                                                 output='%s-disc1' % self.topdir, 
-                                                 basedir=basedir, update=False)
-
-        # Write out a repo file for the disc to be used on the installed system
-        self.logger.info('Creating media repo file.')
-        repofile = open(os.path.join(self.topdir, 'media.repo'), 'w')
-        repocontent = """[InstallMedia]
-name=%s %s
-mediaid=%s
-metadata_expire=-1
-gpgcheck=0
-cost=500
-""" % (self.config.get('pungi', 'name'), self.config.get('pungi', 'version'), mediaid)
-
-        repofile.write(repocontent)
-        repofile.close()
-
     def _doIsoChecksum(self, path, csumfile):
         """Simple function to wrap creating checksums of iso files."""
 
@@ -987,7 +951,6 @@ cost=500
 
         isolist=[]
         anaruntime = '/usr/share/anaconda/boot'
-        discinfofile = os.path.join(self.topdir, '.discinfo') # we use this a fair amount
 
         pypungi.util._ensuredir(self.isodir, self.logger,
                            force=self.config.getboolean('pungi', 'force'),
@@ -1026,9 +989,6 @@ cost=500
         # Size returned is 2KiB clusters or some such.  This translates that to MiB.
         treesize = treesize * 2048 / 1024 / 1024
 
-        if not self.config.get('pungi', 'arch') == 'source':
-            self.doCreateMediarepo()
-
         if treesize > 700: # we're larger than a 700meg CD
             isoname = '%s-%s-%s-DVD.iso' % (self.config.get('pungi', 'iso_basename'), self.config.get('pungi', 'version'), 
                 self.config.get('pungi', 'arch'))
@@ -1037,17 +997,6 @@ cost=500
                 self.config.get('pungi', 'arch'))
 
         isofile = os.path.join(self.isodir, isoname)
-
-        if not self.config.get('pungi', 'arch') == 'source':
-            # move the main repodata out of the way to use the media repodata
-            if os.path.isdir(os.path.join(self.config.get('pungi', 'destdir'), 
-                                          'repodata-%s' % self.config.get('pungi', 'arch'))):
-                shutil.rmtree(os.path.join(self.config.get('pungi', 'destdir'), 
-                                           'repodata-%s' % self.config.get('pungi', 'arch')))
-                
-            shutil.move(os.path.join(self.topdir, 'repodata'), os.path.join(self.config.get('pungi', 'destdir'), 
-                'repodata-%s' % self.config.get('pungi', 'arch')))
-            shutil.copytree('%s-disc1/repodata' % self.topdir, os.path.join(self.topdir, 'repodata'))
 
         # setup the extra mkisofs args
         extraargs = []
@@ -1096,17 +1045,6 @@ cost=500
         file.close()
         self._doIsoChecksum(isofile, csumfile)
 
-        # return the .discinfo file
-        if not self.config.get('pungi', 'arch') == 'source':
-            shutil.rmtree(os.path.join(self.topdir, 'repodata')) # remove our copied repodata
-            shutil.move(os.path.join(self.config.get('pungi', 'destdir'), 
-                'repodata-%s' % self.config.get('pungi', 'arch')), os.path.join(self.topdir, 'repodata'))
-            
-        # Move the unified disk out
-        if not self.config.get('pungi', 'arch') == 'source':
-            shutil.rmtree(os.path.join(self.workdir, 'os-unified'), ignore_errors=True)
-            shutil.move('%s-disc1' % self.topdir, os.path.join(self.workdir, 'os-unified'))
-
         # Write out a line describing the media
         self.writeinfo('media: %s' % self.mkrelative(isofile))
 
@@ -1122,14 +1060,5 @@ cost=500
 
             # shove the checksum into a file
             self._doIsoChecksum(isofile, csumfile)
-
-        # Do some clean up
-        dirs = os.listdir(self.archdir)
-
-        for directory in dirs:
-            if directory.startswith('os-disc') or directory.startswith('SRPMS-disc'):
-                if os.path.exists(os.path.join(self.workdir, directory)):
-                    shutil.rmtree(os.path.join(self.workdir, directory))
-                shutil.move(os.path.join(self.archdir, directory), os.path.join(self.workdir, directory))
 
         self.logger.info("CreateIsos is done.")
