@@ -151,7 +151,7 @@ class Pungi(pypungi.PungiBase):
         yumconf.debuglevel = 6
         yumconf.errorlevel = 6
         yumconf.cachedir = self.config.get('pungi', 'cachedir')
-        yumconf.persistdir = os.path.join(self.workdir, 'yumlib')
+        yumconf.persistdir = "/var/lib/yum" # keep at default, gets appended to installroot
         yumconf.installroot = os.path.join(self.workdir, 'yumroot')
         yumconf.uid = os.geteuid()
         yumconf.cache = 0
