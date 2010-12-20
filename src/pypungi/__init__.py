@@ -963,6 +963,9 @@ class Pungi(pypungi.PungiBase):
         x86bootargs = ['-b', 'isolinux/isolinux.bin', '-c', 'isolinux/boot.cat', 
             '-no-emul-boot', '-boot-load-size', '4', '-boot-info-table']
 
+        efibootargs = ['-eltorito-alt-boot', '-e', 'images/efiboot.img',
+                       '-no-emul-boot']
+
         ia64bootargs = ['-b', 'images/boot.img', '-no-emul-boot']
 
         ppcbootargs = ['-part', '-hfs', '-r', '-l', '-sysid', 'PPC', '-no-desktop', '-allow-multidot', '-chrp-boot']
@@ -1003,6 +1006,8 @@ class Pungi(pypungi.PungiBase):
 
         if self.config.get('pungi', 'arch') == 'i386' or self.config.get('pungi', 'arch') == 'x86_64':
             extraargs.extend(x86bootargs)
+            if self.config.get('pungi', 'arch') == 'x86_64':
+                extraargs.extend(efibootargs)
         elif self.config.get('pungi', 'arch') == 'ia64':
             extraargs.extend(ia64bootargs)
         elif self.config.get('pungi', 'arch') == 'ppc':
