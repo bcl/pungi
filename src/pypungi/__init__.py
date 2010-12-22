@@ -767,46 +767,30 @@ class Pungi(pypungi.PungiBase):
             self._makeMetadata(path, cachedir, repoview=False)
 
     def doBuildinstall(self):
-        """Run anaconda-runtime's buildinstall on the tree."""
+        """Run lorax on the tree."""
 
+        self._inityum()
+        yb = self.ayum
 
-        # setup the buildinstall call
-        buildinstall = ['/usr/libexec/anaconda/buildinstall']
-        #buildinstall.append('TMPDIR=%s' % self.workdir) # TMPDIR broken in buildinstall
+        product = self.config.get('pungi', 'name')
+        version = self.config.get('pungi', 'version')
+        release = '%s %s' % (self.config.get('pungi', 'name'), self.config.get('pungi', 'version'))
 
-        buildinstall.append('--product')
-        buildinstall.append(self.config.get('pungi', 'name'))
+        variant = self.config.get('pungi', 'flavor')
+        bugurl = self.config.get('pungi', 'bugurl')
 
-        if not self.config.get('pungi', 'flavor') == "":
-            buildinstall.append('--variant')
-            buildinstall.append(self.config.get('pungi', 'flavor'))
-
-        buildinstall.append('--version')
-        buildinstall.append(self.config.get('pungi', 'version'))
-
-        buildinstall.append('--release')
-        buildinstall.append('%s %s' % (self.config.get('pungi', 'name'), self.config.get('pungi', 'version')))
-
-        if self.config.has_option('pungi', 'bugurl'):
-            buildinstall.append('--bugurl')
-            buildinstall.append(self.config.get('pungi', 'bugurl'))
-
-        buildinstall.append('--output')
-        buildinstall.append(self.topdir)
-
-        for mirrorlist in self.mirrorlists:
-            buildinstall.append('--mirrorlist')
-            buildinstall.append(mirrorlist)
-
-        buildinstall.append(self.topdir)
-
-        # Add any extra repos of baseurl type
-        for repo in self.repos:
-            buildinstall.append(repo)
+        workdir = self.workdir
+        outputdir = self.topdir
 
         # run the command
-        # TMPDIR is still broken with buildinstall.
-        pypungi.util._doRunCommand(buildinstall, self.logger) #, env={"TMPDIR": self.workdir})
+        import pylorax
+        lorax = pylorax.Lorax()
+        lorax.configure()
+
+        # FIXME get the actual is_beta value
+        lorax.run(yb, product=product, version=version, release=release,
+                  variant=variant, bugurl=bugurl, is_beta=True,
+                  workdir=workdir, outputdir=outputdir)
 
         # write out the tree data for snake
         self.writeinfo('tree: %s' % self.mkrelative(self.topdir))
