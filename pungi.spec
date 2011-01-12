@@ -1,7 +1,7 @@
 %{!?python_sitelib: %define python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")}
 
 Name:           pungi
-Version:        2.4
+Version:        2.5
 Release:        1%{?dist}
 Summary:        Distribution compose tool
 
@@ -56,6 +56,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Wed Jan 12 2011 Jesse Keating <jkeating@redhat.com> - 2.5-1
+- Use Lorax instead of buildinstall (mgracik)
+
 * Tue Dec 21 2010 Jesse Keating <jkeating@redhat.com> - 2.4-1
 - Enable EFI booting on x86_64 media
 
