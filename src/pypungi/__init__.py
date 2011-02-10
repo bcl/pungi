@@ -285,6 +285,9 @@ class Pungi(pypungi.PungiBase):
                 self.logger.warn("Unresolvable dependency %s in %s.%s" % (r, po.name, po.arch))
                 continue
 
+            if not self.config.getboolean('pungi', 'alldeps'):
+                deps = self.ayum.bestPackagesFromList(deps)
+
             depsack = yum.packageSack.ListPackageSack(deps)
 
             for dep in depsack.returnNewestByNameArch():

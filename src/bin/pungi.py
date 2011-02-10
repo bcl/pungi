@@ -77,6 +77,8 @@ def main():
     # Set debuginfo flag
     if opts.nodebuginfo:
         config.set('pungi', 'debuginfo', "False")
+    if opts.nogreedy:
+        config.set('pungi', 'alldeps', "False")
 
     # Actually do work.
     mypungi = pypungi.Pungi(config, ksparser)
@@ -178,6 +180,8 @@ if __name__ == '__main__':
           help='disable gathering of source packages (optional)')
         parser.add_option("--nodebuginfo", action="store_true", dest="nodebuginfo",
           help='disable gathering of debuginfo packages (optional)')
+        parser.add_option("--nogreedy", action="store_true", dest="nogreedy",
+          help='disable pulling of all providers of package dependencies (optional)')
         parser.add_option("--sourceisos", default=False, action="store_true", dest="sourceisos",
           help='Create the source isos (other arch runs must be done)')
         parser.add_option("--force", default=False, action="store_true",

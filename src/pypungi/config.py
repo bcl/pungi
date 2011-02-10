@@ -42,4 +42,5 @@ class Config(SafeConfigParser):
         self.set('pungi', 'bugurl', 'https://bugzilla.redhat.com')
         self.set('pungi', 'cdsize', '695.0')
         self.set('pungi', 'debuginfo', "True")
+        self.set('pungi', 'alldeps', "True")
 
