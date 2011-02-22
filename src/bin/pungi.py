@@ -133,7 +133,7 @@ def main():
                                       'source', 'SRPMS')
         mypungi.doCreaterepo(comps=False)
         if opts.do_all or opts.do_createiso:
-            mypungi.doCreateIsos(split=opts.nosplitmedia)
+            mypungi.doCreateIsos()
 
     print "All done!"
 
