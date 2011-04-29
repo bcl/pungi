@@ -24,6 +24,7 @@ import urlgrabber.progress
 import subprocess
 import createrepo
 import ConfigParser
+import pylorax
 
 class MyConfigParser(ConfigParser.ConfigParser):
     """A subclass of ConfigParser which does not lowercase options"""
@@ -816,8 +817,8 @@ class Pungi(pypungi.PungiBase):
     def doBuildinstall(self):
         """Run lorax on the tree."""
 
-        self._inityum()
-        yb = self.ayum
+        if not self.ayum:
+            self._inityum()
 
         # Add the repo in the destdir to our yum object
         self._add_yum_repo('ourtree',
@@ -835,12 +836,11 @@ class Pungi(pypungi.PungiBase):
         outputdir = self.topdir
 
         # run the command
-        import pylorax
         lorax = pylorax.Lorax()
         lorax.configure()
 
         # FIXME get the actual is_beta value
-        lorax.run(yb, product=product, version=version, release=release,
+        lorax.run(self.ayum, product=product, version=version, release=release,
                   variant=variant, bugurl=bugurl, is_beta=True,
                   workdir=workdir, outputdir=outputdir)
 
