@@ -139,6 +139,66 @@ class Pungi(pypungi.PungiBase):
         self.last_po = 0
         self.resolved_deps = {} # list the deps we've already resolved, short circuit.
 
+    def _add_yum_repo(self, name, url, mirrorlist=False, groups=True,
+                      cost=1000, includepkgs=[], excludepkgs=[],
+                      proxy=None):
+        """This function adds a repo to the yum object.
+
+        name: Name of the repo
+
+        url: Full url to the repo
+
+        mirrorlist: Bool for whether or not url is a mirrorlist
+
+        groups: Bool for whether or not to use groupdata from this repo
+
+        cost: an optional int representing the cost of a repo
+
+        includepkgs: An optional list of includes to use
+
+        excludepkgs: An optional list of excludes to use
+
+        proxy: An optional proxy to use
+
+        """
+
+        self.logger.info('Adding repo %s' % name)
+        thisrepo = yum.yumRepo.YumRepository(name)
+        thisrepo.name = name
+        # add excludes and such here when pykickstart gets them
+        if mirrorlist:
+            thisrepo.mirrorlist = yum.parser.varReplace(url,
+                                                        self.ayum.conf.yumvar)
+            self.mirrorlists.append(thisrepo.mirrorlist)
+            self.logger.info('Mirrorlist for repo %s is %s' %
+                             (thisrepo.name, thisrepo.mirrorlist))
+        else:
+            thisrepo.baseurl = yum.parser.varReplace(url,
+                                                     self.ayum.conf.yumvar)
+            self.repos.extend(thisrepo.baseurl)
+            self.logger.info('URL for repo %s is %s' %
+                             (thisrepo.name, thisrepo.baseurl))
+        thisrepo.basecachedir = self.ayum.conf.cachedir
+        thisrepo.enablegroups = groups
+        # This is until yum uses this failover by default
+        thisrepo.failovermethod = 'priority'
+        thisrepo.exclude = excludepkgs
+        thisrepo.includepkgs = includepkgs
+        thisrepo.cost = cost
+        # Yum doesn't like proxy being None
+        if proxy:
+            thisrepo.proxy = proxy
+        self.ayum.repos.add(thisrepo)
+        self.ayum.repos.enableRepo(thisrepo.id)
+        self.ayum._getRepos(thisrepo=thisrepo.id, doSetup=True)
+        # Set the repo callback.
+        self.ayum.repos.setProgressBar(CallBack())
+        self.ayum.repos.callback = CallBack()
+        thisrepo.metadata_expire = 0
+        thisrepo.mirrorlist_expire = 0
+        if os.path.exists(os.path.join(thisrepo.cachedir, 'repomd.xml')):
+            os.remove(os.path.join(thisrepo.cachedir, 'repomd.xml'))
+
     def _inityum(self):
         """Initialize the yum object.  Only needed for certain actions."""
 
@@ -198,43 +258,26 @@ class Pungi(pypungi.PungiBase):
             pass
 
         for repo in self.ksparser.handler.repo.repoList:
-            self.logger.info('Adding repo %s' % repo.name)
-            thisrepo = yum.yumRepo.YumRepository(repo.name)
-            thisrepo.name = repo.name
-            # add excludes and such here when pykickstart gets them
             if repo.mirrorlist:
-                thisrepo.mirrorlist = yum.parser.varReplace(repo.mirrorlist, self.ayum.conf.yumvar)
-                self.mirrorlists.append(thisrepo.mirrorlist)
-                self.logger.info('Mirrorlist for repo %s is %s' % (thisrepo.name, thisrepo.mirrorlist))
+                # The not bool() thing is because pykickstart is yes/no on
+                # whether to ignore groups, but yum is a yes/no on whether to
+                # include groups.  Awkward.
+                self._add_yum_repo(repo.name, repo.mirrorlist,
+                                   mirrorlist=True,
+                                   groups=not bool(repo.ignoregroups),
+                                   cost=repo.cost,
+                                   includepkgs=repo.includepkgs,
+                                   excludepkgs=repo.excludepkgs,
+                                   proxy=repo.proxy)
             else:
-                thisrepo.baseurl = yum.parser.varReplace(repo.baseurl, self.ayum.conf.yumvar)
-                self.repos.extend(thisrepo.baseurl)
-                self.logger.info('URL for repo %s is %s' % (thisrepo.name, thisrepo.baseurl))
-            thisrepo.basecachedir = self.ayum.conf.cachedir
-            thisrepo.enablegroups = True
-            thisrepo.failovermethod = 'priority' # This is until yum uses this failover by default
-            thisrepo.exclude = repo.excludepkgs
-            thisrepo.includepkgs = repo.includepkgs
-            if repo.cost:
-                thisrepo.cost = repo.cost
-            if repo.ignoregroups:
-                thisrepo.enablegroups = 0
-            if repo.proxy:
-                thisrepo.proxy = repo.proxy
-            self.ayum.repos.add(thisrepo)
-            self.ayum.repos.enableRepo(thisrepo.id)
-            self.ayum._getRepos(thisrepo=thisrepo.id, doSetup = True)
-
-        self.ayum.repos.setProgressBar(CallBack())
-        self.ayum.repos.callback = CallBack()
+                self._add_yum_repo(repo.name, repo.baseurl,
+                                   mirrorlist=False,
+                                   groups=not bool(repo.ignoregroups),
+                                   cost=repo.cost,
+                                   includepkgs=repo.includepkgs,
+                                   excludepkgs=repo.excludepkgs,
+                                   proxy=repo.proxy)
         
-        # Set the metadata and mirror list to be expired so we always get new ones.
-        for repo in self.ayum.repos.listEnabled():
-            repo.metadata_expire = 0
-            repo.mirrorlist_expire = 0
-            if os.path.exists(os.path.join(repo.cachedir, 'repomd.xml')):
-                os.remove(os.path.join(repo.cachedir, 'repomd.xml'))
-
         self.logger.info('Getting sacks for arches %s' % arches)
         self.ayum._getSacks(archlist=arches)
 
