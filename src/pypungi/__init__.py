@@ -819,6 +819,11 @@ class Pungi(pypungi.PungiBase):
         self._inityum()
         yb = self.ayum
 
+        # Add the repo in the destdir to our yum object
+        self._add_yum_repo('ourtree',
+                           'file://%s' % self.topdir,
+                           cost=10)
+
         product = self.config.get('pungi', 'name')
         version = self.config.get('pungi', 'version')
         release = '%s %s' % (self.config.get('pungi', 'name'), self.config.get('pungi', 'version'))
