@@ -831,6 +831,13 @@ class Pungi(pypungi.PungiBase):
 
         variant = self.config.get('pungi', 'flavor')
         bugurl = self.config.get('pungi', 'bugurl')
+        isfinal = self.config.get('pungi', 'isfinal')
+        # I want to pass in if the release is a final/GA release or not but lorax takes in if its a beta or not
+        # so set isbeta to be the oposite of isfinal
+        if isfinal:
+            isbeta = "False"
+        else:
+            isbeta = "True"
 
         workdir = self.workdir
         outputdir = self.topdir
@@ -841,7 +848,7 @@ class Pungi(pypungi.PungiBase):
 
         # FIXME get the actual is_beta value
         lorax.run(self.ayum, product=product, version=version, release=release,
-                  variant=variant, bugurl=bugurl, is_beta=True,
+                  variant=variant, bugurl=bugurl, is_beta=isbeta,
                   workdir=workdir, outputdir=outputdir)
 
         # write out the tree data for snake

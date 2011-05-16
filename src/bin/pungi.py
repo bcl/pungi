@@ -79,6 +79,8 @@ def main():
         config.set('pungi', 'debuginfo', "False")
     if opts.nogreedy:
         config.set('pungi', 'alldeps', "False")
+    if opts.isfinal:
+        config.set('pungi', 'isfinal', "True")
 
     # Actually do work.
     mypungi = pypungi.Pungi(config, ksparser)
@@ -186,6 +188,8 @@ if __name__ == '__main__':
           help='Create the source isos (other arch runs must be done)')
         parser.add_option("--force", default=False, action="store_true",
           help='Force reuse of an existing destination directory (will overwrite files)')
+        parser.add_option("--isfinal", default=False, action="store_true", 	
+          help='Specify this is a GA tree, which causes betanag to be turned off during install')
 
         parser.add_option("-c", "--config", dest="config",
           help='Path to kickstart config file')
