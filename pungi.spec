@@ -1,7 +1,7 @@
 %{!?python_sitelib: %define python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")}
 
 Name:           pungi
-Version:        2.6
+Version:        2.7
 Release:        1%{?dist}
 Summary:        Distribution compose tool
 
@@ -56,6 +56,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Mon May 16 2011 Dennis Gilmore <dennis@ausil.us> - 2.7-1
+- add --isfinal for turning off the betanag
+
 * Fri Apr 29 2011 Jesse Keating <jkeating@redhat.com> - 2.6-1
 - Make sure lorax makes use of our gathered repo
 
