@@ -1077,6 +1077,10 @@ class Pungi(pypungi.PungiBase):
         # run the command
         pypungi.util._doRunCommand(mkisofs + extraargs, self.logger)
 
+        # Run isohybrid on the iso
+        if os.path.exists("/usr/bin/isohybrid"):
+            subprocess.call(["/usr/bin/isohybrid", isofile])
+
         # implant md5 for mediacheck on all but source arches
         if not self.config.get('pungi', 'arch') == 'source':
             pypungi.util._doRunCommand(['/usr/bin/implantisomd5', isofile], self.logger)
