@@ -817,8 +817,8 @@ class Pungi(pypungi.PungiBase):
     def doBuildinstall(self):
         """Run lorax on the tree."""
 
-        if not self.ayum:
-            self._inityum()
+        # the old ayum object has transaction data that confuse lorax, reinit.
+        self._inityum()
 
         # Add the repo in the destdir to our yum object
         self._add_yum_repo('ourtree',
