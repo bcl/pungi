@@ -1,7 +1,7 @@
 %{!?python_sitelib: %define python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")}
 
 Name:           pungi
-Version:        2.8
+Version:        2.9
 Release:        1%{?dist}
 Summary:        Distribution compose tool
 
@@ -56,6 +56,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Wed Jul 27 2011 Dennis Gilmore <dennis@ausil.us> - 2.9-1
+- pass isfinal rather than is_beta to lorax 
+
 * Mon Jul 18 2011 Jesse Keating <jkeating@redhat.com> - 2.8-1
 - Always re-init the yum object (#717089)
 
