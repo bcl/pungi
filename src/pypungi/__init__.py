@@ -728,6 +728,22 @@ class Pungi(pypungi.PungiBase):
         self._downloadPackageList(self.debuginfolist, os.path.join(self.config.get('pungi', 'arch'),
                                                            'debug'))
 
+    def _listPackages(self, polist):
+        """Cycle through the list of packages and return their paths."""
+        return [ os.path.join(pkg.basepath or "", pkg.relativepath) for pkg in polist ]
+
+    def listPackages(self):
+        """Cycle through the list of RPMs and return their paths."""
+        return self._listPackages(self.polist)
+
+    def listSRPMs(self):
+        """Cycle through the list of SRPMs and return their paths."""
+        return self._listPackages(self.srpmpolist)
+
+    def listDebuginfo(self):
+        """Cycle through the list of DEBUGINFO RPMs and return their paths."""
+        return self._listPackages(self.debuginfolist)
+
     def writeinfo(self, line):
         """Append a line to the infofile in self.infofile"""
 

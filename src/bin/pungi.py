@@ -110,13 +110,28 @@ def main():
                     mypungi.completePackageSet()
                     if plen == len(mypungi.srpmpolist):
                         break
-            mypungi.downloadPackages()
+            if opts.nodownload:
+                for line in mypungi.listPackages():
+                    sys.stdout.write("RPM: %s\n" % line)
+                sys.stdout.flush()
+            else:
+                mypungi.downloadPackages()
             mypungi.makeCompsFile()
             if not opts.nodebuginfo:
                 mypungi.getDebuginfoList()
-                mypungi.downloadDebuginfo()
+                if opts.nodownload:
+                    for line in mypungi.listDebuginfo():
+                        sys.stdout.write("DEBUGINFO: %s\n" % line)
+                    sys.stdout.flush()
+                else:
+                    mypungi.downloadDebuginfo()
             if not opts.nosource:
-                mypungi.downloadSRPMs()
+                if opts.nodownload:
+                    for line in mypungi.listSRPMs():
+                        sys.stdout.write("SRPM: %s\n" % line)
+                    sys.stdout.flush()
+                else:
+                    mypungi.downloadSRPMs()
 
         if opts.do_all or opts.do_createrepo:
            mypungi.doCreaterepo()
@@ -184,6 +199,8 @@ if __name__ == '__main__':
           help='disable gathering of source packages (optional)')
         parser.add_option("--nodebuginfo", action="store_true", dest="nodebuginfo",
           help='disable gathering of debuginfo packages (optional)')
+        parser.add_option("--nodownload", action="store_true", dest="nodownload",
+          help='disable downloading of packages. instead, print the package URLs (optional)')
         parser.add_option("--nogreedy", action="store_true", dest="nogreedy",
           help='disable pulling of all providers of package dependencies (optional)')
         parser.add_option("--sourceisos", default=False, action="store_true", dest="sourceisos",
