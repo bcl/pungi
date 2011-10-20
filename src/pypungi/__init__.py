@@ -1052,13 +1052,11 @@ class Pungi(pypungi.PungiBase):
         elif self.config.get('pungi', 'arch') == 'sparc':
             extraargs.extend(sparcbootargs)
 
+        # NOTE: if this doesn't match what's in the bootloader config, the
+        # image won't be bootable!
         extraargs.append('-V')
-        if treesize > 700:
-            extraargs.append('%s %s %s DVD' % (self.config.get('pungi', 'name'),
-                self.config.get('pungi', 'version'), self.config.get('pungi', 'arch')))
-        else:
-            extraargs.append('%s %s %s' % (self.config.get('pungi', 'name'),
-                self.config.get('pungi', 'version'), self.config.get('pungi', 'arch')))
+        extraargs.append('%s %s %s' % (self.config.get('pungi', 'name'),
+            self.config.get('pungi', 'version'), self.config.get('pungi', 'arch')))
 
         extraargs.extend(['-o', isofile])
         
