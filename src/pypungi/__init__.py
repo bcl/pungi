@@ -1046,7 +1046,7 @@ class Pungi(pypungi.PungiBase):
                 extraargs.extend(efibootargs)
         elif self.config.get('pungi', 'arch') == 'ia64':
             extraargs.extend(ia64bootargs)
-        elif self.config.get('pungi', 'arch') == 'ppc':
+        elif self.config.get('pungi', 'arch').startswith('ppc'):
             extraargs.extend(ppcbootargs)
             extraargs.append(os.path.join(self.topdir, "ppc/mac"))
         elif self.config.get('pungi', 'arch') == 'sparc':
