@@ -137,7 +137,8 @@ def main():
            mypungi.doCreaterepo()
 
         if opts.do_all or opts.do_buildinstall:
-           mypungi.doGetRelnotes()
+            if not opts.norelnotes:
+                mypungi.doGetRelnotes()
            mypungi.doBuildinstall()
 
         if opts.do_all or opts.do_createiso:
@@ -201,6 +202,8 @@ if __name__ == '__main__':
           help='disable gathering of debuginfo packages (optional)')
         parser.add_option("--nodownload", action="store_true", dest="nodownload",
           help='disable downloading of packages. instead, print the package URLs (optional)')
+        parser.add_option("--norelnotes", action="store_true", dest="norelnotes",
+          help='disable gathering of release notes (optional)')
         parser.add_option("--nogreedy", action="store_true", dest="nogreedy",
           help='disable pulling of all providers of package dependencies (optional)')
         parser.add_option("--sourceisos", default=False, action="store_true", dest="sourceisos",
