@@ -45,4 +45,5 @@ class Config(SafeConfigParser):
         self.set('pungi', 'alldeps', "True")
         self.set('pungi', 'isfinal', "False")
         self.set('pungi', 'nohash', "False")
+        self.set('pungi', 'full_archlist', "False")
 

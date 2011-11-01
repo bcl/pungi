@@ -83,6 +83,8 @@ def main():
         config.set('pungi', 'isfinal', "True")
     if opts.nohash:
         config.set('pungi', 'nohash', "True")
+    if opts.full_archlist:
+        config.set('pungi', 'full_archlist', "True")
 
     # Actually do work.
     mypungi = pypungi.Pungi(config, ksparser)
@@ -214,6 +216,8 @@ if __name__ == '__main__':
           help='Specify this is a GA tree, which causes betanag to be turned off during install')
         parser.add_option("--nohash", default=False, action="store_true",
           help='disable hashing the Packages trees')
+        parser.add_option("--full-archlist", action="store_true",
+          help='Use the full arch list for x86_64 (include i686, i386, etc.)')
 
         parser.add_option("-c", "--config", dest="config",
           help='Path to kickstart config file')
