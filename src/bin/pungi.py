@@ -169,7 +169,7 @@ if __name__ == '__main__':
     today = time.strftime('%Y%m%d', time.localtime())
 
     def get_arguments(config):
-        parser = OptionParser(version="%prog 2.9")
+        parser = OptionParser("%prog [--help] [options]", version="%prog 2.9")
 
         def set_config(option, opt_str, value, parser, config):
             config.set('pungi', option.dest, value)
@@ -238,20 +238,18 @@ if __name__ == '__main__':
 
 
         (opts, args) = parser.parse_args()
-        
+
         if not opts.config:
-            parser.print_help()
-            sys.exit(0)
-            
+            parser.error("Please specify a config file")
+
         if not config.get('pungi', 'flavor').isalnum() and not config.get('pungi', 'flavor') == '':
-            print >> sys.stderr, "Flavor must be alphanumeric."
-            sys.exit(1)
+            parser.error("Flavor must be alphanumeric")
 
         if opts.do_gather or opts.do_createrepo or opts.do_buildinstall or opts.do_createiso:
             opts.do_all = False
 
         if opts.arch and (opts.do_all or opts.do_buildinstall):
-            parser.error("cannot override arch while the BuildInstall stage is enabled")
+            parser.error("Cannot override arch while the BuildInstall stage is enabled")
 
         return (opts, args)
 
