@@ -134,15 +134,15 @@ def main():
                     mypungi.downloadSRPMs()
 
         if opts.do_all or opts.do_createrepo:
-           mypungi.doCreaterepo()
+            mypungi.doCreaterepo()
 
         if opts.do_all or opts.do_buildinstall:
             if not opts.norelnotes:
                 mypungi.doGetRelnotes()
-           mypungi.doBuildinstall()
+            mypungi.doBuildinstall()
 
         if opts.do_all or opts.do_createiso:
-           mypungi.doCreateIsos()
+            mypungi.doCreateIsos()
 
     # Do things slightly different for src.
     if opts.sourceisos:
