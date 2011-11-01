@@ -85,6 +85,8 @@ def main():
         config.set('pungi', 'nohash', "True")
     if opts.full_archlist:
         config.set('pungi', 'full_archlist', "True")
+    if opts.arch:
+        config.set('pungi', 'arch', opts.arch)
 
     # Actually do work.
     mypungi = pypungi.Pungi(config, ksparser)
@@ -218,6 +220,8 @@ if __name__ == '__main__':
           help='disable hashing the Packages trees')
         parser.add_option("--full-archlist", action="store_true",
           help='Use the full arch list for x86_64 (include i686, i386, etc.)')
+        parser.add_option("--arch",
+          help='Override default (uname based) arch')
 
         parser.add_option("-c", "--config", dest="config",
           help='Path to kickstart config file')
@@ -245,6 +249,10 @@ if __name__ == '__main__':
 
         if opts.do_gather or opts.do_createrepo or opts.do_buildinstall or opts.do_createiso:
             opts.do_all = False
+
+        if opts.arch and (opts.do_all or opts.do_buildinstall):
+            parser.error("cannot override arch while the BuildInstall stage is enabled")
+
         return (opts, args)
 
     main()
