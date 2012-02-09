@@ -44,4 +44,5 @@ class Config(SafeConfigParser):
         self.set('pungi', 'debuginfo', "True")
         self.set('pungi', 'alldeps', "True")
         self.set('pungi', 'isfinal', "False")
+        self.set('pungi', 'nohash', "False")
 
