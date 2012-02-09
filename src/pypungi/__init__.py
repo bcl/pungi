@@ -668,7 +668,11 @@ class Pungi(pypungi.PungiBase):
             basename = os.path.basename(po.relativepath)
 
             local = po.localPkg()
-            target = os.path.join(pkgdir, basename)
+            nohash = self.config.get('pungi', 'nohash')
+            if nohash:
+                target = os.path.join(pkgdir, basename)
+            else:
+                target = os.path.join(pkgdir, po.name[0].lower(), basename)
 
             # Link downloaded package in (or link package from file repo)
             try:
