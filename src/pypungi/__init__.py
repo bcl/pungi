@@ -325,20 +325,35 @@ class Pungi(pypungi.PungiBase):
             if req in provs:
                 continue
 
-            deps = self.ayum.whatProvides(r, f, v).returnPackages()
-            if not deps:
-                self.logger.warn("Unresolvable dependency %s in %s.%s" % (r, po.name, po.arch))
-                continue
+            if self.config.getboolean('pungi', 'alldeps'):
+                # greedy
+                deps = self.ayum.whatProvides(r, f, v).returnPackages()
+                if not deps:
+                    self.logger.warn("Unresolvable dependency %s in %s.%s" % (r, po.name, po.arch))
+                    continue
 
-            if not self.config.getboolean('pungi', 'alldeps'):
-                deps = self.ayum.bestPackagesFromList(deps)
+                depsack = yum.packageSack.ListPackageSack(deps)
 
-            depsack = yum.packageSack.ListPackageSack(deps)
-
-            for dep in depsack.returnNewestByNameArch():
-                self.ayum.tsInfo.addInstall(dep)
+                for dep in depsack.returnNewestByNameArch():
+                    self.ayum.tsInfo.addInstall(dep)
+                    self.logger.info('Added %s.%s for %s.%s' % (dep.name, dep.arch, po.name, po.arch))
+                    added.append(dep)
+            else:
+                # nogreedy
+                try:
+                    pkg_sack = self.ayum.whatProvides(r, f, v).returnPackages()
+                    if not pkg_sack:
+                        self.logger.warn("Unresolvable dependency %s in %s.%s" % (r, po.name, po.arch))
+                        continue
+                    match = self.ayum._bestPackageFromList(pkg_sack)
+                    dep = match
+                    self.ayum.install(dep)
+                except (yum.Errors.InstallError, yum.Errors.YumBaseError), ex:
+                    self.logger.warn("Unresolvable dependency %s in %s.%s" % (r, po.name, po.arch))
+                    continue
                 self.logger.info('Added %s.%s for %s.%s' % (dep.name, dep.arch, po.name, po.arch))
                 added.append(dep)
+
             self.resolved_deps[req] = None
         for add in added:
             self.getPackageDeps(add)
@@ -465,23 +480,43 @@ class Pungi(pypungi.PungiBase):
         # Make the search list unique
         searchlist = yum.misc.unique(searchlist)
 
-        # Search repos for things in our searchlist, supports globs
-        (exactmatched, matched, unmatched) = yum.packages.parsePackages(self.ayum.pkgSack.returnPackages(), searchlist, casematch=1)
-        matches = filter(self._filtersrcdebug, exactmatched + matched)
+        if self.config.getboolean('pungi', 'alldeps'):
+            # greedy
+            # Search repos for things in our searchlist, supports globs
+            (exactmatched, matched, unmatched) = yum.packages.parsePackages(self.ayum.pkgSack.returnPackages(), searchlist, casematch=1)
+            matches = filter(self._filtersrcdebug, exactmatched + matched)
 
-        # Populate a dict of package objects to their names
-        for match in matches:
-            matchdict[match.name] = match
-            
-        # Get the newest results from the search
-        mysack = yum.packageSack.ListPackageSack(matches)
-        for match in mysack.returnNewestByNameArch():
-            self.ayum.tsInfo.addInstall(match)
-            self.logger.debug('Found %s.%s' % (match.name, match.arch))
+            # Populate a dict of package objects to their names
+            for match in matches:
+                matchdict[match.name] = match
 
-        for pkg in unmatched:
-            if not pkg in matchdict.keys():
-                self.logger.warn('Could not find a match for %s in any configured repo' % pkg)
+            # Get the newest results from the search
+            mysack = yum.packageSack.ListPackageSack(matches)
+            for match in mysack.returnNewestByNameArch():
+                self.ayum.tsInfo.addInstall(match)
+                self.logger.info('Found %s.%s' % (match.name, match.arch))
+
+            for pkg in unmatched:
+                if not pkg in matchdict.keys():
+                    self.logger.warn('Could not find a match for %s in any configured repo' % pkg)
+        else:
+            # nogreedy
+            for name in searchlist:
+                arch = None
+                if "." in name:
+                    name, arch = name.rsplit(".", 1)
+
+                pkg_sack = self.ayum.pkgSack.searchNevra(name=name, arch=arch)
+                # filter sources out of the package sack
+                pkg_sack = [ i for i in pkg_sack if i.arch not in ("src", "nosrc") ]
+
+                match = self.ayum._bestPackageFromList(pkg_sack)
+                if not match:
+                    self.logger.warn('Could not find a match for %s in any configured repo' % name)
+                    continue
+
+                self.ayum.tsInfo.addInstall(match)
+                self.logger.info('Found %s.%s' % (match.name, match.arch))
 
         if len(self.ayum.tsInfo) == 0:
             raise yum.Errors.MiscError, 'No packages found to download.'
