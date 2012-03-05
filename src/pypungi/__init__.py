@@ -25,6 +25,8 @@ import subprocess
 import createrepo
 import ConfigParser
 import pylorax
+from fnmatch import fnmatch
+
 
 class MyConfigParser(ConfigParser.ConfigParser):
     """A subclass of ConfigParser which does not lowercase options"""
@@ -139,6 +141,7 @@ class Pungi(pypungi.PungiBase):
         self.srpms_fulltree = []
         self.last_po = 0
         self.resolved_deps = {} # list the deps we've already resolved, short circuit.
+        self.excluded_pkgs = {} # list the packages we've already excluded.
 
     def _add_yum_repo(self, name, url, mirrorlist=False, groups=True,
                       cost=1000, includepkgs=[], excludepkgs=[],
@@ -306,6 +309,30 @@ class Pungi(pypungi.PungiBase):
 
         return True
 
+    def excludePackages(self, pkg_sack):
+        """exclude packages according to config file"""
+        if not pkg_sack:
+            return pkg_sack
+
+        excludes = [] # list of (name, arch, pattern)
+        for i in self.ksparser.handler.packages.excludedList:
+            if "." in i:
+                excludes.append(i.rsplit(".", 1) + [i])
+            else:
+                excludes.append((i, None, i))
+
+        for pkg in pkg_sack[:]:
+            for name, arch, exclude_pattern in excludes:
+                if fnmatch(pkg.name, name):
+                    if not arch or fnmatch(pkg.arch, arch):
+                        if pkg.nvra not in self.excluded_pkgs:
+                            self.logger.info("Excluding %s.%s (pattern: %s)" % (pkg.name, pkg.arch, exclude_pattern))
+                            self.excluded_pkgs[pkg.nvra] = pkg
+                        pkg_sack.remove(pkg)
+                        break
+
+        return pkg_sack
+
     def getPackageDeps(self, po):
         """Add the dependencies for a given package to the
            transaction info"""
@@ -328,6 +355,7 @@ class Pungi(pypungi.PungiBase):
             if self.config.getboolean('pungi', 'alldeps'):
                 # greedy
                 deps = self.ayum.whatProvides(r, f, v).returnPackages()
+                deps = self.excludePackages(deps)
                 if not deps:
                     self.logger.warn("Unresolvable dependency %s in %s.%s" % (r, po.name, po.arch))
                     continue
@@ -342,6 +370,7 @@ class Pungi(pypungi.PungiBase):
                 # nogreedy
                 try:
                     pkg_sack = self.ayum.whatProvides(r, f, v).returnPackages()
+                    pkg_sack = self.excludePackages(pkg_sack)
                     if not pkg_sack:
                         self.logger.warn("Unresolvable dependency %s in %s.%s" % (r, po.name, po.arch))
                         continue
@@ -413,33 +442,6 @@ class Pungi(pypungi.PungiBase):
         self.logger.debug('Add default groups %s' % groups)
         return groups
 
-    def _deselectPackage(self, pkg, *args):
-        """Stolen from anaconda; Remove a package from the transaction set"""
-        sp = pkg.rsplit(".", 2)
-        txmbrs = []
-        if len(sp) == 2:
-            txmbrs = self.ayum.tsInfo.matchNaevr(name=sp[0], arch=sp[1])
-
-        if len(txmbrs) == 0:
-            exact, match, unmatch = yum.packages.parsePackages(self.ayum.pkgSack.returnPackages(), [pkg], casematch=1)
-            for p in exact + match:
-                txmbrs.append(p)
-
-        if len(txmbrs) > 0:
-            for x in txmbrs:
-                self.ayum.tsInfo.remove(x.pkgtup)
-                # we also need to remove from the conditionals
-                # dict so that things don't get pulled back in as a result
-                # of them.  yes, this is ugly.  conditionals should die.
-                for req, pkgs in self.ayum.tsInfo.conditionals.iteritems():
-                    if x in pkgs:
-                        pkgs.remove(x)
-                        self.ayum.tsInfo.conditionals[req] = pkgs
-            return len(txmbrs)
-        else:
-            self.logger.debug("no such package %s to remove" %(pkg,))
-            return 0
-
     def getPackageObjects(self):
         """Cycle through the list of packages, get package object
            matches, and resolve deps.
@@ -485,6 +487,7 @@ class Pungi(pypungi.PungiBase):
             # Search repos for things in our searchlist, supports globs
             (exactmatched, matched, unmatched) = yum.packages.parsePackages(self.ayum.pkgSack.returnPackages(), searchlist, casematch=1)
             matches = filter(self._filtersrcdebug, exactmatched + matched)
+            matches = self.excludePackages(matches)
 
             # Populate a dict of package objects to their names
             for match in matches:
@@ -509,6 +512,7 @@ class Pungi(pypungi.PungiBase):
                 pkg_sack = self.ayum.pkgSack.searchNevra(name=name, arch=arch)
                 # filter sources out of the package sack
                 pkg_sack = [ i for i in pkg_sack if i.arch not in ("src", "nosrc") ]
+                pkg_sack = self.excludePackages(pkg_sack)
 
                 match = self.ayum._bestPackageFromList(pkg_sack)
                 if not match:
@@ -520,9 +524,6 @@ class Pungi(pypungi.PungiBase):
 
         if len(self.ayum.tsInfo) == 0:
             raise yum.Errors.MiscError, 'No packages found to download.'
-
-        # Deselect things we don't want from the ks
-        map(self._deselectPackage, self.ksparser.handler.packages.excludedList)
 
         moretoprocess = True
         while moretoprocess: # Our fun loop
