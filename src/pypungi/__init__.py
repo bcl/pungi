@@ -1006,6 +1006,9 @@ class Pungi(pypungi.PungiBase):
         efibootargs = ['-eltorito-alt-boot', '-e', 'images/efiboot.img',
                        '-no-emul-boot']
 
+        macbootargs = ['-eltorito-alt-boot', '-e', 'images/macboot.img',
+                       '-no-emul-boot']
+
         ia64bootargs = ['-b', 'images/boot.img', '-no-emul-boot']
 
         ppcbootargs = ['-part', '-hfs', '-r', '-l', '-sysid', 'PPC', '-no-desktop', '-allow-multidot', '-chrp-boot']
@@ -1019,6 +1022,8 @@ class Pungi(pypungi.PungiBase):
         ppcbootargs.append('-hfs-bless') # must be last
 
         sparcbootargs = ['-G', '/boot/isofs.b', '-B', '...', '-s', '/boot/silo.conf', '-sparc-label', '"sparc"']
+
+        isohybrid = ['/usr/bin/isohybrid']
 
         # Check the size of the tree
         # This size checking method may be bunk, accepting patches...
@@ -1048,6 +1053,10 @@ class Pungi(pypungi.PungiBase):
             extraargs.extend(x86bootargs)
             if self.config.get('pungi', 'arch') == 'x86_64':
                 extraargs.extend(efibootargs)
+                isohybrid.append('-u')
+                if os.path.exists(os.path.join(self.topdir, 'images', 'macboot.img')):
+                    extraargs.extend(macbootargs)
+                    isohybrid.append('-m')
         elif self.config.get('pungi', 'arch') == 'ia64':
             extraargs.extend(ia64bootargs)
         elif self.config.get('pungi', 'arch').startswith('ppc'):
@@ -1063,7 +1072,9 @@ class Pungi(pypungi.PungiBase):
             self.config.get('pungi', 'version'), self.config.get('pungi', 'arch')))
 
         extraargs.extend(['-o', isofile])
-        
+
+        isohybrid.append(isofile)
+
         if not self.config.get('pungi', 'arch') == 'source':
             extraargs.append(self.topdir)
         else:
@@ -1074,7 +1085,7 @@ class Pungi(pypungi.PungiBase):
 
         # Run isohybrid on the iso
         if os.path.exists("/usr/bin/isohybrid"):
-            subprocess.call(["/usr/bin/isohybrid", isofile])
+            pypungi.util._doRunCommand(isohybrid, self.logger)
 
         # implant md5 for mediacheck on all but source arches
         if not self.config.get('pungi', 'arch') == 'source':
