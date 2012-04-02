@@ -657,16 +657,21 @@ class Pungi(pypungi.PungiBase):
                         self.debuginfolist.append(srcresults[0])
 
             if po.name == 'kernel' or po.name == 'glibc':
+                # %name-debuginfo-common
                 debugcommon = '%s-debuginfo-common' % po.name
-                commonresults = self.ayum.pkgSack.searchNevra(name=debugcommon,
-                                                              epoch=po.epoch,
-                                                              ver=po.version,
-                                                              rel=po.release,
-                                                              arch=po.arch)
-                if commonresults:
-                    if not commonresults[0] in self.debuginfolist:
-                        self.logger.debug('Added %s found by common' % commonresults[0].name)
-                        self.debuginfolist.append(commonresults[0])
+                # %name-debuginfo-common-%arch
+                debugcommon_arch = "%s-%s" % (debugcommon, po.arch)
+
+                for name in (debugcommon, debugcommon_arch):
+                    commonresults = self.ayum.pkgSack.searchNevra(name=name,
+                                                                  epoch=po.epoch,
+                                                                  ver=po.version,
+                                                                  rel=po.release,
+                                                                  arch=po.arch)
+                    if commonresults:
+                        if not commonresults[0] in self.debuginfolist:
+                            self.logger.debug('Added %s found by common' % commonresults[0].name)
+                            self.debuginfolist.append(commonresults[0])
 
     def _downloadPackageList(self, polist, relpkgdir):
         """Cycle through the list of package objects and
