@@ -239,6 +239,7 @@ class Pungi(pypungi.PungiBase):
         else:
             yumarch = arch
 
+        self.ayum.arch.setup_arch(yumarch)
         self.ayum.compatarch = yumarch
         # Filter out all the multilib arches, anaconda won't use them.
         # only makes sense on x86_64 
