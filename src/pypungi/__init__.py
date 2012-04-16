@@ -710,11 +710,13 @@ class Pungi(pypungi.PungiBase):
             basename = os.path.basename(po.relativepath)
 
             local = po.localPkg()
-            nohash = self.config.get('pungi', 'nohash')
-            if nohash:
+            if self.config.getboolean('pungi', 'nohash'):
                 target = os.path.join(pkgdir, basename)
             else:
                 target = os.path.join(pkgdir, po.name[0].lower(), basename)
+                # Make sure we have the hashed dir available to link into we only want dirs there to corrospond to packages
+                # that we are including so we can not just do A-Z 0-9
+                pypungi.util._ensuredir(os.path.join(pkgdir, po.name[0].lower()), self.logger, force=True, clean=False)
 
             # Link downloaded package in (or link package from file repo)
             try:
