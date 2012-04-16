@@ -2,10 +2,10 @@ from distutils.core import setup
 import glob
 
 setup(name='pungi',
-      version='2.10',
+      version='2.11',
       description='Distribution compose tool',
-      author='Jesse Keating',
-      author_email='jkeating@redhat.com',
+      author='Dennis Gilmore',
+      author_email='dgilmore@fedoraproject.org',
       url='http://fedorahosted.org/pungi',
       license='GPLv2',
       package_dir = {'': 'src'}, 

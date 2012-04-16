@@ -1,7 +1,7 @@
 %{!?python_sitelib: %define python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")}
 
 Name:           pungi
-Version:        2.10
+Version:        2.11
 Release:        1%{?dist}
 Summary:        Distribution compose tool
 
@@ -54,8 +54,13 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man8/pungi.8.gz
 /var/cache/pungi
 
-
 %changelog
+* Mon Apr 16 2012 Dennis Gilmore <dennis@ausil.us> - 2.11-1
+- upstream 2.11 release
+
+* Thu Feb 09 2012 Dennis Gilmore <dennis@ausil.us> - 2.10-1
+- upstream 2.10 release
+
 * Wed Jul 27 2011 Dennis Gilmore <dennis@ausil.us> - 2.9-1
 - pass isfinal rather than is_beta to lorax 
 
