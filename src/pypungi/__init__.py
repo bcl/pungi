@@ -233,7 +233,7 @@ class Pungi(pypungi.PungiBase):
         if arch == 'i386':
             yumarch = 'athlon'
         elif arch == 'ppc':
-            yumarch = 'ppc64'
+            yumarch = 'ppc64p7'
         elif arch == 'sparc':
             yumarch = 'sparc64v'
         else:
@@ -1051,6 +1051,7 @@ class Pungi(pypungi.PungiBase):
 
         isolist=[]
         anaruntime = '/usr/share/anaconda/boot'
+        ppcbootinfo = '/usr/share/lorax/config_files/ppc'
 
         pypungi.util._ensuredir(self.isodir, self.logger,
                            force=self.config.getboolean('pungi', 'force'),
@@ -1074,10 +1075,10 @@ class Pungi(pypungi.PungiBase):
         ppcbootargs = ['-part', '-hfs', '-r', '-l', '-sysid', 'PPC', '-no-desktop', '-allow-multidot', '-chrp-boot']
 
         ppcbootargs.append('-map')
-        ppcbootargs.append(os.path.join(anaruntime, 'mapping'))
+        ppcbootargs.append(os.path.join(ppcbootinfo, 'mapping'))
 
         ppcbootargs.append('-magic')
-        ppcbootargs.append(os.path.join(anaruntime, 'magic'))
+        ppcbootargs.append(os.path.join(ppcbootinfo, 'magic'))
 
         ppcbootargs.append('-hfs-bless') # must be last
 
