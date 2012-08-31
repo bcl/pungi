@@ -1,7 +1,7 @@
 %{!?python_sitelib: %define python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")}
 
 Name:           pungi
-Version:        2.11
+Version:        2.12
 Release:        1%{?dist}
 Summary:        Distribution compose tool
 
@@ -55,6 +55,11 @@ rm -rf $RPM_BUILD_ROOT
 /var/cache/pungi
 
 %changelog
+* Fri Aug 31 2012 Dennis Gilmore <dennis@ausil.us> - 2.12-1
+- ppc64p7 support
+- update locations for ppc files for image composition bz#849731
+- add 32 bit arch arches
+
 * Mon Apr 16 2012 Dennis Gilmore <dennis@ausil.us> - 2.11-1
 - upstream 2.11 release
 
