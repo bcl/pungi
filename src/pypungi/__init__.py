@@ -236,6 +236,10 @@ class Pungi(pypungi.PungiBase):
             yumarch = 'ppc64p7'
         elif arch == 'sparc':
             yumarch = 'sparc64v'
+        elif arch == 'arm':
+            yumarch = 'armv7l'
+        elif arch == 'armhfp':
+            yumarch = 'armv7hnl'
         else:
             yumarch = arch
 
