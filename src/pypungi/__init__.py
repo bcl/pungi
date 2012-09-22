@@ -232,7 +232,7 @@ class Pungi(pypungi.PungiBase):
         arch = self.config.get('pungi', 'arch')
         if arch == 'i386':
             yumarch = 'athlon'
-        elif arch == 'ppc':
+        elif arch in ['ppc', 'ppc64']:
             yumarch = 'ppc64p7'
         elif arch == 'sparc':
             yumarch = 'sparc64v'
