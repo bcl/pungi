@@ -33,6 +33,26 @@ from fnmatch import fnmatch
 import arch as arch_module
 
 
+def is_debug(po):
+    if "debuginfo" in po.name:
+        return True
+    return False
+
+
+def is_source(po):
+    if po.arch in ("src", "nosrc"):
+        return True
+    return False
+
+
+def is_package(po):
+    if is_debug(po):
+        return False
+    if is_source(po):
+        return False
+    return True
+
+
 class MyConfigParser(ConfigParser.ConfigParser):
     """A subclass of ConfigParser which does not lowercase options"""
 
@@ -53,6 +73,11 @@ class PungiBase(object):
         self.valid_arches = arch_module.get_valid_arches(self.tree_arch, multilib=full_archlist)
         self.valid_arches.append("src") # throw source in there, filter it later
         self.valid_multilib_arches = arch_module.get_valid_multilib_arches(self.tree_arch)
+
+        # arch: compatible arches
+        self.compatible_arches = {}
+        for i in self.valid_arches:
+            self.compatible_arches[i] = arch_module.get_compatible_arches(i)
 
         self.doLoggerSetup()
         self.workdir = os.path.join(self.config.get('pungi', 'destdir'),
@@ -157,6 +182,7 @@ class Pungi(pypungi.PungiBase):
         self.excluded_pkgs = {} # list the packages we've already excluded.
         self.seen_pkgs = {}     # list the packages we've already seen so we can check all deps only once
         self.lookaside_repos = self.config.get('pungi', 'lookaside_repos').split(" ")
+        self.sourcerpm_arch_map = {}    # {sourcerpm: set[arches]} - used for gathering debuginfo
 
     def _add_yum_repo(self, name, url, mirrorlist=False, groups=True,
                       cost=1000, includepkgs=[], excludepkgs=[],
@@ -283,6 +309,32 @@ class Pungi(pypungi.PungiBase):
 
         return True
 
+    def add_package(self, po, msg=None):
+        if not is_package(po):
+            raise ValueError("Not a binary package: %s" % po)
+        if msg:
+            self.logger.info(msg)
+        if po not in self.polist:
+            self.polist.append(po)
+        self.ayum.install(po)
+        self.sourcerpm_arch_map.setdefault(po.sourcerpm, set()).add(po.arch)
+
+    def add_debuginfo(self, po, msg=None):
+        if not is_debug(po):
+            raise ValueError("Not a debuginfog package: %s" % po)
+        if msg:
+            self.logger.info(msg)
+        if po not in self.debuginfolist:
+            self.debuginfolist.append(po)
+
+    def add_source(self, po, msg=None):
+        if not is_source(po):
+            raise ValueError("Not a source package: %s" % po)
+        if msg:
+            self.logger.info(msg)
+        if po not in self.srpmpolist:
+            self.srpmpolist.append(po)
+
     def verifyCachePkg(self, po, path): # Stolen from yum
         """check the package checksum vs the cache
            return True if pkg is good, False if not"""
@@ -358,8 +410,8 @@ class Pungi(pypungi.PungiBase):
 
                 for dep in depsack.returnNewestByNameArch():
                     if dep not in added:
-                        self.ayum.tsInfo.addInstall(dep)
-                        self.logger.info('Added %s.%s for %s.%s' % (dep.name, dep.arch, po.name, po.arch))
+                        msg = 'Added %s.%s for %s.%s' % (dep.name, dep.arch, po.name, po.arch)
+                        self.add_package(dep, msg)
                         added.append(dep)
             else:
                 # nogreedy
@@ -372,8 +424,8 @@ class Pungi(pypungi.PungiBase):
                     match = self.ayum._bestPackageFromList(pkg_sack)
                     dep = match
                     if dep not in added:
-                        self.ayum.install(dep)
-                        self.logger.info('Added %s.%s for %s.%s' % (dep.name, dep.arch, po.name, po.arch))
+                        msg = 'Added %s.%s for %s.%s' % (dep.name, dep.arch, po.name, po.arch)
+                        self.add_package(dep, msg)
                         added.append(dep)
                 except (yum.Errors.InstallError, yum.Errors.YumBaseError), ex:
                     self.logger.warn("Unresolvable dependency %s in %s.%s" % (r, po.name, po.arch))
@@ -405,9 +457,9 @@ class Pungi(pypungi.PungiBase):
             for i, pkg_sack in packages_by_name.iteritems():
                 pkg_sack = self.excludePackages(pkg_sack)
                 match = self.ayum._bestPackageFromList(pkg_sack)
-                self.ayum.tsInfo.addInstall(match)
+                msg = 'Added langpack %s.%s for package %s (pattern: %s)' % (match.name, match.arch, po.name, pattern)
+                self.add_package(match, msg)
                 added.append(match)
-                self.logger.info('Added langpack %s.%s for package %s (pattern: %s)' % (match.name, match.arch, po.name, pattern))
 
         return added
 
@@ -535,8 +587,8 @@ class Pungi(pypungi.PungiBase):
             # Get the newest results from the search
             mysack = yum.packageSack.ListPackageSack(matches)
             for match in mysack.returnNewestByNameArch():
-                self.ayum.tsInfo.addInstall(match)
-                self.logger.info('Found %s.%s' % (match.name, match.arch))
+                msg = 'Found %s.%s' % (match.name, match.arch)
+                self.add_package(match, msg)
 
             for pkg in unmatched:
                 if not pkg in matchdict.keys():
@@ -558,8 +610,8 @@ class Pungi(pypungi.PungiBase):
                 for i, pkg_sack in packages_by_name.iteritems():
                     pkg_sack = self.excludePackages(pkg_sack)
                     match = self.ayum._bestPackageFromList(pkg_sack)
-                    self.ayum.tsInfo.addInstall(match)
-                    self.logger.info('Found %s.%s' % (match.name, match.arch))
+                    msg = 'Found %s.%s' % (match.name, match.arch)
+                    self.add_package(match, msg)
 
         if len(self.ayum.tsInfo) == 0:
             raise yum.Errors.MiscError, 'No packages found to download.'
@@ -612,10 +664,10 @@ class Pungi(pypungi.PungiBase):
            find the sourcerpm for them.  Requires yum still
            configured and a list of package objects"""
         for po in self.polist[self.last_po:]:
-            srpmpo = self.src_by_bin[po]
-            if not srpmpo in self.srpmpolist:
-                self.logger.info("Adding source package %s.%s" % (srpmpo.name, srpmpo.arch))
-                self.srpmpolist.append(srpmpo)
+            srpm_po = self.src_by_bin[po]
+            if not srpm_po in self.srpmpolist:
+                msg = "Adding source package %s.%s" % (srpm_po.name, srpm_po.arch)
+                self.add_source(srpm_po)
         self.last_po = len(self.polist)
 
     def resolvePackageBuildDeps(self):
@@ -666,51 +718,26 @@ class Pungi(pypungi.PungiBase):
                 break
             thepass = thepass + 1
 
+
     def getDebuginfoList(self):
         """Cycle through the list of package objects and find
            debuginfo rpms for them.  Requires yum still
            configured and a list of package objects"""
 
-        for po in self.polist:
-            debugname = '%s-debuginfo' % po.name
-            results = self.ayum.pkgSack.searchNevra(name=debugname,
-                                                    epoch=po.epoch,
-                                                    ver=po.version,
-                                                    rel=po.release,
-                                                    arch=po.arch)
-            if results:
-                if not results[0] in self.debuginfolist:
-                    self.logger.debug('Added %s found by name' % results[0].name)
-                    self.debuginfolist.append(results[0])
-            else:
-                srpm = po.sourcerpm.split('.src.rpm')[0]
-                sname, sver, srel = srpm.rsplit('-', 2)
-                debugname = '%s-debuginfo' % sname
-                srcresults = self.ayum.pkgSack.searchNevra(name=debugname,
-                                                           ver=sver,
-                                                           rel=srel,
-                                                           arch=po.arch)
-                if srcresults:
-                    if not srcresults[0] in self.debuginfolist:
-                        self.logger.debug('Added %s found by srpm' % srcresults[0].name)
-                        self.debuginfolist.append(srcresults[0])
+        for po in self.pkgs:
+            if not is_debug(po):
+                continue
 
-            if po.name == 'kernel' or po.name == 'glibc':
-                # %name-debuginfo-common
-                debugcommon = '%s-debuginfo-common' % po.name
-                # %name-debuginfo-common-%arch
-                debugcommon_arch = "%s-%s" % (debugcommon, po.arch)
+            if po.sourcerpm not in self.sourcerpm_arch_map:
+                # TODO: print a warning / throw an error
+                continue
 
-                for name in (debugcommon, debugcommon_arch):
-                    commonresults = self.ayum.pkgSack.searchNevra(name=name,
-                                                                  epoch=po.epoch,
-                                                                  ver=po.version,
-                                                                  rel=po.release,
-                                                                  arch=po.arch)
-                    if commonresults:
-                        if not commonresults[0] in self.debuginfolist:
-                            self.logger.debug('Added %s found by common' % commonresults[0].name)
-                            self.debuginfolist.append(commonresults[0])
+            if not set(self.compatible_arches[po.arch]) & set(self.sourcerpm_arch_map[po.sourcerpm]):
+                # skip all incompatible arches
+                # this pulls i386 debuginfo for a i686 package for example
+                continue
+            msg = 'Added debuginfo %s.%s' % (po.name, po.arch)
+            self.add_debuginfo(po, msg)
 
     def _downloadPackageList(self, polist, relpkgdir):
         """Cycle through the list of package objects and
