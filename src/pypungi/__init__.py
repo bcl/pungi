@@ -1080,7 +1080,6 @@ class Pungi(pypungi.PungiBase):
             return
 
         isolist=[]
-        anaruntime = '/usr/share/anaconda/boot'
         ppcbootinfo = '/usr/share/lorax/config_files/ppc'
 
         pypungi.util._ensuredir(self.isodir, self.logger,
