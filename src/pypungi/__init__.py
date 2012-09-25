@@ -457,6 +457,10 @@ class Pungi(pypungi.PungiBase):
         matchdict = {} # A dict of objects to names
         excludeGroups = [] #A list of groups for removal defined in the ks file
 
+        # precompute pkgs and pkg_refs to speed things up
+        self.pkgs = self.ayum.pkgSack.returnPackages()
+        self.pkg_refs = yum.packages.buildPkgRefDict(self.pkgs, casematch=True)
+
         # First remove the excludes
         self.ayum.excludePackages()
         
@@ -489,7 +493,7 @@ class Pungi(pypungi.PungiBase):
         if self.config.getboolean('pungi', 'alldeps'):
             # greedy
             # Search repos for things in our searchlist, supports globs
-            (exactmatched, matched, unmatched) = yum.packages.parsePackages(self.ayum.pkgSack.returnPackages(), searchlist, casematch=1)
+            (exactmatched, matched, unmatched) = yum.packages.parsePackages(self.pkgs, searchlist, casematch=1, pkgdict=self.pkg_refs.copy())
             matches = filter(self._filtersrcdebug, exactmatched + matched)
             matches = self.excludePackages(matches)
 
@@ -509,22 +513,22 @@ class Pungi(pypungi.PungiBase):
         else:
             # nogreedy
             for name in searchlist:
-                arch = None
-                if "." in name:
-                    name, arch = name.rsplit(".", 1)
+                exactmatched, matched, unmatched = yum.packages.parsePackages(self.pkgs, [name], casematch=1, pkgdict=self.pkg_refs.copy())
+                matches = filter(self._filtersrcdebug, exactmatched + matched)
 
-                pkg_sack = self.ayum.pkgSack.searchNevra(name=name, arch=arch)
-                # filter sources out of the package sack
-                pkg_sack = [ i for i in pkg_sack if i.arch not in ("src", "nosrc") ]
-                pkg_sack = self.excludePackages(pkg_sack)
-
-                match = self.ayum._bestPackageFromList(pkg_sack)
-                if not match:
+                if not matches:
                     self.logger.warn('Could not find a match for %s in any configured repo' % name)
                     continue
 
-                self.ayum.tsInfo.addInstall(match)
-                self.logger.info('Found %s.%s' % (match.name, match.arch))
+                packages_by_name = {}
+                for i in matches:
+                    packages_by_name.setdefault(i.name, []).append(i)
+
+                for i, pkg_sack in packages_by_name.iteritems():
+                    pkg_sack = self.excludePackages(pkg_sack)
+                    match = self.ayum._bestPackageFromList(pkg_sack)
+                    self.ayum.tsInfo.addInstall(match)
+                    self.logger.info('Found %s.%s' % (match.name, match.arch))
 
         if len(self.ayum.tsInfo) == 0:
             raise yum.Errors.MiscError, 'No packages found to download.'
@@ -561,7 +565,7 @@ class Pungi(pypungi.PungiBase):
         self.src_by_bin = {}
         self.bin_by_src = {}
         self.logger.info("Generating source <-> binary package mappings")
-        (dummy1, everything, dummy2) = yum.packages.parsePackages(self.ayum.pkgSack.returnPackages(), ['*'])
+        (dummy1, everything, dummy2) = yum.packages.parsePackages(self.pkgs, ['*'], pkgdict=self.pkg_refs.copy())
         for po in everything:
             if po.arch == 'src':
                 continue
