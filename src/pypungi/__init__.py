@@ -142,6 +142,7 @@ class Pungi(pypungi.PungiBase):
         self.last_po = 0
         self.resolved_deps = {} # list the deps we've already resolved, short circuit.
         self.excluded_pkgs = {} # list the packages we've already excluded.
+        self.seen_pkgs = {}     # list the packages we've already seen so we can check all deps only once
 
     def _add_yum_repo(self, name, url, mirrorlist=False, groups=True,
                       cost=1000, includepkgs=[], excludepkgs=[],
@@ -340,6 +341,10 @@ class Pungi(pypungi.PungiBase):
     def getPackageDeps(self, po):
         """Add the dependencies for a given package to the
            transaction info"""
+
+        if po in self.seen_pkgs:
+            return
+        self.seen_pkgs[po] = None
 
         self.logger.info('Checking deps of %s.%s' % (po.name, po.arch))
 
