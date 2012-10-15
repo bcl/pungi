@@ -367,9 +367,10 @@ class Pungi(pypungi.PungiBase):
                 depsack = yum.packageSack.ListPackageSack(deps)
 
                 for dep in depsack.returnNewestByNameArch():
-                    self.ayum.tsInfo.addInstall(dep)
-                    self.logger.info('Added %s.%s for %s.%s' % (dep.name, dep.arch, po.name, po.arch))
-                    added.append(dep)
+                    if dep not in added:
+                        self.ayum.tsInfo.addInstall(dep)
+                        self.logger.info('Added %s.%s for %s.%s' % (dep.name, dep.arch, po.name, po.arch))
+                        added.append(dep)
             else:
                 # nogreedy
                 try:
@@ -380,12 +381,13 @@ class Pungi(pypungi.PungiBase):
                         continue
                     match = self.ayum._bestPackageFromList(pkg_sack)
                     dep = match
-                    self.ayum.install(dep)
+                    if dep not in added:
+                        self.ayum.install(dep)
+                        self.logger.info('Added %s.%s for %s.%s' % (dep.name, dep.arch, po.name, po.arch))
+                        added.append(dep)
                 except (yum.Errors.InstallError, yum.Errors.YumBaseError), ex:
                     self.logger.warn("Unresolvable dependency %s in %s.%s" % (r, po.name, po.arch))
                     continue
-                self.logger.info('Added %s.%s for %s.%s' % (dep.name, dep.arch, po.name, po.arch))
-                added.append(dep)
 
             self.resolved_deps[req] = None
         for add in added:
