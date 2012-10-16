@@ -341,7 +341,6 @@ class Pungi(pypungi.PungiBase):
     def getPackageDeps(self, po):
         """Add the dependencies for a given package to the
            transaction info"""
-
         if po in self.seen_pkgs:
             return
         self.seen_pkgs[po] = None
@@ -351,6 +350,9 @@ class Pungi(pypungi.PungiBase):
         reqs = po.requires
         provs = po.provides
         added = []
+
+        # get langpacks for each processed package
+        added.extend(self.getLangpacks(po))
 
         for req in reqs:
             if self.resolved_deps.has_key(req):
@@ -397,6 +399,34 @@ class Pungi(pypungi.PungiBase):
             self.resolved_deps[req] = None
         for add in added:
             self.getPackageDeps(add)
+
+    def getLangpacks(self, po):
+        added = []
+
+        # get all langpacks matching the package name
+        langpacks = [ i for i in self.langpacks if i["name"] == po.name ]
+        if not langpacks:
+            return []
+
+        for langpack in langpacks:
+            pattern = langpack["install"] % "*" # replace '%s' with '*'
+            exactmatched, matched, unmatched = yum.packages.parsePackages(self.pkgs, [pattern], casematch=1, pkgdict=self.pkg_refs.copy())
+            matches = filter(self._filtersrcdebug, exactmatched + matched)
+            matches = [ i for i in matches if not i.name.endswith("-devel") and not i.name.endswith("-static") and i.name != "man-pages-overrides" ]
+            matches = [ i for i in matches if fnmatch(i.name, pattern) ]
+
+            packages_by_name = {}
+            for i in matches:
+                packages_by_name.setdefault(i.name, []).append(i)
+
+            for i, pkg_sack in packages_by_name.iteritems():
+                pkg_sack = self.excludePackages(pkg_sack)
+                match = self.ayum._bestPackageFromList(pkg_sack)
+                self.ayum.tsInfo.addInstall(match)
+                added.append(match)
+                self.logger.info('Added langpack %s.%s for package %s (pattern: %s)' % (match.name, match.arch, po.name, pattern))
+
+        return added
 
     def getPackagesFromGroup(self, group):
         """Get a list of package names from a ksparser group object
@@ -467,6 +497,17 @@ class Pungi(pypungi.PungiBase):
         # precompute pkgs and pkg_refs to speed things up
         self.pkgs = self.ayum.pkgSack.returnPackages()
         self.pkg_refs = yum.packages.buildPkgRefDict(self.pkgs, casematch=True)
+
+        try:
+            self.langpacks = list(self.ayum.comps.langpacks)
+        except AttributeError:
+            # old yum
+            self.logger.warning("Could not get langpacks via yum.comps. You may need to update yum.")
+            self.langpacks = []
+        except yum.Errors.GroupsError:
+            # no groups or no comps at all
+            self.logger.warning("Could not get langpacks due to missing comps in repodata or --ignoregroups=true option.")
+            self.langpacks = []
 
         # First remove the excludes
         self.ayum.excludePackages()
