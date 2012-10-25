@@ -46,4 +46,5 @@ class Config(SafeConfigParser):
         self.set('pungi', 'isfinal', "False")
         self.set('pungi', 'nohash', "False")
         self.set('pungi', 'full_archlist', "False")
+        self.set('pungi', 'lookaside_repos', '')
 

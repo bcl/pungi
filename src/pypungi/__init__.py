@@ -143,6 +143,7 @@ class Pungi(pypungi.PungiBase):
         self.resolved_deps = {} # list the deps we've already resolved, short circuit.
         self.excluded_pkgs = {} # list the packages we've already excluded.
         self.seen_pkgs = {}     # list the packages we've already seen so we can check all deps only once
+        self.lookaside_repos = self.config.get('pungi', 'lookaside_repos').split(" ")
 
     def _add_yum_repo(self, name, url, mirrorlist=False, groups=True,
                       cost=1000, includepkgs=[], excludepkgs=[],
@@ -848,7 +849,7 @@ class Pungi(pypungi.PungiBase):
 
     def _listPackages(self, polist):
         """Cycle through the list of packages and return their paths."""
-        return [ os.path.join(pkg.basepath or "", pkg.relativepath) for pkg in polist ]
+        return [ os.path.join(pkg.basepath or "", pkg.relativepath) for pkg in polist if pkg.repoid not in self.lookaside_repos ]
 
     def listPackages(self):
         """Cycle through the list of RPMs and return their paths."""
