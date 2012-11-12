@@ -1,4 +1,6 @@
 #!/usr/bin/python -tt
+
+
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; version 2 of the License.
@@ -11,6 +13,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+
 
 import yum
 import os
@@ -27,6 +30,8 @@ import ConfigParser
 import pylorax
 from fnmatch import fnmatch
 
+import arch as arch_module
+
 
 class MyConfigParser(ConfigParser.ConfigParser):
     """A subclass of ConfigParser which does not lowercase options"""
@@ -41,12 +46,19 @@ class PungiBase(object):
     def __init__(self, config):
         self.config = config
 
-        self.doLoggerSetup()
+        # ARCH setup
+        self.tree_arch = self.config.get('pungi', 'arch')
+        self.yum_arch = arch_module.tree_arch_to_yum_arch(arch)
+        full_archlist = self.config.getboolean('pungi', 'full_archlist')
+        self.valid_arches = arch_module.get_valid_arches(self.tree_arch, multilib=full_archlist)
+        self.valid_arches.append("src") # throw source in there, filter it later
+        self.valid_multilib_arches = arch_module.get_valid_multilib_arches(self.tree_arch)
 
+        self.doLoggerSetup()
         self.workdir = os.path.join(self.config.get('pungi', 'destdir'),
                                     'work',
                                     self.config.get('pungi', 'flavor'),
-                                    self.config.get('pungi', 'arch'))
+                                    self.tree_arch)
 
 
 
@@ -59,9 +71,9 @@ class PungiBase(object):
 
         if self.config.get('pungi', 'flavor'):
             logfile = os.path.join(logdir, '%s.%s.log' % (self.config.get('pungi', 'flavor'),
-                                                          self.config.get('pungi', 'arch')))
+                                                          self.tree_arch))
         else:
-            logfile = os.path.join(logdir, '%s.log' % (self.config.get('pungi', 'arch')))
+            logfile = os.path.join(logdir, '%s.log' % (self.tree_arch))
 
         # Create the root logger, that will log to our file
         logging.basicConfig(level=logging.DEBUG,
@@ -121,7 +133,7 @@ class Pungi(pypungi.PungiBase):
         self.archdir = os.path.join(self.destdir,
                                    self.config.get('pungi', 'version'),
                                    self.config.get('pungi', 'flavor'),
-                                   self.config.get('pungi', 'arch'))
+                                   self.tree_arch)
 
         self.topdir = os.path.join(self.archdir, 'os')
         self.isodir = os.path.join(self.archdir, self.config.get('pungi','isodir'))
@@ -132,6 +144,7 @@ class Pungi(pypungi.PungiBase):
         self.infofile = os.path.join(self.config.get('pungi', 'destdir'),
                                     self.config.get('pungi', 'version'),
                                     '.composeinfo')
+
 
         self.ksparser = ksparser
         self.polist = []
@@ -225,41 +238,12 @@ class Pungi(pypungi.PungiBase):
         yumconf.deltarpm = 0
         yumvars = yum.config._getEnvVar()
         yumvars['releasever'] = self.config.get('pungi', 'version')
-        yumvars['basearch'] = yum.rpmUtils.arch.getBaseArch(myarch=self.config.get('pungi', 'arch'))
+        yumvars['basearch'] = yum.rpmUtils.arch.getBaseArch(myarch=self.tree_arch)
         yumconf.yumvar = yumvars
         self.ayum._conf = yumconf
         # I have no idea why this fixes a traceback, but James says it does.
         del self.ayum.prerepoconf
         self.ayum.repos.setCacheDir(self.ayum.conf.cachedir)
-
-        arch = self.config.get('pungi', 'arch')
-        if arch == 'i386':
-            yumarch = 'athlon'
-        elif arch in ['ppc', 'ppc64']:
-            yumarch = 'ppc64p7'
-        elif arch == 'arm':
-            yumarch = 'armv7l'
-        elif arch == 'armhfp':
-            yumarch = 'armv7hnl'
-        else:
-            yumarch = arch
-
-        self.ayum.arch.setup_arch(yumarch)
-        self.ayum.compatarch = yumarch
-        # Filter out all the multilib arches, anaconda won't use them.
-        # only makes sense on x86_64 and s390x
-        full_archlist = set(yum.rpmUtils.arch.getArchList(yumarch))
-        if arch in ['x86_64', 's390x'] and not self.config.getboolean('pungi', 'full_archlist'):
-            compat_archinfo = yum.rpmUtils.arch.getMultiArchInfo(yumarch)
-            compat_archlist = set(yum.rpmUtils.arch.getArchList(compat_archinfo[0]))
-            newarchlist = list(full_archlist.difference(compat_archlist))
-            if 'noarch' not in newarchlist:
-                newarchlist.append('noarch')
-            arches = newarchlist
-        else:
-            arches = list(full_archlist)
-
-        arches.append('src') # throw source in there, filter it later
 
         # deal with our repos
         try:
@@ -287,9 +271,9 @@ class Pungi(pypungi.PungiBase):
                                    includepkgs=repo.includepkgs,
                                    excludepkgs=repo.excludepkgs,
                                    proxy=repo.proxy)
-        
-        self.logger.info('Getting sacks for arches %s' % arches)
-        self.ayum._getSacks(archlist=arches)
+
+        self.logger.info('Getting sacks for arches %s' % self.valid_arches)
+        self.ayum._getSacks(archlist=self.valid_arches)
 
     def _filtersrcdebug(self, po):
         """Filter out package objects that are of 'src' arch."""
@@ -322,10 +306,8 @@ class Pungi(pypungi.PungiBase):
 
         excludes = [] # list of (name, arch, pattern)
         for i in self.ksparser.handler.packages.excludedList:
-            if "." in i:
-                excludes.append(i.rsplit(".", 1) + [i])
-            else:
-                excludes.append((i, None, i))
+            name, arch = arch_module.split_name_arch(i)
+            excludes.append(name, arch, i)
 
         for pkg in pkg_sack[:]:
             for name, arch, exclude_pattern in excludes:
@@ -788,7 +770,7 @@ class Pungi(pypungi.PungiBase):
         """Download the package objects obtained in getPackageObjects()."""
 
         self._downloadPackageList(self.polist,
-                                  os.path.join(self.config.get('pungi', 'arch'),
+                                  os.path.join(self.tree_arch,
                                                self.config.get('pungi', 'osdir'),
                                                self.config.get('pungi', 'product_path')))
 
@@ -844,8 +826,7 @@ class Pungi(pypungi.PungiBase):
            download them."""
 
         # do the downloads
-        self._downloadPackageList(self.debuginfolist, os.path.join(self.config.get('pungi', 'arch'),
-                                                           'debug'))
+        self._downloadPackageList(self.debuginfolist, os.path.join(self.tree_arch, 'debug'))
 
     def _listPackages(self, polist):
         """Cycle through the list of packages and return their paths."""
@@ -938,7 +919,7 @@ class Pungi(pypungi.PungiBase):
             
         repoviewtitle = '%s %s - %s' % (self.config.get('pungi', 'name'), 
                                         self.config.get('pungi', 'version'),
-                                        self.config.get('pungi', 'arch'))
+                                        self.tree_arch)
 
         cachedir = self.config.get('pungi', 'cachedir')
 
@@ -949,7 +930,7 @@ class Pungi(pypungi.PungiBase):
         if self.config.getboolean('pungi', 'debuginfo'):
             path = os.path.join(self.archdir, 'debug')
             if not os.path.isdir(path):
-                self.logger.debug("No debuginfo for %s" % self.config.get('pungi', 'arch'))
+                self.logger.debug("No debuginfo for %s" % self.tree_arch)
                 return
             self._makeMetadata(path, cachedir, repoview=False)
 
@@ -1031,7 +1012,7 @@ class Pungi(pypungi.PungiBase):
         os.path.walk(os.path.join(self.topdir, 'images'), getsum, self.topdir + '/')
         
         # Capture PPC images
-        if self.config.get('pungi', 'arch') in  ['ppc', 'ppc64']:
+        if self.tree_arch in ['ppc', 'ppc64']:
             os.path.walk(os.path.join(self.topdir, 'ppc'), getsum, self.topdir + '/')
 
         # Get a checksum of repomd.xml since it has within it sums for other files
@@ -1174,7 +1155,7 @@ class Pungi(pypungi.PungiBase):
 
         # Check the size of the tree
         # This size checking method may be bunk, accepting patches...
-        if not self.config.get('pungi', 'arch') == 'source':
+        if not self.tree_arch == 'source':
             treesize = int(subprocess.Popen(mkisofs + ['-print-size', '-quiet', self.topdir], stdout=subprocess.PIPE).communicate()[0])
         else:
             srcdir = os.path.join(self.config.get('pungi', 'destdir'), self.config.get('pungi', 'version'), 
@@ -1186,27 +1167,27 @@ class Pungi(pypungi.PungiBase):
 
         if treesize > 700: # we're larger than a 700meg CD
             isoname = '%s-%s-%s-DVD.iso' % (self.config.get('pungi', 'iso_basename'), self.config.get('pungi', 'version'), 
-                self.config.get('pungi', 'arch'))
+                self.tree_arch)
         else:
             isoname = '%s-%s-%s.iso' % (self.config.get('pungi', 'iso_basename'), self.config.get('pungi', 'version'), 
-                self.config.get('pungi', 'arch'))
+                self.tree_arch)
 
         isofile = os.path.join(self.isodir, isoname)
 
         # setup the extra mkisofs args
         extraargs = []
 
-        if self.config.get('pungi', 'arch') == 'i386' or self.config.get('pungi', 'arch') == 'x86_64':
+        if self.tree_arch == 'i386' or self.tree_arch == 'x86_64':
             extraargs.extend(x86bootargs)
-            if self.config.get('pungi', 'arch') == 'x86_64':
+            if self.tree_arch == 'x86_64':
                 extraargs.extend(efibootargs)
                 isohybrid.append('-u')
                 if os.path.exists(os.path.join(self.topdir, 'images', 'macboot.img')):
                     extraargs.extend(macbootargs)
                     isohybrid.append('-m')
-        elif self.config.get('pungi', 'arch') == 'ia64':
+        elif self.tree_arch == 'ia64':
             extraargs.extend(ia64bootargs)
-        elif self.config.get('pungi', 'arch').startswith('ppc'):
+        elif self.tree_arch.startswith('ppc'):
             extraargs.extend(ppcbootargs)
             extraargs.append(os.path.join(self.topdir, "ppc/mac"))
 
@@ -1214,13 +1195,13 @@ class Pungi(pypungi.PungiBase):
         # image won't be bootable!
         extraargs.append('-V')
         extraargs.append('%s %s %s' % (self.config.get('pungi', 'name'),
-            self.config.get('pungi', 'version'), self.config.get('pungi', 'arch')))
+            self.config.get('pungi', 'version'), self.tree_arch))
 
         extraargs.extend(['-o', isofile])
 
         isohybrid.append(isofile)
 
-        if not self.config.get('pungi', 'arch') == 'source':
+        if not self.tree_arch == 'source':
             extraargs.append(self.topdir)
         else:
             extraargs.append(os.path.join(self.archdir, 'SRPMS'))
@@ -1229,18 +1210,18 @@ class Pungi(pypungi.PungiBase):
         pypungi.util._doRunCommand(mkisofs + extraargs, self.logger)
 
         # Run isohybrid on the iso as long as its not the source iso
-        if os.path.exists("/usr/bin/isohybrid") and not self.config.get('pungi', 'arch') == 'source':
+        if os.path.exists("/usr/bin/isohybrid") and not self.tree_arch == 'source':
             pypungi.util._doRunCommand(isohybrid, self.logger)
 
         # implant md5 for mediacheck on all but source arches
-        if not self.config.get('pungi', 'arch') == 'source':
+        if not self.tree_arch == 'source':
             pypungi.util._doRunCommand(['/usr/bin/implantisomd5', isofile], self.logger)
 
         # shove the checksum into a file
         csumfile = os.path.join(self.isodir, '%s-%s-%s-CHECKSUM' % (
                                 self.config.get('pungi', 'iso_basename'),
                                 self.config.get('pungi', 'version'),
-                                self.config.get('pungi', 'arch')))
+                                self.tree_arch))
         # Write a line about what checksums are used.
         # sha256sum is magic...
         file = open(csumfile, 'w')
@@ -1252,10 +1233,10 @@ class Pungi(pypungi.PungiBase):
         self.writeinfo('media: %s' % self.mkrelative(isofile))
 
         # Now link the boot iso
-        if not self.config.get('pungi', 'arch') == 'source' and \
+        if not self.tree_arch == 'source' and \
         os.path.exists(os.path.join(self.topdir, 'images', 'boot.iso')):
             isoname = '%s-%s-%s-netinst.iso' % (self.config.get('pungi', 'iso_basename'),
-                self.config.get('pungi', 'version'), self.config.get('pungi', 'arch'))
+                self.config.get('pungi', 'version'), self.tree_arch)
             isofile = os.path.join(self.isodir, isoname)
 
             # link the boot iso to the iso dir
