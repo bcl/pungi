@@ -74,6 +74,9 @@ class PungiBase(object):
         self.valid_arches.append("src") # throw source in there, filter it later
         self.valid_multilib_arches = arch_module.get_valid_multilib_arches(self.tree_arch)
 
+        # --nogreedy
+        self.greedy = config.getboolean('pungi', 'alldeps')
+
         # arch: compatible arches
         self.compatible_arches = {}
         for i in self.valid_arches:
@@ -358,13 +361,20 @@ class Pungi(pypungi.PungiBase):
 
         excludes = [] # list of (name, arch, pattern)
         for i in self.ksparser.handler.packages.excludedList:
+            pattern = i
+            multilib = False
+            if i.endswith(".+"):
+                multilib = True
+                i = i[:-2]
             name, arch = arch_module.split_name_arch(i)
-            excludes.append(name, arch, i)
+            excludes.append((name, arch, pattern, multilib))
 
         for pkg in pkg_sack[:]:
-            for name, arch, exclude_pattern in excludes:
+            for name, arch, exclude_pattern, multilib in excludes:
                 if fnmatch(pkg.name, name):
                     if not arch or fnmatch(pkg.arch, arch):
+                        if multilib and pkg.arch not in self.valid_multilib_arches:
+                            continue
                         if pkg.nvra not in self.excluded_pkgs:
                             self.logger.info("Excluding %s.%s (pattern: %s)" % (pkg.name, pkg.arch, exclude_pattern))
                             self.excluded_pkgs[pkg.nvra] = pkg
@@ -390,48 +400,37 @@ class Pungi(pypungi.PungiBase):
         added.extend(self.getLangpacks(po))
 
         for req in reqs:
-            if self.resolved_deps.has_key(req):
+            if req in self.resolved_deps:
                 continue
-            (r,f,v) = req
+            r, f, v = req
             if r.startswith('rpmlib(') or r.startswith('config('):
                 continue
             if req in provs:
                 continue
 
-            if self.config.getboolean('pungi', 'alldeps'):
-                # greedy
+            try:
                 deps = self.ayum.whatProvides(r, f, v).returnPackages()
                 deps = self.excludePackages(deps)
                 if not deps:
                     self.logger.warn("Unresolvable dependency %s in %s.%s" % (r, po.name, po.arch))
                     continue
 
-                depsack = yum.packageSack.ListPackageSack(deps)
+                if self.greedy:
+                    deps = yum.packageSack.ListPackageSack(deps).returnNewestByNameArch()
+                else:
+                    deps = [self.ayum._bestPackageFromList(deps)]
 
-                for dep in depsack.returnNewestByNameArch():
+                for dep in deps:
                     if dep not in added:
                         msg = 'Added %s.%s for %s.%s' % (dep.name, dep.arch, po.name, po.arch)
                         self.add_package(dep, msg)
                         added.append(dep)
-            else:
-                # nogreedy
-                try:
-                    pkg_sack = self.ayum.whatProvides(r, f, v).returnPackages()
-                    pkg_sack = self.excludePackages(pkg_sack)
-                    if not pkg_sack:
-                        self.logger.warn("Unresolvable dependency %s in %s.%s" % (r, po.name, po.arch))
-                        continue
-                    match = self.ayum._bestPackageFromList(pkg_sack)
-                    dep = match
-                    if dep not in added:
-                        msg = 'Added %s.%s for %s.%s' % (dep.name, dep.arch, po.name, po.arch)
-                        self.add_package(dep, msg)
-                        added.append(dep)
-                except (yum.Errors.InstallError, yum.Errors.YumBaseError), ex:
-                    self.logger.warn("Unresolvable dependency %s in %s.%s" % (r, po.name, po.arch))
-                    continue
 
+            except (yum.Errors.InstallError, yum.Errors.YumBaseError), ex:
+                self.logger.warn("Unresolvable dependency %s in %s.%s" % (r, po.name, po.arch))
+                continue
             self.resolved_deps[req] = None
+
         for add in added:
             self.getPackageDeps(add)
 
@@ -573,45 +572,37 @@ class Pungi(pypungi.PungiBase):
         # Make the search list unique
         searchlist = yum.misc.unique(searchlist)
 
-        if self.config.getboolean('pungi', 'alldeps'):
-            # greedy
-            # Search repos for things in our searchlist, supports globs
-            (exactmatched, matched, unmatched) = yum.packages.parsePackages(self.pkgs, searchlist, casematch=1, pkgdict=self.pkg_refs.copy())
+        for name in searchlist:
+            pattern = name
+            multilib = False
+            if name.endswith(".+"):
+                name = name[:-2]
+                multilib = True
+
+            exactmatched, matched, unmatched = yum.packages.parsePackages(self.pkgs, [name], casematch=1, pkgdict=self.pkg_refs.copy())
             matches = filter(self._filtersrcdebug, exactmatched + matched)
-            matches = self.excludePackages(matches)
 
-            # Populate a dict of package objects to their names
-            for match in matches:
-                matchdict[match.name] = match
+            if multilib and not self.greedy:
+                matches = [ po for po in matches if po.arch in self.valid_multilib_arches ]
 
-            # Get the newest results from the search
-            mysack = yum.packageSack.ListPackageSack(matches)
-            for match in mysack.returnNewestByNameArch():
-                msg = 'Found %s.%s' % (match.name, match.arch)
-                self.add_package(match, msg)
+            if not matches:
+                self.logger.warn('Could not find a match for %s in any configured repo' % pattern)
+                continue
 
-            for pkg in unmatched:
-                if not pkg in matchdict.keys():
-                    self.logger.warn('Could not find a match for %s in any configured repo' % pkg)
-        else:
-            # nogreedy
-            for name in searchlist:
-                exactmatched, matched, unmatched = yum.packages.parsePackages(self.pkgs, [name], casematch=1, pkgdict=self.pkg_refs.copy())
-                matches = filter(self._filtersrcdebug, exactmatched + matched)
+            packages_by_name = {}
+            for po in matches:
+                packages_by_name.setdefault(po.name, []).append(po)
 
-                if not matches:
-                    self.logger.warn('Could not find a match for %s in any configured repo' % name)
-                    continue
+            for name, packages in packages_by_name.iteritems():
+                packages = self.excludePackages(packages)
+                if self.greedy:
+                    packages = yum.packageSack.ListPackageSack(packages).returnNewestByNameArch()
+                else:
+                    packages = [self.ayum._bestPackageFromList(packages)]
 
-                packages_by_name = {}
-                for i in matches:
-                    packages_by_name.setdefault(i.name, []).append(i)
-
-                for i, pkg_sack in packages_by_name.iteritems():
-                    pkg_sack = self.excludePackages(pkg_sack)
-                    match = self.ayum._bestPackageFromList(pkg_sack)
-                    msg = 'Found %s.%s' % (match.name, match.arch)
-                    self.add_package(match, msg)
+                for po in packages:
+                    msg = 'Found %s.%s' % (po.name, po.arch)
+                    self.add_package(po, msg)
 
         if len(self.ayum.tsInfo) == 0:
             raise yum.Errors.MiscError, 'No packages found to download.'
