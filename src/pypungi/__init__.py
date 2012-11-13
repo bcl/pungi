@@ -579,8 +579,14 @@ class Pungi(pypungi.PungiBase):
                 name = name[:-2]
                 multilib = True
 
-            exactmatched, matched, unmatched = yum.packages.parsePackages(self.pkgs, [name], casematch=1, pkgdict=self.pkg_refs.copy())
-            matches = filter(self._filtersrcdebug, exactmatched + matched)
+            if self.greedy and name == "system-release":
+                # HACK: handles a special case, when system-release virtual provide is specified in the greedy mode
+                matches = self.ayum.whatProvides(name, None, None).returnPackages()
+            else:
+                exactmatched, matched, unmatched = yum.packages.parsePackages(self.pkgs, [name], casematch=1, pkgdict=self.pkg_refs.copy())
+                matches = exactmatched + matched
+
+            matches = filter(self._filtersrcdebug, matches)
 
             if multilib and not self.greedy:
                 matches = [ po for po in matches if po.arch in self.valid_multilib_arches ]
