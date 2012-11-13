@@ -79,6 +79,7 @@ class PungiBase(object):
         full_archlist = self.config.getboolean('pungi', 'full_archlist')
         self.valid_arches = arch_module.get_valid_arches(self.tree_arch, multilib=full_archlist)
         self.valid_arches.append("src") # throw source in there, filter it later
+        self.valid_native_arches = arch_module.get_valid_arches(self.tree_arch, multilib=False)
         self.valid_multilib_arches = arch_module.get_valid_multilib_arches(self.tree_arch)
 
         # --nogreedy
@@ -129,6 +130,11 @@ class PungiYum(yum.YumBase):
     def __init__(self, config):
         self.pungiconfig = config
         yum.YumBase.__init__(self)
+
+    def _checkInstall(self, txmbr):
+        # overriding this method allows us to ignore installed packages
+        # and always prefer native packages over those who pull less deps into a transaction
+        return []
 
     def doLoggingSetup(self, debuglevel, errorlevel, syslog_ident=None, syslog_facility=None):
         """Setup the logging facility."""
@@ -426,7 +432,15 @@ class Pungi(pypungi.PungiBase):
                 if self.greedy:
                     deps = yum.packageSack.ListPackageSack(deps).returnNewestByNameArch()
                 else:
-                    deps = [self.ayum._bestPackageFromList(deps)]
+                    found = False
+                    for dep in deps:
+                        if dep in self.polist:
+                            found = True
+                            break
+                    if found:
+                        deps = []
+                    else:
+                        deps = [self.ayum._bestPackageFromList(deps)]
 
                 for dep in deps:
                     if dep not in added:
@@ -736,11 +750,55 @@ class Pungi(pypungi.PungiBase):
             prevlen = len(self.srpmpolist)
             self.logger.info("Completing package set, pass %d" % (thepass,))
             for srpm in self.srpmpolist[len(self.srpms_fulltree):]:
-                for po in self.bin_by_src[srpm]:
-                    if po not in self.polist and 'debuginfo' not in po.name:
-                        self.logger.info("Adding %s.%s to complete package set" % (po.name, po.arch))
-                        self.polist.append(po)
-                        self.getPackageDeps(po)
+
+                include_native = False
+                include_multilib = False
+                has_native = False
+                has_multilib = False
+                for po in self.excludePackages(self.bin_by_src[srpm]):
+                    if not is_package(po):
+                        continue
+                    if po.arch == "noarch":
+                        continue
+                    if po not in self.polist:
+                        # process only already included packages
+                        if po.arch in self.valid_multilib_arches:
+                            has_multilib = True
+                        elif po.arch in self.valid_native_arches:
+                            has_native = True
+                        continue
+                    if po.arch in self.valid_multilib_arches:
+                        include_multilib = True
+                    elif po.arch in self.valid_native_arches:
+                        include_native = True
+
+                # XXX: this is very fragile!
+                # Do not make any changes unless you really know what you're doing!
+                if not include_native:
+                    # if there's no native package already pulled in...
+                    if has_native and not include_multilib:
+                        # include all native packages, but only if we're not pulling multilib already
+                        # SCENARIO: a noarch package was already pulled in and there are x86_64 and i686 packages -> we want x86_64 in to complete the package set
+                        include_native = True
+                    elif has_multilib:
+                        # SCENARIO: a noarch package was already pulled in and there are no x86_64 packages; we want i686 in to complete the package set
+                        include_multilib = True
+
+                for po in self.excludePackages(self.bin_by_src[srpm]):
+                    if not is_package(po):
+                        continue
+                    if po in self.polist:
+                        continue
+                    if po.arch != "noarch":
+                        if po.arch in self.valid_multilib_arches:
+                            if not include_multilib:
+                                continue
+                        if po.arch in self.valid_native_arches:
+                            if not include_native:
+                                continue
+                    msg = "Adding %s.%s to complete package set" % (po.name, po.arch)
+                    self.add_package(po, msg)
+                    self.getPackageDeps(po)
             for txmbr in self.ayum.tsInfo:
                 if txmbr.po.arch != 'src' and txmbr.po not in self.polist:
                     self.polist.append(txmbr.po)
@@ -766,8 +824,7 @@ class Pungi(pypungi.PungiBase):
             if po.sourcerpm not in self.sourcerpm_arch_map:
                 # TODO: print a warning / throw an error
                 continue
-
-            if not set(self.compatible_arches[po.arch]) & set(self.sourcerpm_arch_map[po.sourcerpm]):
+            if not (set(self.compatible_arches[po.arch]) & set(self.sourcerpm_arch_map[po.sourcerpm]) - set(["noarch"])):
                 # skip all incompatible arches
                 # this pulls i386 debuginfo for a i686 package for example
                 continue
