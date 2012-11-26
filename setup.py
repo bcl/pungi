@@ -11,6 +11,10 @@ setup(name='pungi',
       package_dir = {'': 'src'}, 
       packages = ['pypungi'],
       scripts = ['src/bin/pungi.py'],
-      data_files=[('/usr/share/pungi', glob.glob('share/*'))]
-      )
+      data_files=[
+        ('/usr/share/pungi', glob.glob('share/*.xsl')),
+        ('/usr/share/pungi', glob.glob('share/*.ks')),
+        ('/usr/share/pungi/multilib', glob.glob('share/multilib/*')),
+      ]
+)
 

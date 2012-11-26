@@ -87,6 +87,8 @@ def main():
         config.set('pungi', 'full_archlist', "True")
     if opts.arch:
         config.set('pungi', 'arch', opts.arch)
+    if opts.multilib:
+        config.set('pungi', 'multilib', " ".join(opts.multilib))
     if opts.lookaside_repos:
         config.set('pungi', 'lookaside_repos', " ".join(opts.lookaside_repos))
 
@@ -224,6 +226,8 @@ if __name__ == '__main__':
           help='Use the full arch list for x86_64 (include i686, i386, etc.)')
         parser.add_option("--arch",
           help='Override default (uname based) arch')
+        parser.add_option("--multilib", action="append", metavar="METHOD",
+          help='Multilib method; can be specified multiple times; recommended: devel, runtime')
         parser.add_option("--lookaside-repo", action="append", dest="lookaside_repos", metavar="NAME",
           help='Specify lookaside repo name(s) (packages will used for depsolving but not be included in the output)')
 

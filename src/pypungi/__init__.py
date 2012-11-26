@@ -31,6 +31,7 @@ import pylorax
 from fnmatch import fnmatch
 
 import arch as arch_module
+import multilib
 
 
 def is_debug(po):
@@ -41,6 +42,12 @@ def is_debug(po):
 
 def is_source(po):
     if po.arch in ("src", "nosrc"):
+        return True
+    return False
+
+
+def is_noarch(po):
+    if po.arch == "noarch":
         return True
     return False
 
@@ -184,6 +191,7 @@ class Pungi(pypungi.PungiBase):
         self.resolved_deps = {} # list the deps we've already resolved, short circuit.
         self.excluded_pkgs = {} # list the packages we've already excluded.
         self.seen_pkgs = {}     # list the packages we've already seen so we can check all deps only once
+        self.multilib_methods = self.config.get('pungi', 'multilib').split(" ")
         self.lookaside_repos = self.config.get('pungi', 'lookaside_repos').split(" ")
         self.sourcerpm_arch_map = {}    # {sourcerpm: set[arches]} - used for gathering debuginfo
 
@@ -394,10 +402,10 @@ class Pungi(pypungi.PungiBase):
 
         reqs = po.requires
         provs = po.provides
-        added = []
+        added = set()
 
-        # get langpacks for each processed package
-        added.extend(self.getLangpacks(po))
+        added.update(self.getLangpacks([po]))
+        added.update(self.getMultilib([po]))
 
         for req in reqs:
             if req in self.resolved_deps:
@@ -424,7 +432,7 @@ class Pungi(pypungi.PungiBase):
                     if dep not in added:
                         msg = 'Added %s.%s for %s.%s' % (dep.name, dep.arch, po.name, po.arch)
                         self.add_package(dep, msg)
-                        added.append(dep)
+                        added.add(dep)
 
             except (yum.Errors.InstallError, yum.Errors.YumBaseError), ex:
                 self.logger.warn("Unresolvable dependency %s in %s.%s" % (r, po.name, po.arch))
@@ -434,32 +442,62 @@ class Pungi(pypungi.PungiBase):
         for add in added:
             self.getPackageDeps(add)
 
-    def getLangpacks(self, po):
+    def getLangpacks(self, po_list):
         added = []
 
-        # get all langpacks matching the package name
-        langpacks = [ i for i in self.langpacks if i["name"] == po.name ]
-        if not langpacks:
-            return []
+        for po in po_list:
+            # get all langpacks matching the package name
+            langpacks = [ i for i in self.langpacks if i["name"] == po.name ]
+            if not langpacks:
+                continue
 
-        for langpack in langpacks:
-            pattern = langpack["install"] % "*" # replace '%s' with '*'
-            exactmatched, matched, unmatched = yum.packages.parsePackages(self.pkgs, [pattern], casematch=1, pkgdict=self.pkg_refs.copy())
-            matches = filter(self._filtersrcdebug, exactmatched + matched)
-            matches = [ i for i in matches if not i.name.endswith("-devel") and not i.name.endswith("-static") and i.name != "man-pages-overrides" ]
-            matches = [ i for i in matches if fnmatch(i.name, pattern) ]
+            for langpack in langpacks:
+                pattern = langpack["install"] % "*" # replace '%s' with '*'
+                exactmatched, matched, unmatched = yum.packages.parsePackages(self.pkgs, [pattern], casematch=1, pkgdict=self.pkg_refs.copy())
+                matches = filter(self._filtersrcdebug, exactmatched + matched)
+                matches = [ i for i in matches if not i.name.endswith("-devel") and not i.name.endswith("-static") and i.name != "man-pages-overrides" ]
+                matches = [ i for i in matches if fnmatch(i.name, pattern) ]
 
-            packages_by_name = {}
-            for i in matches:
-                packages_by_name.setdefault(i.name, []).append(i)
+                packages_by_name = {}
+                for i in matches:
+                    packages_by_name.setdefault(i.name, []).append(i)
 
-            for i, pkg_sack in packages_by_name.iteritems():
-                pkg_sack = self.excludePackages(pkg_sack)
-                match = self.ayum._bestPackageFromList(pkg_sack)
-                msg = 'Added langpack %s.%s for package %s (pattern: %s)' % (match.name, match.arch, po.name, pattern)
-                self.add_package(match, msg)
-                added.append(match)
+                for i, pkg_sack in packages_by_name.iteritems():
+                    pkg_sack = self.excludePackages(pkg_sack)
+                    match = self.ayum._bestPackageFromList(pkg_sack)
+                    msg = 'Added langpack %s.%s for package %s (pattern: %s)' % (match.name, match.arch, po.name, pattern)
+                    self.add_package(match, msg)
+                    added.append(match)
 
+        return added
+
+    def getMultilib(self, po_list):
+        added = []
+
+        if not self.multilib_methods:
+            return added
+
+        for po in po_list:
+            if po.arch in ("noarch", "src", "nosrc"):
+                continue
+
+            if po.arch in self.valid_multilib_arches:
+                continue
+
+            matches = self.ayum.pkgSack.searchNevra(name=po.name, ver=po.version, rel=po.release)
+            matches = [i for i in matches if i.arch in self.valid_multilib_arches]
+            if not matches:
+                continue
+            matches = self.excludePackages(matches)
+            match = self.ayum._bestPackageFromList(matches)
+            if not match:
+                continue
+            method = multilib.po_is_multilib(po, self.multilib_methods)
+            if not method:
+                continue
+            msg = "Added multilib package %s.%s for package %s.%s (method: %s)" % (match.name, match.arch, po.name, po.arch, method)
+            self.add_package(match, msg)
+            added.append(match)
         return added
 
     def getPackagesFromGroup(self, group):
