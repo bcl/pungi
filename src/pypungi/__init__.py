@@ -597,22 +597,25 @@ class Pungi(pypungi.PungiBase):
 
         # First remove the excludes
         self.ayum.excludePackages()
-        
+
         # Get the groups set for removal
         for group in self.ksparser.handler.packages.excludedGroupList:
             excludeGroups.append(str(group)[1:])
 
-        # Always add the core group
-        self.ksparser.handler.packages.add(['@core'])
+        if "core" in [ i.groupid for i in self.ayum.comps.groups ]:
+            if "core" not in [ i.name for i in self.ksparser.handler.packages.groupList ]:
+                self.logger.warning("The @core group is no longer added by default; Please add @core to the kickstart if you want it in.")
+
+        if "base" in [ i.groupid for i in self.ayum.comps.groups ]:
+            if "base" not in [ i.name for i in self.ksparser.handler.packages.groupList ]:
+                if self.ksparser.handler.packages.addBase:
+                    self.logger.warning("The --nobase kickstart option is no longer supported; Please add @base to the kickstart if you want it in.")
 
         # Check to see if we want all the defaults
         if self.ksparser.handler.packages.default:
             for group in self._addDefaultGroups(excludeGroups):
                 self.ksparser.handler.packages.add(['@%s' % group])
 
-        # Check to see if we need the base group
-        if self.ksparser.handler.packages.addBase:
-            self.ksparser.handler.packages.add(['@base'])
 
         # Get a list of packages from groups
         for group in self.ksparser.handler.packages.groupList:
