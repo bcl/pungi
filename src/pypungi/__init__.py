@@ -684,10 +684,10 @@ class Pungi(pypungi.PungiBase):
         """Given a package object, get a package object for the
            corresponding source rpm. Requires yum still configured
            and a valid package object."""
-        srpm = po.sourcerpm.split('.src.rpm')[0]
-        (sname, sver, srel) = srpm.rsplit('-', 2)
+        nvr, arch, _ = po.sourcerpm.rsplit(".", 2)
+        name, ver, rel = nvr.rsplit('-', 2)
         try:
-            srpmpo = self.ayum.pkgSack.searchNevra(name=sname, ver=sver, rel=srel, arch='src')[0]
+            srpmpo = self.ayum.pkgSack.searchNevra(name=name, ver=ver, rel=rel, arch='src')[0]
             return srpmpo
         except IndexError:
             print >> sys.stderr, "Error: Cannot find a source rpm for %s" % srpm
