@@ -75,15 +75,12 @@ class PungiBase(object):
 
         # ARCH setup
         self.tree_arch = self.config.get('pungi', 'arch')
-        self.yum_arch = arch_module.tree_arch_to_yum_arch(arch)
+        self.yum_arch = arch_module.tree_arch_to_yum_arch(self.tree_arch)
         full_archlist = self.config.getboolean('pungi', 'full_archlist')
         self.valid_arches = arch_module.get_valid_arches(self.tree_arch, multilib=full_archlist)
         self.valid_arches.append("src") # throw source in there, filter it later
         self.valid_native_arches = arch_module.get_valid_arches(self.tree_arch, multilib=False)
         self.valid_multilib_arches = arch_module.get_valid_multilib_arches(self.tree_arch)
-
-        # --nogreedy
-        self.greedy = config.getboolean('pungi', 'alldeps')
 
         # arch: compatible arches
         self.compatible_arches = {}
@@ -131,11 +128,6 @@ class PungiYum(yum.YumBase):
         self.pungiconfig = config
         yum.YumBase.__init__(self)
 
-    def _checkInstall(self, txmbr):
-        # overriding this method allows us to ignore installed packages
-        # and always prefer native packages over those who pull less deps into a transaction
-        return []
-
     def doLoggingSetup(self, debuglevel, errorlevel, syslog_ident=None, syslog_facility=None):
         """Setup the logging facility."""
 
@@ -155,6 +147,17 @@ class PungiYum(yum.YumBase):
         # the logging.
         pass
 
+    def _compare_providers(self, *args, **kwargs):
+        # HACK: always prefer 64bit over 32bit packages
+        result = yum.YumBase._compare_providers(self, *args, **kwargs)
+        if len(result) >= 2:
+            pkg1 = result[0][0]
+            pkg2 = result[1][0]
+            if pkg1.name == pkg2.name:
+                best_arch = self.arch.get_best_arch_from_list([pkg1.arch, pkg2.arch], self.arch.canonarch)
+                if best_arch != "noarch" and best_arch != pkg1.arch:
+                    result[0:1] = result[0:1:-1]
+        return result
 
 class Pungi(pypungi.PungiBase):
     def __init__(self, config, ksparser):
@@ -188,12 +191,7 @@ class Pungi(pypungi.PungiBase):
 
 
         self.ksparser = ksparser
-        self.polist = []
-        self.srpmpolist = []
-        self.debuginfolist = []
-        self.srpms_build = []
-        self.srpms_fulltree = []
-        self.last_po = 0
+
         self.resolved_deps = {} # list the deps we've already resolved, short circuit.
         self.excluded_pkgs = {} # list the packages we've already excluded.
         self.seen_pkgs = {}     # list the packages we've already seen so we can check all deps only once
@@ -201,28 +199,45 @@ class Pungi(pypungi.PungiBase):
         self.lookaside_repos = self.config.get('pungi', 'lookaside_repos').split(" ")
         self.sourcerpm_arch_map = {}    # {sourcerpm: set[arches]} - used for gathering debuginfo
 
+        # package object lists
+        self.po_list = set()
+        self.srpm_po_list = set()
+        self.debuginfo_po_list = set()
+
+        # get_srpm_po() cache
+        self.sourcerpm_srpmpo_map = {}
+
+        # already processed packages
+        self.completed_add_srpms = set()        # srpms
+        self.completed_debuginfo = set()        # rpms
+        self.completed_depsolve = set()         # rpms
+        self.completed_langpacks = set()        # rpms
+        self.completed_multilib = set()         # rpms
+        self.completed_fulltree = set()         # srpms
+        self.completed_selfhosting = set()      # srpms
+
+        self.is_fulltree = self.config.getboolean("pungi", "fulltree")
+        self.is_selfhosting = self.config.getboolean("pungi", "selfhosting")
+        self.is_sources = not self.config.getboolean("pungi", "nosource")
+        self.is_debuginfo = not self.config.getboolean("pungi", "nodebuginfo")
+        self.is_greedy = self.config.getboolean("pungi", "alldeps")
+        self.is_resolve_deps = True # TODO: implement --nodepsolve
+
     def _add_yum_repo(self, name, url, mirrorlist=False, groups=True,
-                      cost=1000, includepkgs=[], excludepkgs=[],
+                      cost=1000, includepkgs=None, excludepkgs=None,
                       proxy=None):
         """This function adds a repo to the yum object.
-
         name: Name of the repo
-
         url: Full url to the repo
-
         mirrorlist: Bool for whether or not url is a mirrorlist
-
         groups: Bool for whether or not to use groupdata from this repo
-
         cost: an optional int representing the cost of a repo
-
         includepkgs: An optional list of includes to use
-
         excludepkgs: An optional list of excludes to use
-
         proxy: An optional proxy to use
-
         """
+        includepkgs = includepkgs or []
+        excludepkgs = excludepkgs or []
 
         self.logger.info('Adding repo %s' % name)
         thisrepo = yum.yumRepo.YumRepository(name)
@@ -288,6 +303,8 @@ class Pungi(pypungi.PungiBase):
         del self.ayum.prerepoconf
         self.ayum.repos.setCacheDir(self.ayum.conf.cachedir)
 
+        self.ayum.arch.setup_arch(self.yum_arch)
+
         # deal with our repos
         try:
             self.ksparser.handler.repo.methodToRepo()
@@ -331,8 +348,8 @@ class Pungi(pypungi.PungiBase):
             raise ValueError("Not a binary package: %s" % po)
         if msg:
             self.logger.info(msg)
-        if po not in self.polist:
-            self.polist.append(po)
+        if po not in self.po_list:
+            self.po_list.add(po)
         self.ayum.install(po)
         self.sourcerpm_arch_map.setdefault(po.sourcerpm, set()).add(po.arch)
 
@@ -341,16 +358,16 @@ class Pungi(pypungi.PungiBase):
             raise ValueError("Not a debuginfog package: %s" % po)
         if msg:
             self.logger.info(msg)
-        if po not in self.debuginfolist:
-            self.debuginfolist.append(po)
+        if po not in self.debuginfo_po_list:
+            self.debuginfo_po_list.add(po)
 
     def add_source(self, po, msg=None):
         if not is_source(po):
             raise ValueError("Not a source package: %s" % po)
         if msg:
             self.logger.info(msg)
-        if po not in self.srpmpolist:
-            self.srpmpolist.append(po)
+        if po not in self.srpm_po_list:
+            self.srpm_po_list.add(po)
 
     def verifyCachePkg(self, po, path): # Stolen from yum
         """check the package checksum vs the cache
@@ -397,21 +414,18 @@ class Pungi(pypungi.PungiBase):
 
         return pkg_sack
 
-    def getPackageDeps(self, po):
+    def get_package_deps(self, po):
         """Add the dependencies for a given package to the
            transaction info"""
-        if po in self.seen_pkgs:
-            return
-        self.seen_pkgs[po] = None
+        added = set()
+        if po in self.completed_depsolve:
+            return added
+        self.completed_depsolve.add(po)
 
         self.logger.info('Checking deps of %s.%s' % (po.name, po.arch))
 
         reqs = po.requires
         provs = po.provides
-        added = set()
-
-        added.update(self.getLangpacks([po]))
-        added.update(self.getMultilib([po]))
 
         for req in reqs:
             if req in self.resolved_deps:
@@ -429,12 +443,12 @@ class Pungi(pypungi.PungiBase):
                     self.logger.warn("Unresolvable dependency %s in %s.%s" % (r, po.name, po.arch))
                     continue
 
-                if self.greedy:
+                if self.is_greedy:
                     deps = yum.packageSack.ListPackageSack(deps).returnNewestByNameArch()
                 else:
                     found = False
                     for dep in deps:
-                        if dep in self.polist:
+                        if dep in self.po_list:
                             found = True
                             break
                     if found:
@@ -454,20 +468,27 @@ class Pungi(pypungi.PungiBase):
             self.resolved_deps[req] = None
 
         for add in added:
-            self.getPackageDeps(add)
+            self.get_package_deps(add)
+        return added
 
-    def getLangpacks(self, po_list):
-        added = []
+    def add_langpacks(self, po_list=None):
+        po_list = po_list or self.po_list
+        added = set()
 
-        for po in po_list:
+        for po in sorted(po_list):
+            if po in self.completed_langpacks:
+                continue
+
             # get all langpacks matching the package name
             langpacks = [ i for i in self.langpacks if i["name"] == po.name ]
             if not langpacks:
                 continue
 
+            self.completed_langpacks.add(po)
+
             for langpack in langpacks:
                 pattern = langpack["install"] % "*" # replace '%s' with '*'
-                exactmatched, matched, unmatched = yum.packages.parsePackages(self.pkgs, [pattern], casematch=1, pkgdict=self.pkg_refs.copy())
+                exactmatched, matched, unmatched = yum.packages.parsePackages(self.all_pkgs, [pattern], casematch=1, pkgdict=self.pkg_refs.copy())
                 matches = filter(self._filtersrcdebug, exactmatched + matched)
                 matches = [ i for i in matches if not i.name.endswith("-devel") and not i.name.endswith("-static") and i.name != "man-pages-overrides" ]
                 matches = [ i for i in matches if fnmatch(i.name, pattern) ]
@@ -481,22 +502,29 @@ class Pungi(pypungi.PungiBase):
                     match = self.ayum._bestPackageFromList(pkg_sack)
                     msg = 'Added langpack %s.%s for package %s (pattern: %s)' % (match.name, match.arch, po.name, pattern)
                     self.add_package(match, msg)
-                    added.append(match)
+                    self.completed_langpacks.add(match) # assuming langpack doesn't have langpacks
+                    added.add(match)
 
         return added
 
-    def getMultilib(self, po_list):
-        added = []
+    def add_multilib(self, po_list=None):
+        po_list = po_list or self.po_list
+        added = set()
 
         if not self.multilib_methods:
             return added
 
-        for po in po_list:
+        for po in sorted(po_list):
+            if po in self.completed_multilib:
+                continue
+
             if po.arch in ("noarch", "src", "nosrc"):
                 continue
 
             if po.arch in self.valid_multilib_arches:
                 continue
+
+            self.completed_multilib.add(po)
 
             matches = self.ayum.pkgSack.searchNevra(name=po.name, ver=po.version, rel=po.release)
             matches = [i for i in matches if i.arch in self.valid_multilib_arches]
@@ -511,7 +539,8 @@ class Pungi(pypungi.PungiBase):
                 continue
             msg = "Added multilib package %s.%s for package %s.%s (method: %s)" % (match.name, match.arch, po.name, po.arch, method)
             self.add_package(match, msg)
-            added.append(match)
+            self.completed_multilib.add(match)
+            added.add(match)
         return added
 
     def getPackagesFromGroup(self, group):
@@ -546,19 +575,18 @@ class Pungi(pypungi.PungiBase):
         # of the package objects it would bring in.  To be used later if
         # we match the conditional.
         for condreq, cond in groupobj.conditional_packages.iteritems():
-            pkgs = self.ayum.pkgSack.searchNevra(name=condreq)
-            if pkgs:
-                pkgs = self.ayum.bestPackagesFromList(pkgs, arch=self.ayum.compatarch)
-            if self.ayum.tsInfo.conditionals.has_key(cond):
-                self.ayum.tsInfo.conditionals[cond].extend(pkgs)
-            else:
-                self.ayum.tsInfo.conditionals[cond] = pkgs
+            matches = self.ayum.pkgSack.searchNevra(name=condreq)
+            if matches:
+                if not self.is_greedy:
+                    matches = [self.ayum._bestPackageFromList(matches)]
+                self.ayum.tsInfo.conditionals.setdefault(cond, []).extend(matches)
 
         return packages
 
-    def _addDefaultGroups(self, excludeGroups=[]):
+    def _addDefaultGroups(self, excludeGroups=None):
         """Cycle through the groups and return at list of the ones that ara
            default."""
+        excludeGroups = excludeGroups or []
 
         # This is mostly stolen from anaconda.
         groups = map(lambda x: x.groupid,
@@ -569,21 +597,7 @@ class Pungi(pypungi.PungiBase):
         self.logger.debug('Add default groups %s' % groups)
         return groups
 
-    def getPackageObjects(self):
-        """Cycle through the list of packages, get package object
-           matches, and resolve deps.
-
-           Returns a list of package objects"""
-
-        final_pkgobjs = {} # The final list of package objects
-        searchlist = [] # The list of package names/globs to search for
-        matchdict = {} # A dict of objects to names
-        excludeGroups = [] #A list of groups for removal defined in the ks file
-
-        # precompute pkgs and pkg_refs to speed things up
-        self.pkgs = self.ayum.pkgSack.returnPackages()
-        self.pkg_refs = yum.packages.buildPkgRefDict(self.pkgs, casematch=True)
-
+    def get_langpacks(self):
         try:
             self.langpacks = list(self.ayum.comps.langpacks)
         except AttributeError:
@@ -594,6 +608,19 @@ class Pungi(pypungi.PungiBase):
             # no groups or no comps at all
             self.logger.warning("Could not get langpacks due to missing comps in repodata or --ignoregroups=true option.")
             self.langpacks = []
+
+    def getPackageObjects(self):
+        """Cycle through the list of packages and get package object matches."""
+
+        searchlist = [] # The list of package names/globs to search for
+        matchdict = {} # A dict of objects to names
+        excludeGroups = [] # A list of groups for removal defined in the ks file
+
+        # precompute pkgs and pkg_refs to speed things up
+        self.all_pkgs = self.ayum.pkgSack.returnPackages()
+        self.pkg_refs = yum.packages.buildPkgRefDict(self.all_pkgs, casematch=True)
+
+        self.get_langpacks()
 
         # First remove the excludes
         self.ayum.excludePackages()
@@ -634,16 +661,16 @@ class Pungi(pypungi.PungiBase):
                 name = name[:-2]
                 multilib = True
 
-            if self.greedy and name == "system-release":
+            if self.is_greedy and name == "system-release":
                 # HACK: handles a special case, when system-release virtual provide is specified in the greedy mode
                 matches = self.ayum.whatProvides(name, None, None).returnPackages()
             else:
-                exactmatched, matched, unmatched = yum.packages.parsePackages(self.pkgs, [name], casematch=1, pkgdict=self.pkg_refs.copy())
+                exactmatched, matched, unmatched = yum.packages.parsePackages(self.all_pkgs, [name], casematch=1, pkgdict=self.pkg_refs.copy())
                 matches = exactmatched + matched
 
             matches = filter(self._filtersrcdebug, matches)
 
-            if multilib and not self.greedy:
+            if multilib and not self.is_greedy:
                 matches = [ po for po in matches if po.arch in self.valid_multilib_arches ]
 
             if not matches:
@@ -656,7 +683,7 @@ class Pungi(pypungi.PungiBase):
 
             for name, packages in packages_by_name.iteritems():
                 packages = self.excludePackages(packages)
-                if self.greedy:
+                if self.is_greedy:
                     packages = yum.packageSack.ListPackageSack(packages).returnNewestByNameArch()
                 else:
                     packages = [self.ayum._bestPackageFromList(packages)]
@@ -665,33 +692,75 @@ class Pungi(pypungi.PungiBase):
                     msg = 'Found %s.%s' % (po.name, po.arch)
                     self.add_package(po, msg)
 
-        if len(self.ayum.tsInfo) == 0:
-            raise yum.Errors.MiscError, 'No packages found to download.'
+        if not self.po_list:
+            raise RuntimeError("No packages found")
 
-        moretoprocess = True
-        while moretoprocess: # Our fun loop
-            moretoprocess = False
-            for txmbr in self.ayum.tsInfo:
-                if not final_pkgobjs.has_key(txmbr.po):
-                    final_pkgobjs[txmbr.po] = None # Add the pkg to our final list
-                    self.getPackageDeps(txmbr.po) # Get the deps of our package
-                    moretoprocess = True
-
-        self.polist = final_pkgobjs.keys()
         self.logger.info('Finished gathering package objects.')
 
-    def getSRPMPo(self, po):
-        """Given a package object, get a package object for the
-           corresponding source rpm. Requires yum still configured
-           and a valid package object."""
+    def gather(self):
+
+        # get package objects according to the input list
+        self.getPackageObjects()
+        self.createSourceHashes()
+
+        pass_num = 0
+        added = set()
+        while 1:
+            if pass_num > 0 and not added:
+                break
+            added = set()
+            pass_num += 1
+            self.logger.info("Pass #%s" % pass_num)
+
+            for txmbr in self.ayum.tsInfo:
+                if not txmbr.po in self.po_list:
+                    self.add_package(txmbr.po)
+
+            # resolve deps
+            if self.is_resolve_deps:
+                for po in sorted(self.po_list):
+                    added.update(self.get_package_deps(po))
+
+            added_srpms = self.add_srpms()
+            added.update(added_srpms)
+            if self.is_selfhosting:
+                for srpm_po in sorted(added_srpms):
+                    added.update(self.get_package_deps(srpm_po))
+
+            if self.is_fulltree:
+                added.update(self.add_fulltree())
+            if added:
+                continue
+
+            # add langpacks
+            added.update(self.add_langpacks(self.po_list))
+            if added:
+                continue
+
+            # add multilib packages
+            added.update(self.add_multilib(self.po_list))
+            if added:
+                continue
+
+    def get_srpm_po(self, po):
+        """Given a package object, get a package object for the corresponding source rpm."""
+
+        # return srpm_po from cache if available
+        srpm_po = self.sourcerpm_srpmpo_map.get(po.sourcerpm, None)
+        if srpm_po is not None:
+            return srpm_po
+
+        # arch can be "src" or "nosrc"
         nvr, arch, _ = po.sourcerpm.rsplit(".", 2)
         name, ver, rel = nvr.rsplit('-', 2)
-        try:
-            srpmpo = self.ayum.pkgSack.searchNevra(name=name, ver=ver, rel=rel, arch='src')[0]
-            return srpmpo
-        except IndexError:
-            print >> sys.stderr, "Error: Cannot find a source rpm for %s" % srpm
-            sys.exit(1)
+
+        # ... but even "nosrc" packages are stored as "src" in repodata
+        srpm_po_list = self.ayum.pkgSack.searchNevra(name=name, ver=ver, rel=rel, arch="src")
+        if not srpm_po_list:
+            raise RuntimeError("Cannot find a source rpm for %s" % po.sourcerpm)
+        srpm_po = srpm_po_list[0]
+        self.sourcerpm_srpmpo_map[po.sourcerpm] = srpm_po
+        return srpm_po
 
     def createSourceHashes(self):
         """Create two dicts - one that maps binary POs to source POs, and
@@ -700,127 +769,109 @@ class Pungi(pypungi.PungiBase):
         self.src_by_bin = {}
         self.bin_by_src = {}
         self.logger.info("Generating source <-> binary package mappings")
-        (dummy1, everything, dummy2) = yum.packages.parsePackages(self.pkgs, ['*'], pkgdict=self.pkg_refs.copy())
-        for po in everything:
-            if po.arch == 'src':
+        #(dummy1, everything, dummy2) = yum.packages.parsePackages(self.all_pkgs, ['*'], pkgdict=self.pkg_refs.copy())
+        for po in self.all_pkgs:
+            if is_source(po):
                 continue
-            srpmpo = self.getSRPMPo(po)
+            srpmpo = self.get_srpm_po(po)
             self.src_by_bin[po] = srpmpo
             if self.bin_by_src.has_key(srpmpo):
                 self.bin_by_src[srpmpo].append(po)
             else:
                 self.bin_by_src[srpmpo] = [po]
 
-    def getSRPMList(self):
+    def add_srpms(self, po_list=None):
         """Cycle through the list of package objects and
            find the sourcerpm for them.  Requires yum still
            configured and a list of package objects"""
-        for po in self.polist[self.last_po:]:
-            srpm_po = self.src_by_bin[po]
-            if not srpm_po in self.srpmpolist:
-                msg = "Adding source package %s.%s" % (srpm_po.name, srpm_po.arch)
-                self.add_source(srpm_po)
-        self.last_po = len(self.polist)
 
-    def resolvePackageBuildDeps(self):
-        """Make the package lists self hosting. Requires yum
-           still configured, a list of package objects, and a
-           a list of source rpms."""
-        deppass = 1
-        while 1:
-            self.logger.info("Resolving build dependencies, pass %d" % (deppass))
-            prev = list(self.ayum.tsInfo.getMembers())
-            for srpm in self.srpmpolist[len(self.srpms_build):]:
-                self.getPackageDeps(srpm)
-            for txmbr in self.ayum.tsInfo:
-                if txmbr.po.arch != 'src' and txmbr.po not in self.polist:
-                    self.polist.append(txmbr.po)
-                    self.getPackageDeps(txmbr.po)
-            self.srpms_build = list(self.srpmpolist)
-            # Now that we've resolved deps, refresh the source rpm list
-            self.getSRPMList()
-            deppass = deppass + 1
-            if len(prev) == len(self.ayum.tsInfo.getMembers()):
-                break
+        srpms = set()
+        po_list = po_list or self.po_list
+        for po in sorted(po_list):
+            srpm_po = self.sourcerpm_srpmpo_map[po.sourcerpm]
+            if srpm_po in self.completed_add_srpms:
+                continue
+            msg = "Adding source package %s.%s" % (srpm_po.name, srpm_po.arch)
+            self.add_source(srpm_po, msg)
+            self.completed_add_srpms.add(srpm_po)
+            srpms.add(srpm_po)
+        return srpms
 
-    def completePackageSet(self):
+    def add_fulltree(self, srpm_po_list=None):
         """Cycle through all package objects, and add any
            that correspond to a source rpm that we are including.
            Requires yum still configured and a list of package
            objects."""
-        thepass = 1
-        while 1:
-            prevlen = len(self.srpmpolist)
-            self.logger.info("Completing package set, pass %d" % (thepass,))
-            for srpm in self.srpmpolist[len(self.srpms_fulltree):]:
 
-                include_native = False
-                include_multilib = False
-                has_native = False
-                has_multilib = False
-                for po in self.excludePackages(self.bin_by_src[srpm]):
-                    if not is_package(po):
-                        continue
-                    if po.arch == "noarch":
-                        continue
-                    if po not in self.polist:
-                        # process only already included packages
-                        if po.arch in self.valid_multilib_arches:
-                            has_multilib = True
-                        elif po.arch in self.valid_native_arches:
-                            has_native = True
-                        continue
+        self.logger.info("Completing package set")
+
+        srpm_po_list = srpm_po_list or self.srpm_po_list
+        srpms = []
+        for srpm_po in srpm_po_list:
+            if srpm_po in self.completed_fulltree:
+                continue
+            srpms.append(srpm_po)
+            self.completed_fulltree.add(srpm_po)
+
+        added = set()
+        for srpm_po in srpms:
+            include_native = False
+            include_multilib = False
+            has_native = False
+            has_multilib = False
+
+            for po in self.excludePackages(self.bin_by_src[srpm_po]):
+                if not is_package(po):
+                    continue
+                if po.arch == "noarch":
+                    continue
+                if po not in self.po_list:
+                    # process only already included packages
                     if po.arch in self.valid_multilib_arches:
-                        include_multilib = True
+                        has_multilib = True
                     elif po.arch in self.valid_native_arches:
-                        include_native = True
+                        has_native = True
+                    continue
+                if po.arch in self.valid_multilib_arches:
+                    include_multilib = True
+                elif po.arch in self.valid_native_arches:
+                    include_native = True
 
-                # XXX: this is very fragile!
-                # Do not make any changes unless you really know what you're doing!
-                if not include_native:
-                    # if there's no native package already pulled in...
-                    if has_native and not include_multilib:
-                        # include all native packages, but only if we're not pulling multilib already
-                        # SCENARIO: a noarch package was already pulled in and there are x86_64 and i686 packages -> we want x86_64 in to complete the package set
-                        include_native = True
-                    elif has_multilib:
-                        # SCENARIO: a noarch package was already pulled in and there are no x86_64 packages; we want i686 in to complete the package set
-                        include_multilib = True
+            # XXX: this is very fragile!
+            # Do not make any changes unless you really know what you're doing!
+            if not include_native:
+                # if there's no native package already pulled in...
+                if has_native and not include_multilib:
+                    # include all native packages, but only if we're not pulling multilib already
+                    # SCENARIO: a noarch package was already pulled in and there are x86_64 and i686 packages -> we want x86_64 in to complete the package set
+                    include_native = True
+                elif has_multilib:
+                    # SCENARIO: a noarch package was already pulled in and there are no x86_64 packages; we want i686 in to complete the package set
+                    include_multilib = True
 
-                for po in self.excludePackages(self.bin_by_src[srpm]):
-                    if not is_package(po):
-                        continue
-                    if po in self.polist:
-                        continue
-                    if po.arch != "noarch":
-                        if po.arch in self.valid_multilib_arches:
-                            if not include_multilib:
-                                continue
-                        if po.arch in self.valid_native_arches:
-                            if not include_native:
-                                continue
-                    msg = "Adding %s.%s to complete package set" % (po.name, po.arch)
-                    self.add_package(po, msg)
-                    self.getPackageDeps(po)
-            for txmbr in self.ayum.tsInfo:
-                if txmbr.po.arch != 'src' and txmbr.po not in self.polist:
-                    self.polist.append(txmbr.po)
-                    self.getPackageDeps(po)
-            self.srpms_fulltree = list(self.srpmpolist)
-            # Now that we've resolved deps, refresh the source rpm list
-            self.getSRPMList()
-            if len(self.srpmpolist) == prevlen:
-                self.logger.info("Completion finished in %d passes" % (thepass,))
-                break
-            thepass = thepass + 1
-
+            for po in self.excludePackages(self.bin_by_src[srpm_po]):
+                if not is_package(po):
+                    continue
+                if po in self.po_list:
+                    continue
+                if po.arch != "noarch":
+                    if po.arch in self.valid_multilib_arches:
+                        if not include_multilib:
+                            continue
+                    if po.arch in self.valid_native_arches:
+                        if not include_native:
+                            continue
+                msg = "Adding %s.%s to complete package set" % (po.name, po.arch)
+                self.add_package(po, msg)
+        return added
 
     def getDebuginfoList(self):
         """Cycle through the list of package objects and find
            debuginfo rpms for them.  Requires yum still
            configured and a list of package objects"""
 
-        for po in self.pkgs:
+        added = set()
+        for po in self.all_pkgs:
             if not is_debug(po):
                 continue
 
@@ -833,6 +884,8 @@ class Pungi(pypungi.PungiBase):
                 continue
             msg = 'Added debuginfo %s.%s' % (po.name, po.arch)
             self.add_debuginfo(po, msg)
+            added.add(po)
+        return added
 
     def _downloadPackageList(self, polist, relpkgdir):
         """Cycle through the list of package objects and
@@ -891,7 +944,7 @@ class Pungi(pypungi.PungiBase):
     def downloadPackages(self):
         """Download the package objects obtained in getPackageObjects()."""
 
-        self._downloadPackageList(self.polist,
+        self._downloadPackageList(self.po_list,
                                   os.path.join(self.tree_arch,
                                                self.config.get('pungi', 'osdir'),
                                                self.config.get('pungi', 'product_path')))
@@ -941,30 +994,44 @@ class Pungi(pypungi.PungiBase):
            find the package objects for them, Then download them."""
 
         # do the downloads
-        self._downloadPackageList(self.srpmpolist, os.path.join('source', 'SRPMS'))
+        self._downloadPackageList(self.srpm_po_list, os.path.join('source', 'SRPMS'))
 
     def downloadDebuginfo(self):
         """Cycle through the list of debuginfo rpms and
            download them."""
 
         # do the downloads
-        self._downloadPackageList(self.debuginfolist, os.path.join(self.tree_arch, 'debug'))
+        self._downloadPackageList(self.debuginfo_po_list, os.path.join(self.tree_arch, 'debug'))
 
-    def _listPackages(self, polist):
+    def _list_packages(self, po_list):
         """Cycle through the list of packages and return their paths."""
-        return [ os.path.join(pkg.basepath or "", pkg.relativepath) for pkg in polist if pkg.repoid not in self.lookaside_repos ]
+        result = [ os.path.join(po.basepath or "", po.relativepath) for po in po_list if po.repoid not in self.lookaside_repos ]
+        result.sort()
+        return result
 
-    def listPackages(self):
+    def list_packages(self):
         """Cycle through the list of RPMs and return their paths."""
-        return self._listPackages(self.polist)
+        return self._list_packages(self.po_list)
 
-    def listSRPMs(self):
+    def list_srpms(self):
         """Cycle through the list of SRPMs and return their paths."""
-        return self._listPackages(self.srpmpolist)
+        return self._list_packages(self.srpm_po_list)
 
-    def listDebuginfo(self):
+    def list_debuginfo(self):
         """Cycle through the list of DEBUGINFO RPMs and return their paths."""
-        return self._listPackages(self.debuginfolist)
+        return self._list_packages(self.debuginfo_po_list)
+
+    def _size_packages(self, po_list):
+        return sum([ po.size for po in po_list if po.repoid not in self.lookaside_repos ])
+
+    def size_packages(self):
+        return self._size_packages(self.po_list)
+
+    def size_srpms(self):
+        return self._size_packages(self.srpm_po_list)
+
+    def size_debuginfo(self):
+        return self._size_packages(self.debuginfo_po_list)
 
     def writeinfo(self, line):
         """Append a line to the infofile in self.infofile"""
@@ -996,7 +1063,7 @@ class Pungi(pypungi.PungiBase):
         conf.directory = path
         conf.database = True
         if comps:
-           conf.groupfile = comps
+            conf.groupfile = comps
         if basedir:
             conf.basedir = basedir
         if baseurl:
@@ -1241,7 +1308,7 @@ class Pungi(pypungi.PungiBase):
             self.logger.info("ARCH: arm, not doing doCreateIsos().")
             return
 
-        isolist=[]
+        isolist = []
         ppcbootinfo = '/usr/share/lorax/config_files/ppc'
 
         pypungi.util._ensuredir(self.isodir, self.logger,

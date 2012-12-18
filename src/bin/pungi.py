@@ -15,7 +15,6 @@
 import os
 import pypungi
 import pypungi.config
-import yum
 import pykickstart.parser
 import pykickstart.version
 import subprocess
@@ -91,6 +90,10 @@ def main():
         config.set('pungi', 'multilib', " ".join(opts.multilib))
     if opts.lookaside_repos:
         config.set('pungi', 'lookaside_repos', " ".join(opts.lookaside_repos))
+    config.set("pungi", "fulltree", str(bool(opts.fulltree)))
+    config.set("pungi", "selfhosting", str(bool(opts.selfhosting)))
+    config.set("pungi", "nosource", str(bool(opts.nosource)))
+    config.set("pungi", "nodebuginfo", str(bool(opts.nodebuginfo)))
 
     # Actually do work.
     mypungi = pypungi.Pungi(config, ksparser)
@@ -99,27 +102,9 @@ def main():
         if opts.do_all or opts.do_gather or opts.do_buildinstall:
             mypungi._inityum() # initialize the yum object for things that need it
         if opts.do_all or opts.do_gather:
-            mypungi.getPackageObjects()
-            if not opts.nosource or opts.selfhosting or opts.fulltree:
-                mypungi.createSourceHashes()
-                mypungi.getSRPMList()
-            if opts.selfhosting:
-                mypungi.resolvePackageBuildDeps()
-            if opts.fulltree:
-                mypungi.completePackageSet()
-            if opts.selfhosting and opts.fulltree:
-                # OUCH.
-                while 1:
-                    plen = len(mypungi.srpmpolist)
-                    mypungi.resolvePackageBuildDeps()
-                    if plen == len(mypungi.srpmpolist):
-                        break
-                    plen = len(mypungi.srpmpolist)
-                    mypungi.completePackageSet()
-                    if plen == len(mypungi.srpmpolist):
-                        break
+            mypungi.gather()
             if opts.nodownload:
-                for line in mypungi.listPackages():
+                for line in mypungi.list_packages():
                     sys.stdout.write("RPM: %s\n" % line)
                 sys.stdout.flush()
             else:
@@ -128,18 +113,24 @@ def main():
             if not opts.nodebuginfo:
                 mypungi.getDebuginfoList()
                 if opts.nodownload:
-                    for line in mypungi.listDebuginfo():
+                    for line in mypungi.list_debuginfo():
                         sys.stdout.write("DEBUGINFO: %s\n" % line)
                     sys.stdout.flush()
                 else:
                     mypungi.downloadDebuginfo()
             if not opts.nosource:
                 if opts.nodownload:
-                    for line in mypungi.listSRPMs():
+                    for line in mypungi.list_srpms():
                         sys.stdout.write("SRPM: %s\n" % line)
                     sys.stdout.flush()
                 else:
                     mypungi.downloadSRPMs()
+
+            print "RPM size:       %s MiB" % (mypungi.size_packages() / 1024 ** 2)
+            if not opts.nodebuginfo:
+                print "DEBUGINFO size: %s MiB" % (mypungi.size_debuginfo() / 1024 ** 2)
+            if not opts.nosource:
+                print "SRPM size:      %s MiB" % (mypungi.size_srpms() / 1024 ** 2)
 
         if opts.do_all or opts.do_createrepo:
             mypungi.doCreaterepo()
