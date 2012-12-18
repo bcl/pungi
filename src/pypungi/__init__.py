@@ -745,10 +745,29 @@ class Pungi(pypungi.PungiBase):
 
         ourcompspath = os.path.join(self.workdir, '%s-%s-comps.xml' % (self.config.get('pungi', 'name'), self.config.get('pungi', 'version')))
 
+        # Filter out things we don't include
+        ourgroups = []
+        for item in self.ksparser.handler.packages.groupList:
+            g = self.ayum.comps.return_group(item.name)
+            if g:
+                ourgroups.append(g.groupid)
+        allgroups = [g.groupid for g in self.ayum.comps.get_groups()]
+        for group in allgroups:
+            if group not in ourgroups and not self.ayum.comps.return_group(group).langonly:
+                self.logger.info('Removing extra group %s from comps file' % (group,))
+                del self.ayum.comps._groups[group]
+
+        groups = [g.groupid for g in self.ayum.comps.get_groups()]
+        envs = self.ayum.comps.get_environments()
+        for env in envs:
+            for group in env.groups:
+                if group not in groups:
+                    self.logger.info('Removing incomplete environment %s from comps file' % (env,))
+                    del self.ayum.comps._environments[env.environmentid]
+                    break
+
         ourcomps = open(ourcompspath, 'w')
-
         ourcomps.write(self.ayum.comps.xml())
-
         ourcomps.close()
 
         # Disable this until https://bugzilla.redhat.com/show_bug.cgi?id=442097 is fixed.
