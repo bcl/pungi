@@ -1071,6 +1071,9 @@ class Pungi(pypungi.PungiBase):
     def doCreateIsos(self):
         """Create iso of the tree."""
 
+        if self.config.get('pungi', 'arch').startswith('arm'):
+            self.logger.info("ARCH: arm, not doing doCreateIsos().")
+            return
 
         isolist=[]
         anaruntime = '/usr/share/anaconda/boot'
