@@ -973,7 +973,7 @@ class Pungi(pypungi.PungiBase):
         os.path.walk(os.path.join(self.topdir, 'images'), getsum, self.topdir + '/')
         
         # Capture PPC images
-        if self.config.get('pungi', 'arch') == 'ppc':
+        if self.config.get('pungi', 'arch') in  ['ppc', 'ppc64']:
             os.path.walk(os.path.join(self.topdir, 'ppc'), getsum, self.topdir + '/')
 
         # Get a checksum of repomd.xml since it has within it sums for other files
