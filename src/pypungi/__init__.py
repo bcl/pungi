@@ -923,6 +923,11 @@ class Pungi(pypungi.PungiBase):
         workdir = self.workdir
         outputdir = self.topdir
 
+        # on ppc64 we need to tell lorax to only use ppc64 packages so that the media will run on all 64 bit ppc boxes
+        if self.config.get('pungi', 'arch') == 'ppc64':
+            self.ayum.arch.setup_arch('ppc64')
+            self.ayum.compatarch = 'ppc64'
+
         # run the command
         lorax = pylorax.Lorax()
         lorax.configure()
