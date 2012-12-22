@@ -33,7 +33,7 @@ class Config(SafeConfigParser):
         self.set('pungi', 'relnotepkgs', 'fedora-release fedora-release-notes')
         self.set('pungi', 'product_path', 'Packages')
         self.set('pungi', 'cachedir', '/var/cache/pungi')
-        self.set('pungi', 'arch', yum.rpmUtils.arch.getBaseArch(os.uname()[4]))
+        self.set('pungi', 'arch', yum.rpmUtils.arch.getBaseArch())
         self.set('pungi', 'name', 'Fedora')
         self.set('pungi', 'iso_basename', 'Fedora')
         self.set('pungi', 'version', time.strftime('%Y%m%d', time.localtime()))
