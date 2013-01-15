@@ -223,6 +223,8 @@ class Pungi(pypungi.PungiBase):
         self.is_greedy = self.config.getboolean("pungi", "alldeps")
         self.is_resolve_deps = True # TODO: implement --nodepsolve
 
+        self.fulltree_excludes = set(self.ksparser.handler.fulltree_excludes)
+
     def _add_yum_repo(self, name, url, mirrorlist=False, groups=True,
                       cost=1000, includepkgs=None, excludepkgs=None,
                       proxy=None):
@@ -682,7 +684,7 @@ class Pungi(pypungi.PungiBase):
                 packages_by_name.setdefault(po.name, []).append(po)
 
             for name, packages in packages_by_name.iteritems():
-                packages = self.excludePackages(packages)
+                packages = self.excludePackages(packages or [])
                 if self.is_greedy:
                     packages = yum.packageSack.ListPackageSack(packages).returnNewestByNameArch()
                 else:
@@ -810,7 +812,8 @@ class Pungi(pypungi.PungiBase):
         for srpm_po in srpm_po_list:
             if srpm_po in self.completed_fulltree:
                 continue
-            srpms.append(srpm_po)
+            if srpm_po.name not in self.fulltree_excludes:
+                srpms.append(srpm_po)
             self.completed_fulltree.add(srpm_po)
 
         added = set()

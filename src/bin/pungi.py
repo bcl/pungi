@@ -15,8 +15,7 @@
 import os
 import pypungi
 import pypungi.config
-import pykickstart.parser
-import pykickstart.version
+import pypungi.ks
 import subprocess
 
 def main():
@@ -42,8 +41,7 @@ def main():
             pass
 
     # Set up the kickstart parser and pass in the kickstart file we were handed
-    ksparser = pykickstart.parser.KickstartParser(pykickstart.version.makeVersion())
-    ksparser.readKickstart(opts.config)
+    ksparser = pypungi.ks.get_ksparser(ks_path=opts.config)
 
     if opts.sourceisos:
         config.set('pungi', 'arch', 'source')
