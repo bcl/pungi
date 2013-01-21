@@ -48,4 +48,4 @@ class Config(SafeConfigParser):
         self.set('pungi', 'full_archlist', "False")
         self.set('pungi', 'multilib', '')
         self.set('pungi', 'lookaside_repos', '')
-
+        self.set('pungi', 'resolve_deps', "True")

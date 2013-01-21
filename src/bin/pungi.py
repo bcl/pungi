@@ -76,6 +76,7 @@ def main():
         config.set('pungi', 'debuginfo', "False")
     if opts.nogreedy:
         config.set('pungi', 'alldeps', "False")
+    config.set('pungi', 'resolve_deps', str(bool(opts.resolve_deps)))
     if opts.isfinal:
         config.set('pungi', 'isfinal', "True")
     if opts.nohash:
@@ -203,6 +204,8 @@ if __name__ == '__main__':
           help='disable gathering of release notes (optional)')
         parser.add_option("--nogreedy", action="store_true", dest="nogreedy",
           help='disable pulling of all providers of package dependencies (optional)')
+        parser.add_option("--nodeps", action="store_false", dest="resolve_deps", default=True,
+          help='disable resolving dependencies')
         parser.add_option("--sourceisos", default=False, action="store_true", dest="sourceisos",
           help='Create the source isos (other arch runs must be done)')
         parser.add_option("--force", default=False, action="store_true",
