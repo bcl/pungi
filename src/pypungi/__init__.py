@@ -234,8 +234,6 @@ class Pungi(pypungi.PungiBase):
             yumarch = 'athlon'
         elif arch in ['ppc', 'ppc64']:
             yumarch = 'ppc64p7'
-        elif arch == 'sparc':
-            yumarch = 'sparc64v'
         elif arch == 'arm':
             yumarch = 'armv7l'
         elif arch == 'armhfp':
@@ -1113,8 +1111,6 @@ class Pungi(pypungi.PungiBase):
 
         ppcbootargs.append('-hfs-bless') # must be last
 
-        sparcbootargs = ['-G', '/boot/isofs.b', '-B', '...', '-s', '/boot/silo.conf', '-sparc-label', '"sparc"']
-
         isohybrid = ['/usr/bin/isohybrid']
 
         # Check the size of the tree
@@ -1154,8 +1150,6 @@ class Pungi(pypungi.PungiBase):
         elif self.config.get('pungi', 'arch').startswith('ppc'):
             extraargs.extend(ppcbootargs)
             extraargs.append(os.path.join(self.topdir, "ppc/mac"))
-        elif self.config.get('pungi', 'arch') == 'sparc':
-            extraargs.extend(sparcbootargs)
 
         # NOTE: if this doesn't match what's in the bootloader config, the
         # image won't be bootable!
