@@ -220,6 +220,7 @@ class Pungi(pypungi.PungiBase):
         yumconf.uid = os.geteuid()
         yumconf.cache = 0
         yumconf.failovermethod = 'priority'
+        yumconf.deltarpm = 0
         yumvars = yum.config._getEnvVar()
         yumvars['releasever'] = self.config.get('pungi', 'version')
         yumvars['basearch'] = yum.rpmUtils.arch.getBaseArch(myarch=self.config.get('pungi', 'arch'))
