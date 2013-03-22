@@ -20,13 +20,13 @@ import re
 import fnmatch
 import pathmatch
 
-#from pypungi import is_package, is_source, is_debug, is_noarch
 import pypungi
 
 
 
 LINE_PATTERN_RE = re.compile(r"^\s*(?P<line>[^#]+)(:?\s+(?P<comment>#.*))?$")
 RUNTIME_PATTERN_SPLIT_RE = re.compile(r"^\s*(?P<path>[^\s]+)\s+(?P<pattern>[^\s]+)(:?\s+(?P<comment>#.*))?$")
+SONAME_PATTERN_RE = re.compile(r"^(.+\.so\.[a-zA-Z0-9_\.]+).*$")
 
 
 def read_lines(lines):
@@ -156,6 +156,13 @@ class RuntimeMultilibMethod(MultilibMethodBase):
         if self.is_kernel(po):
             return False
 
+        # gather all *.so.* provides from the RPM header
+        provides = set()
+        for i in po.provides:
+            match = SONAME_PATTERN_RE.match(i[0])
+            if match is not None:
+                provides.add(match.group(1))
+
         for path in po.returnFileEntries() + po.returnFileEntries("ghost"):
             dirname, filename = path.rsplit("/", 1)
             dirname = dirname.rstrip("/")
@@ -167,7 +174,13 @@ class RuntimeMultilibMethod(MultilibMethodBase):
                 if file_pattern == "-":
                     return True
                 if fnmatch.fnmatch(filename, file_pattern):
-                    return True
+                    if ".so.*" in file_pattern:
+                        if filename in provides:
+                            # return only if the lib is provided in RPM header
+                            # (some libs may be private, hence not exposed in Provides)
+                            return True
+                    else:
+                        return True
         return False
 
 
