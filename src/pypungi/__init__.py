@@ -714,9 +714,11 @@ class Pungi(pypungi.PungiBase):
             pass_num += 1
             self.logger.info("Pass #%s" % pass_num)
 
-            for txmbr in self.ayum.tsInfo:
-                if not txmbr.po in self.po_list:
-                    self.add_package(txmbr.po)
+            if self.is_resolve_deps:
+                # get conditional deps (defined in comps)
+                for txmbr in self.ayum.tsInfo:
+                    if not txmbr.po in self.po_list:
+                        self.add_package(txmbr.po)
 
             # resolve deps
             if self.is_resolve_deps:
