@@ -619,7 +619,19 @@ class Pungi(pypungi.PungiBase):
         excludeGroups = [] # A list of groups for removal defined in the ks file
 
         # precompute pkgs and pkg_refs to speed things up
-        self.all_pkgs = self.ayum.pkgSack.returnPackages()
+        self.all_pkgs = list(set(self.ayum.pkgSack.returnPackages()))
+        self.all_pkgs = self.excludePackages(self.all_pkgs)
+
+
+        lookaside_nvrs = set()
+        for po in self.all_pkgs:
+            if po.repoid in self.lookaside_repos:
+                lookaside_nvrs.add(po.nvra)
+        for po in self.all_pkgs[:]:
+            if po.repoid not in self.lookaside_repos and po.nvra in lookaside_nvrs:
+                self.logger.debug("Removed %s (repo: %s), because it's also in a lookaside repo" % (po, po.repoid))
+                self.all_pkgs.remove(po)
+
         self.pkg_refs = yum.packages.buildPkgRefDict(self.all_pkgs, casematch=True)
 
         self.get_langpacks()
