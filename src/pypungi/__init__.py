@@ -460,12 +460,12 @@ class Pungi(pypungi.PungiBase):
 
                 for dep in deps:
                     if dep not in added:
-                        msg = 'Added %s.%s for %s.%s' % (dep.name, dep.arch, po.name, po.arch)
+                        msg = 'Added %s.%s (repo: %s) for %s.%s' % (dep.name, dep.arch, dep.repoid, po.name, po.arch)
                         self.add_package(dep, msg)
                         added.add(dep)
 
             except (yum.Errors.InstallError, yum.Errors.YumBaseError), ex:
-                self.logger.warn("Unresolvable dependency %s in %s.%s" % (r, po.name, po.arch))
+                self.logger.warn("Unresolvable dependency %s in %s.%s (repo: %s)" % (r, po.name, po.arch, po.repoid))
                 continue
             self.resolved_deps[req] = None
 
@@ -502,7 +502,7 @@ class Pungi(pypungi.PungiBase):
                 for i, pkg_sack in packages_by_name.iteritems():
                     pkg_sack = self.excludePackages(pkg_sack)
                     match = self.ayum._bestPackageFromList(pkg_sack)
-                    msg = 'Added langpack %s.%s for package %s (pattern: %s)' % (match.name, match.arch, po.name, pattern)
+                    msg = 'Added langpack %s.%s (repo: %s) for package %s (pattern: %s)' % (match.name, match.arch, match.repoid, po.name, pattern)
                     self.add_package(match, msg)
                     self.completed_langpacks.add(match) # assuming langpack doesn't have langpacks
                     added.add(match)
@@ -539,7 +539,7 @@ class Pungi(pypungi.PungiBase):
             method = multilib.po_is_multilib(po, self.multilib_methods)
             if not method:
                 continue
-            msg = "Added multilib package %s.%s for package %s.%s (method: %s)" % (match.name, match.arch, po.name, po.arch, method)
+            msg = "Added multilib package %s.%s (repo: %s) for package %s.%s (method: %s)" % (match.name, match.arch, match.repoid, po.name, po.arch, method)
             self.add_package(match, msg)
             self.completed_multilib.add(match)
             added.add(match)
@@ -685,6 +685,8 @@ class Pungi(pypungi.PungiBase):
 
             for name, packages in packages_by_name.iteritems():
                 packages = self.excludePackages(packages or [])
+                if not packages:
+                    continue
                 if self.is_greedy:
                     packages = yum.packageSack.ListPackageSack(packages).returnNewestByNameArch()
                 else:
@@ -795,7 +797,7 @@ class Pungi(pypungi.PungiBase):
             srpm_po = self.sourcerpm_srpmpo_map[po.sourcerpm]
             if srpm_po in self.completed_add_srpms:
                 continue
-            msg = "Adding source package %s.%s" % (srpm_po.name, srpm_po.arch)
+            msg = "Added source package %s.%s (repo: %s)" % (srpm_po.name, srpm_po.arch, srpm_po.repoid)
             self.add_source(srpm_po, msg)
             self.completed_add_srpms.add(srpm_po)
             srpms.add(srpm_po)
@@ -866,7 +868,7 @@ class Pungi(pypungi.PungiBase):
                     if po.arch in self.valid_native_arches:
                         if not include_native:
                             continue
-                msg = "Adding %s.%s to complete package set" % (po.name, po.arch)
+                msg = "Added %s.%s (repo: %s) to complete package set" % (po.name, po.arch, po.repoid)
                 self.add_package(po, msg)
         return added
 
@@ -887,7 +889,7 @@ class Pungi(pypungi.PungiBase):
                 # skip all incompatible arches
                 # this pulls i386 debuginfo for a i686 package for example
                 continue
-            msg = 'Added debuginfo %s.%s' % (po.name, po.arch)
+            msg = 'Added debuginfo %s.%s (repo: %s)' % (po.name, po.arch, po.repoid)
             self.add_debuginfo(po, msg)
             added.add(po)
         return added
