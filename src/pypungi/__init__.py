@@ -756,6 +756,9 @@ class Pungi(pypungi.PungiBase):
                 # get conditional deps (defined in comps)
                 for txmbr in self.ayum.tsInfo:
                     if not txmbr.po in self.po_list:
+                        if not is_package(txmbr.po):
+                            # we don't want sources which can be pulled in, because 'src' arch is part of self.valid_arches
+                            continue
                         self.add_package(txmbr.po)
 
             # resolve deps
