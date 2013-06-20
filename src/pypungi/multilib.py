@@ -221,6 +221,18 @@ class KernelMultilibMethod(MultilibMethodBase):
         return False
 
 
+class YabootMultilibMethod(MultilibMethodBase):
+    """yaboot on ppc"""
+    def __init__(self, **kwargs):
+        self.name = "yaboot"
+
+    def select(self, po):
+        if po.arch in ["ppc"]:
+            if po.name.startswith("yaboot"):
+                return True
+        return False
+
+
 class DevelMultilibMethod(MultilibMethodBase):
     """all -devel and -static packages"""
     name = "devel"
@@ -255,7 +267,7 @@ class DevelMultilibMethod(MultilibMethodBase):
 
 DEFAULT_METHODS = ["devel", "runtime"]
 METHOD_MAP = {}
-for cls in (AllMultilibMethod, DevelMultilibMethod, FileMultilibMethod, KernelMultilibMethod, NoneMultilibMethod, RuntimeMultilibMethod):
+for cls in (AllMultilibMethod, DevelMultilibMethod, FileMultilibMethod, KernelMultilibMethod, NoneMultilibMethod, RuntimeMultilibMethod, YabootMultilibMethod):
     method = cls()
     METHOD_MAP[method.name] = method
 
