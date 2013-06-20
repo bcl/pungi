@@ -74,8 +74,14 @@ def main():
     # Set debuginfo flag
     if opts.nodebuginfo:
         config.set('pungi', 'debuginfo', "False")
-    if opts.nogreedy:
-        config.set('pungi', 'alldeps', "False")
+    if opts.greedy:
+        config.set('pungi', 'greedy', opts.greedy)
+    else:
+        # XXX: compatibility
+        if opts.nogreedy:
+            config.set('pungi', 'greedy', "none")
+        else:
+            config.set('pungi', 'greedy', "all")
     config.set('pungi', 'resolve_deps', str(bool(opts.resolve_deps)))
     if opts.isfinal:
         config.set('pungi', 'isfinal', "True")
@@ -201,7 +207,7 @@ if __name__ == '__main__':
         parser.add_option("--nodownload", action="store_true", dest="nodownload",
           help='disable downloading of packages. instead, print the package URLs (optional)')
         parser.add_option("--norelnotes", action="store_true", dest="norelnotes",
-          help='disable gathering of release notes (optional)')
+          help='disable gathering of release notes (optional); DEPRECATED')
         parser.add_option("--nogreedy", action="store_true", dest="nogreedy",
           help='disable pulling of all providers of package dependencies (optional)')
         parser.add_option("--nodeps", action="store_false", dest="resolve_deps", default=True,
@@ -218,6 +224,8 @@ if __name__ == '__main__':
           help='Use the full arch list for x86_64 (include i686, i386, etc.)')
         parser.add_option("--arch",
           help='Override default (uname based) arch')
+        parser.add_option("--greedy", metavar="METHOD",
+          help='Greedy method; none, all, build')
         parser.add_option("--multilib", action="append", metavar="METHOD",
           help='Multilib method; can be specified multiple times; recommended: devel, runtime')
         parser.add_option("--lookaside-repo", action="append", dest="lookaside_repos", metavar="NAME",

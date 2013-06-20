@@ -196,6 +196,13 @@ class Pungi(pypungi.PungiBase):
         self.excluded_pkgs = {} # list the packages we've already excluded.
         self.seen_pkgs = {}     # list the packages we've already seen so we can check all deps only once
         self.multilib_methods = self.config.get('pungi', 'multilib').split(" ")
+
+        # greedy methods:
+        #  * none: only best match package
+        #  * all: all packages matching a provide
+        #  * build: best match package + all other packages from the same SRPM having the same provide
+        self.greedy_method = self.config.get('pungi', 'greedy')
+
         self.lookaside_repos = self.config.get('pungi', 'lookaside_repos').split(" ")
         self.sourcerpm_arch_map = {}    # {sourcerpm: set[arches]} - used for gathering debuginfo
 
@@ -215,12 +222,12 @@ class Pungi(pypungi.PungiBase):
         self.completed_multilib = set()         # rpms
         self.completed_fulltree = set()         # srpms
         self.completed_selfhosting = set()      # srpms
+        self.completed_greedy_build = set()     # po.sourcerpm
 
         self.is_fulltree = self.config.getboolean("pungi", "fulltree")
         self.is_selfhosting = self.config.getboolean("pungi", "selfhosting")
         self.is_sources = not self.config.getboolean("pungi", "nosource")
         self.is_debuginfo = not self.config.getboolean("pungi", "nodebuginfo")
-        self.is_greedy = self.config.getboolean("pungi", "alldeps")
         self.is_resolve_deps = self.config.getboolean("pungi", "resolve_deps")
 
         self.fulltree_excludes = set(self.ksparser.handler.fulltree_excludes)
@@ -445,18 +452,33 @@ class Pungi(pypungi.PungiBase):
                     self.logger.warn("Unresolvable dependency %s in %s.%s" % (r, po.name, po.arch))
                     continue
 
-                if self.is_greedy:
+                if self.greedy_method == "all":
                     deps = yum.packageSack.ListPackageSack(deps).returnNewestByNameArch()
                 else:
                     found = False
                     for dep in deps:
                         if dep in self.po_list:
+                            # HACK: there can be builds in the input list on which we want to apply the "build" greedy rules
+                            if self.greedy_method == "build" and dep.sourcerpm not in self.completed_greedy_build:
+                                break
                             found = True
                             break
                     if found:
                         deps = []
                     else:
-                        deps = [self.ayum._bestPackageFromList(deps)]
+                        all_deps = deps
+                        deps = [self.ayum._bestPackageFromList(all_deps)]
+                        if self.greedy_method == "build":
+                            # hande "build" greedy method
+                            if deps:
+                                build_po = deps[0]
+                                if is_package(build_po):
+                                    if build_po.arch != "noarch" and build_po.arch not in self.valid_multilib_arches:
+                                        all_deps = [ i for i in all_deps if i.arch not in self.valid_multilib_arches ]
+                                    for dep in all_deps:
+                                        if dep != build_po and dep.sourcerpm == build_po.sourcerpm:
+                                            deps.append(dep)
+                                            self.completed_greedy_build.add(dep.sourcerpm)
 
                 for dep in deps:
                     if dep not in added:
@@ -579,7 +601,8 @@ class Pungi(pypungi.PungiBase):
         for condreq, cond in groupobj.conditional_packages.iteritems():
             matches = self.ayum.pkgSack.searchNevra(name=condreq)
             if matches:
-                if not self.is_greedy:
+                if self.greedy_method != "all":
+                    # works for both "none" and "build" greedy methods
                     matches = [self.ayum._bestPackageFromList(matches)]
                 self.ayum.tsInfo.conditionals.setdefault(cond, []).extend(matches)
 
@@ -675,7 +698,7 @@ class Pungi(pypungi.PungiBase):
                 name = name[:-2]
                 multilib = True
 
-            if self.is_greedy and name == "system-release":
+            if self.greedy_method == "all" and name == "system-release":
                 # HACK: handles a special case, when system-release virtual provide is specified in the greedy mode
                 matches = self.ayum.whatProvides(name, None, None).returnPackages()
             else:
@@ -684,7 +707,7 @@ class Pungi(pypungi.PungiBase):
 
             matches = filter(self._filtersrcdebug, matches)
 
-            if multilib and not self.is_greedy:
+            if multilib and self.greedy_method != "all":
                 matches = [ po for po in matches if po.arch in self.valid_multilib_arches ]
 
             if not matches:
@@ -699,9 +722,10 @@ class Pungi(pypungi.PungiBase):
                 packages = self.excludePackages(packages or [])
                 if not packages:
                     continue
-                if self.is_greedy:
+                if self.greedy_method == "all":
                     packages = yum.packageSack.ListPackageSack(packages).returnNewestByNameArch()
                 else:
+                    # works for both "none" and "build" greedy methods
                     packages = [self.ayum._bestPackageFromList(packages)]
 
                 for po in packages:
