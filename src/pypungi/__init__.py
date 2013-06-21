@@ -214,6 +214,12 @@ class Pungi(pypungi.PungiBase):
         # get_srpm_po() cache
         self.sourcerpm_srpmpo_map = {}
 
+        # flags
+        self.input_packages = set()     # packages specified in the input list (%packages section in kickstart)
+        self.fulltree_packages = set()
+        self.langpack_packages = set()
+        self.multilib_packages = set()
+
         # already processed packages
         self.completed_add_srpms = set()        # srpms
         self.completed_debuginfo = set()        # rpms
@@ -728,6 +734,8 @@ class Pungi(pypungi.PungiBase):
                     # works for both "none" and "build" greedy methods
                     packages = [self.ayum._bestPackageFromList(packages)]
 
+                self.input_packages.update(packages)
+
                 for po in packages:
                     msg = 'Found %s.%s' % (po.name, po.arch)
                     self.add_package(po, msg)
@@ -773,17 +781,26 @@ class Pungi(pypungi.PungiBase):
                     added.update(self.get_package_deps(srpm_po))
 
             if self.is_fulltree:
-                added.update(self.add_fulltree())
+                new = self.add_fulltree()
+                self.fulltree_packages.update(new)
+                self.fulltree_packages.update([ self.sourcerpm_srpmpo_map[i.sourcerpm] for i in new ])
+                added.update(new)
             if added:
                 continue
 
             # add langpacks
-            added.update(self.add_langpacks(self.po_list))
+            new = self.add_langpacks(self.po_list)
+            self.langpack_packages.update(new)
+            self.langpack_packages.update([ self.sourcerpm_srpmpo_map[i.sourcerpm] for i in new ])
+            added.update(new)
             if added:
                 continue
 
             # add multilib packages
-            added.update(self.add_multilib(self.po_list))
+            new = self.add_multilib(self.po_list)
+            self.multilib_packages.update(new)
+            self.multilib_packages.update([ self.sourcerpm_srpmpo_map[i.sourcerpm] for i in new ])
+            added.update(new)
             if added:
                 continue
 
@@ -838,6 +855,17 @@ class Pungi(pypungi.PungiBase):
                 continue
             msg = "Added source package %s.%s (repo: %s)" % (srpm_po.name, srpm_po.arch, srpm_po.repoid)
             self.add_source(srpm_po, msg)
+
+            # flags
+            if po in self.input_packages:
+                self.input_packages.add(srpm_po)
+            if po in self.fulltree_packages:
+                self.fulltree_packages.add(srpm_po)
+            if po in self.langpack_packages:
+                self.langpack_packages.add(srpm_po)
+            if po in self.multilib_packages:
+                self.multilib_packages.add(srpm_po)
+
             self.completed_add_srpms.add(srpm_po)
             srpms.add(srpm_po)
         return srpms
@@ -930,6 +958,18 @@ class Pungi(pypungi.PungiBase):
                 continue
             msg = 'Added debuginfo %s.%s (repo: %s)' % (po.name, po.arch, po.repoid)
             self.add_debuginfo(po, msg)
+
+            # flags
+            srpm_po = self.sourcerpm_srpmpo_map[po.sourcerpm]
+            if srpm_po in self.input_packages:
+                self.input_packages.add(po)
+            if srpm_po in self.fulltree_packages:
+                self.fulltree_packages.add(po)
+            if srpm_po in self.langpack_packages:
+                self.langpack_packages.add(po)
+            if srpm_po in self.multilib_packages:
+                self.multilib_packages.add(po)
+
             added.add(po)
         return added
 
@@ -1051,8 +1091,42 @@ class Pungi(pypungi.PungiBase):
 
     def _list_packages(self, po_list):
         """Cycle through the list of packages and return their paths."""
-        result = [ os.path.join(po.basepath or "", po.relativepath) for po in po_list if po.repoid not in self.lookaside_repos ]
-        result.sort()
+        result = []
+        for po in po_list:
+            if po.repoid in self.lookaside_repos:
+                continue
+
+            flags = []
+
+            # input
+            if po in self.input_packages:
+                flags.append("input")
+
+            # langpack
+            if po in self.langpack_packages:
+                flags.append("langpack")
+
+            # multilib
+            if po in self.multilib_packages:
+                flags.append("multilib")
+
+            # fulltree
+            if po in self.fulltree_packages:
+                flags.append("fulltree")
+
+            # fulltree-exclude
+            if is_source(po):
+                srpm_name = po.name
+            else:
+                srpm_name = po.sourcerpm.rsplit("-", 2)[0]
+            if srpm_name in self.fulltree_excludes:
+                flags.append("fulltree-exclude")
+
+            result.append({
+                "path": os.path.join(po.basepath or "", po.relativepath),
+                "flags": sorted(flags),
+            })
+        result.sort(lambda x, y: cmp(x["path"], y["path"]))
         return result
 
     def list_packages(self):

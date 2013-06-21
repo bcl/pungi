@@ -110,7 +110,10 @@ def main():
             mypungi.gather()
             if opts.nodownload:
                 for line in mypungi.list_packages():
-                    sys.stdout.write("RPM: %s\n" % line)
+                    flags_str = ",".join(line["flags"])
+                    if flags_str:
+                        flags_str = "(%s)" % flags_str
+                    sys.stdout.write("RPM%s: %s\n" % (flags_str, line["path"]))
                 sys.stdout.flush()
             else:
                 mypungi.downloadPackages()
@@ -119,14 +122,20 @@ def main():
                 mypungi.getDebuginfoList()
                 if opts.nodownload:
                     for line in mypungi.list_debuginfo():
-                        sys.stdout.write("DEBUGINFO: %s\n" % line)
+                        flags_str = ",".join(line["flags"])
+                        if flags_str:
+                            flags_str = "(%s)" % flags_str
+                        sys.stdout.write("DEBUGINFO%s: %s\n" % (flags_str, line["path"]))
                     sys.stdout.flush()
                 else:
                     mypungi.downloadDebuginfo()
             if not opts.nosource:
                 if opts.nodownload:
                     for line in mypungi.list_srpms():
-                        sys.stdout.write("SRPM: %s\n" % line)
+                        flags_str = ",".join(line["flags"])
+                        if flags_str:
+                            flags_str = "(%s)" % flags_str
+                        sys.stdout.write("SRPM%s: %s\n" % (flags_str, line["path"]))
                     sys.stdout.flush()
                 else:
                     mypungi.downloadSRPMs()
