@@ -475,7 +475,7 @@ class Pungi(pypungi.PungiBase):
                         all_deps = deps
                         deps = [self.ayum._bestPackageFromList(all_deps)]
                         if self.greedy_method == "build":
-                            # hande "build" greedy method
+                            # handle "build" greedy method
                             if deps:
                                 build_po = deps[0]
                                 if is_package(build_po):
@@ -906,7 +906,7 @@ class Pungi(pypungi.PungiBase):
                     elif po.arch in self.valid_native_arches:
                         has_native = True
                     continue
-                if po.arch in self.valid_multilib_arches:
+                if po.arch in self.valid_multilib_arches and (po in self.input_packages or self.greedy_method == "all"):
                     include_multilib = True
                 elif po.arch in self.valid_native_arches:
                     include_native = True
