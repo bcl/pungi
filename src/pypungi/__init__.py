@@ -979,12 +979,18 @@ class Pungi(pypungi.PungiBase):
             self.ayum.arch.setup_arch('ppc64')
             self.ayum.compatarch = 'ppc64'
 
+        # Only supported mac hardware is x86 make sure we only enable mac support on arches that need it
+        if self.config.get('pungi', 'arch') in ['i386', 'i686', 'x86_64']:
+            domacboot = True
+        else:
+            domacboot = False
+
         # run the command
         lorax = pylorax.Lorax()
         lorax.configure()
 
         lorax.run(self.ayum, product=product, version=version, release=release,
-                  variant=variant, bugurl=bugurl, isfinal=isfinal,
+                  variant=variant, bugurl=bugurl, isfinal=isfinal, domacboot=domacboot,
                   workdir=workdir, outputdir=outputdir)
 
         # write out the tree data for snake
