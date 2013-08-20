@@ -1149,12 +1149,12 @@ class Pungi(pypungi.PungiBase):
         outputdir = self.topdir
 
         # on ppc64 we need to tell lorax to only use ppc64 packages so that the media will run on all 64 bit ppc boxes
-        if self.config.get('pungi', 'arch') == 'ppc64':
+        if self.tree_arch == 'ppc64':
             self.ayum.arch.setup_arch('ppc64')
             self.ayum.compatarch = 'ppc64'
 
         # Only supported mac hardware is x86 make sure we only enable mac support on arches that need it
-        if self.config.get('pungi', 'arch') in ['i386', 'i686', 'x86_64']:
+        if self.tree_arch in ['x86_64']:
             domacboot = True
         else:
             domacboot = False
@@ -1307,7 +1307,7 @@ class Pungi(pypungi.PungiBase):
     def doCreateIsos(self):
         """Create iso of the tree."""
 
-        if self.config.get('pungi', 'arch').startswith('arm'):
+        if self.tree_arch.startswith('arm'):
             self.logger.info("ARCH: arm, not doing doCreateIsos().")
             return
 
