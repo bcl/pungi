@@ -1,7 +1,7 @@
 %{!?python_sitelib: %define python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")}
 
 Name:           pungi
-Version:        2.13
+Version:        3.00
 Release:        1%{?dist}
 Summary:        Distribution compose tool
 
@@ -59,6 +59,10 @@ rm -rf $RPM_BUILD_ROOT
 /var/cache/pungi
 
 %changelog
+* Tue Aug 20 2013 Dennis Gilmore <dennis@ausil.us> - 3.00-1
+- apply patches from Daniel Mach
+- make sure we only use mac support on x86_64
+
 * Fri Dec 21 2012 Dennis Gilmore <dennis@ausil.us> - 2.13-1
 - strip groups from comps not listed in the kickstart 
 - fix ppc64 runtime installation (#888887)
