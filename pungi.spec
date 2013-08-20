@@ -12,10 +12,8 @@ Source0:        https://fedorahosted.org/pungi/attachment/wiki/%{version}/%{name
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 Requires:       createrepo >= 0.4.11
 Requires:       yum => 3.4.3-28
-%if !0{?rhel:1}
 Requires:       lorax
 Requires:       repoview
-%endif
 
 BuildRequires:  python-devel
 BuildArch:      noarch
