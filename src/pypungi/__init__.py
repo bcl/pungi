@@ -917,7 +917,7 @@ class Pungi(pypungi.PungiBase):
                     elif po.arch in self.valid_native_arches:
                         has_native = True
                     continue
-                if po.arch in self.valid_multilib_arches and (po in self.input_packages or self.greedy_method == "all"):
+                if po.arch in self.valid_multilib_arches and self.greedy_method == "all":
                     include_multilib = True
                 elif po.arch in self.valid_native_arches:
                     include_native = True
