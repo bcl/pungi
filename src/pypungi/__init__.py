@@ -415,6 +415,9 @@ class Pungi(pypungi.PungiBase):
             name, arch = arch_module.split_name_arch(i)
             excludes.append((name, arch, pattern, multilib))
 
+        for name in self.ksparser.handler.multilib_blacklist:
+            excludes.append((name, None, "multilib-blacklist: %s" % name, True))
+
         for pkg in pkg_sack[:]:
             for name, arch, exclude_pattern, multilib in excludes:
                 if fnmatch(pkg.name, name):
@@ -564,6 +567,14 @@ class Pungi(pypungi.PungiBase):
             match = self.ayum._bestPackageFromList(matches)
             if not match:
                 continue
+
+            if po.name in self.ksparser.handler.multilib_whitelist:
+                msg = "Added multilib package %s.%s (repo: %s) for package %s.%s (method: %s)" % (match.name, match.arch, match.repoid, po.name, po.arch, "multilib-whitelist")
+                self.add_package(match, msg)
+                self.completed_multilib.add(match)
+                added.add(match)
+                continue
+
             method = multilib.po_is_multilib(po, self.multilib_methods)
             if not method:
                 continue
