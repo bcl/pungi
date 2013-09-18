@@ -2,16 +2,58 @@
 
 
 """
-Kickstart syntax is extended with:
+Pungi adds several new sections to kickstarts.
 
+
+FULLTREE EXCLUDES
+-----------------
+Fulltree excludes allow us to define SRPM names
+we don't want to be part of fulltree processing.
+
+Syntax:
 %fulltree-excludes
 <srpm_name>
 <srpm_name>
 ...
 %end
 
-Fulltree excludes allow us to define SRPM names
-we don't want to be part of fulltree processing.
+
+MULTILIB BLACKLIST
+------------------
+List of RPMs which are prevented from becoming multilib.
+
+Syntax:
+%multilib-blacklist
+<rpm_name>
+<rpm_name>
+...
+%end
+
+
+MULTILIB WHITELIST
+------------------
+List of RPMs which will become multilib (but only if native package is pulled in).
+
+Syntax:
+%multilib-whitelist
+<rpm_name>
+<rpm_name>
+...
+%end
+
+
+PREPOPULATE
+-----------
+To make sure no package is left behind between 2 composes,
+we can explicitly add <name>.<arch> records to the %prepopulate section.
+These will be added to the input list and marked with 'prepopulate' flag.
+
+Syntax:
+%prepopulate
+<rpm_name>.<rpm_arch>
+<rpm_name>.<rpm_arch>
+...
+%end
 """
 
 
@@ -58,12 +100,26 @@ class MultilibWhitelistSection(pykickstart.sections.Section):
         self.handler.multilib_whitelist.add(line)
 
 
+class PrepopulateSection(pykickstart.sections.Section):
+    sectionOpen = "%prepopulate"
+
+    def handleLine(self, line):
+        if not self.handler:
+            return
+
+        (h, s, t) = line.partition('#')
+        line = h.rstrip()
+
+        self.handler.prepopulate.add(line)
+
+
 class KickstartParser(pykickstart.parser.KickstartParser):
     def setupSections(self):
         pykickstart.parser.KickstartParser.setupSections(self)
         self.registerSection(FulltreeExcludesSection(self.handler))
         self.registerSection(MultilibBlacklistSection(self.handler))
         self.registerSection(MultilibWhitelistSection(self.handler))
+        self.registerSection(PrepopulateSection(self.handler))
 
 
 HandlerClass = pykickstart.version.returnClassForVersion()
@@ -73,6 +129,7 @@ class PungiHandler(HandlerClass):
         self.fulltree_excludes = set()
         self.multilib_blacklist = set()
         self.multilib_whitelist = set()
+        self.prepopulate = set()
 
 
 def get_ksparser(ks_path=None):

@@ -215,7 +215,9 @@ class Pungi(pypungi.PungiBase):
         self.sourcerpm_srpmpo_map = {}
 
         # flags
-        self.input_packages = set()     # packages specified in the input list (%packages section in kickstart)
+        self.input_packages = set()         # packages specified in %packages kickstart section including those defined via comps groups
+        self.comps_packages = set()         # packages specified in %packages kickstart section *indirectly* via comps groups
+        self.prepopulate_packages = set()   # packages specified in %prepopulate kickstart section
         self.fulltree_packages = set()
         self.langpack_packages = set()
         self.multilib_packages = set()
@@ -697,13 +699,19 @@ class Pungi(pypungi.PungiBase):
             for group in self._addDefaultGroups(excludeGroups):
                 self.ksparser.handler.packages.add(['@%s' % group])
 
-
         # Get a list of packages from groups
+        comps_package_names = set()
         for group in self.ksparser.handler.packages.groupList:
-            searchlist.extend(self.getPackagesFromGroup(group))
+            comps_package_names.update(self.getPackagesFromGroup(group))
+        searchlist.extend(sorted(comps_package_names))
 
-        # Add the adds
+        # Add packages
         searchlist.extend(self.ksparser.handler.packages.packageList)
+        input_packages = searchlist[:]
+
+        # Add prepopulate packages
+        prepopulate_packages = self.ksparser.handler.prepopulate
+        searchlist.extend(prepopulate_packages)
 
         # Make the search list unique
         searchlist = yum.misc.unique(searchlist)
@@ -745,11 +753,17 @@ class Pungi(pypungi.PungiBase):
                     # works for both "none" and "build" greedy methods
                     packages = [self.ayum._bestPackageFromList(packages)]
 
-                self.input_packages.update(packages)
+                if name in input_packages:
+                    self.input_packages.update(packages)
+                if name in comps_package_names:
+                    self.comps_packages.update(packages)
 
                 for po in packages:
                     msg = 'Found %s.%s' % (po.name, po.arch)
                     self.add_package(po, msg)
+                    name_arch = "%s.%s" % (po.name, po.arch)
+                    if name_arch in prepopulate_packages:
+                        self.prepopulate_packages.add(po)
 
         if not self.po_list:
             raise RuntimeError("No packages found")
@@ -1112,6 +1126,14 @@ class Pungi(pypungi.PungiBase):
             # input
             if po in self.input_packages:
                 flags.append("input")
+
+            # comps
+            if po in self.comps_packages:
+                flags.append("comps")
+
+            # prepopulate
+            if po in self.prepopulate_packages:
+                flags.append("prepopulate")
 
             # langpack
             if po in self.langpack_packages:
