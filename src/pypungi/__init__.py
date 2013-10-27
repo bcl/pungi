@@ -221,7 +221,7 @@ class Pungi(pypungi.PungiBase):
         self.is_sources = not self.config.getboolean("pungi", "nosource")
         self.is_debuginfo = not self.config.getboolean("pungi", "nodebuginfo")
         self.is_greedy = self.config.getboolean("pungi", "alldeps")
-        self.is_resolve_deps = True # TODO: implement --nodepsolve
+        self.is_resolve_deps = self.config.getboolean("pungi", "resolve_deps")
 
         self.fulltree_excludes = set(self.ksparser.handler.fulltree_excludes)
 
