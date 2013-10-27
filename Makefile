@@ -21,6 +21,9 @@ tag:
 Changelog:
 	(GIT_DIR=.git git log > .changelog.tmp && mv .changelog.tmp Changelog; rm -f .changelog.tmp) || (touch Changelog; echo 'git directory not found: installing possibly empty changelog.' >&2)
 
+log:
+	@(LC_ALL=C date +"* %a %b %e %Y `git config --get user.name` <`git config --get user.email`> - VERSION"; git log --pretty="format:- %s (%an)" | cat) | less
+
 archive:
 	@rm -f Changelog
 	@rm -f MANIFEST
