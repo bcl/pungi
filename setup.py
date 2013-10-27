@@ -2,7 +2,7 @@ from distutils.core import setup
 import glob
 
 setup(name='pungi',
-      version='3.00',
+      version='3.01', # make sure it matches pypungi.__version__
       description='Distribution compose tool',
       author='Dennis Gilmore',
       author_email='dgilmore@fedoraproject.org',
