@@ -1,7 +1,7 @@
 %{!?python_sitelib: %define python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")}
 
 Name:           pungi
-Version:        3.02
+Version:        3.03
 Release:        1%{?dist}
 Summary:        Distribution compose tool
 
@@ -56,6 +56,9 @@ rm -rf $RPM_BUILD_ROOT
 /var/cache/pungi
 
 %changelog
+* Thu Oct 31 2013 Dennis Gilmore <dennis@ausil.us> - 3.03-1
+- revert to the old way of doing versioning as the change in 3.01 did not work
+
 * Thu Oct 31 2013 Dennis Gilmore <dennis@ausil.us> - 3.02-1
 - fix typo in call to __version__ (Dennis Gilmore)
 
