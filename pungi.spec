@@ -1,7 +1,7 @@
 %{!?python_sitelib: %define python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")}
 
 Name:           pungi
-Version:        3.01
+Version:        3.02
 Release:        1%{?dist}
 Summary:        Distribution compose tool
 
@@ -9,7 +9,6 @@ Group:          Development/Tools
 License:        GPLv2
 URL:            https://fedorahosted.org/pungi
 Source0:        https://fedorahosted.org/pungi/attachment/wiki/%{version}/%{name}-%{version}.tar.bz2
-BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 Requires:       createrepo >= 0.4.11
 Requires:       yum => 3.4.3-28
 Requires:       lorax
@@ -57,6 +56,9 @@ rm -rf $RPM_BUILD_ROOT
 /var/cache/pungi
 
 %changelog
+* Thu Oct 31 2013 Dennis Gilmore <dennis@ausil.us> - 3.02-1
+- fix typo in call to __version__ (Dennis Gilmore)
+
 * Sun Oct 27 2013 Daniel Mach <dmach@redhat.com> - 3.01-1
 - Add 'make log' command to print changelog for spec. (Daniel Mach)
 - Implement %prepopulate config section as an additional package input. (Daniel Mach)
