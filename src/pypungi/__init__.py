@@ -1309,6 +1309,9 @@ class Pungi(pypungi.PungiBase):
         if self.tree_arch == 'ppc64':
             self.ayum.arch.setup_arch('ppc64')
             self.ayum.compatarch = 'ppc64'
+        elif self.tree_arch == 'ppc64le':
+            self.ayum.arch.setup_arch('ppc64le')
+            self.ayum.compatarch = 'ppc64le'
 
         # Only supported mac hardware is x86 make sure we only enable mac support on arches that need it
         if self.tree_arch in ['x86_64']:
@@ -1361,7 +1364,7 @@ class Pungi(pypungi.PungiBase):
         os.path.walk(os.path.join(self.topdir, 'images'), getsum, self.topdir + '/')
         
         # Capture PPC images
-        if self.tree_arch in ['ppc', 'ppc64']:
+        if self.tree_arch in ['ppc', 'ppc64', 'ppc64le']:
             os.path.walk(os.path.join(self.topdir, 'ppc'), getsum, self.topdir + '/')
 
         # Get a checksum of repomd.xml since it has within it sums for other files
