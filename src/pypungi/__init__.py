@@ -22,6 +22,7 @@ import shutil
 import sys
 import gzip
 import pypungi.util
+import pprint
 import logging
 import urlgrabber.progress
 import subprocess
@@ -861,15 +862,28 @@ class Pungi(pypungi.PungiBase):
         self.bin_by_src = {}
         self.logger.info("Generating source <-> binary package mappings")
         #(dummy1, everything, dummy2) = yum.packages.parsePackages(self.all_pkgs, ['*'], pkgdict=self.pkg_refs.copy())
+        failed = []
         for po in self.all_pkgs:
             if is_source(po):
                 continue
-            srpmpo = self.get_srpm_po(po)
+            try:
+                srpmpo = self.get_srpm_po(po)
+            except RuntimeError:
+                failed.append(po.sourcerpm)
+                continue
+
             self.src_by_bin[po] = srpmpo
             if self.bin_by_src.has_key(srpmpo):
                 self.bin_by_src[srpmpo].append(po)
             else:
                 self.bin_by_src[srpmpo] = [po]
+
+        if failed:
+            self.logger.info("The following srpms could not be found: %s" % (
+                pprint.pformat(list(sorted(failed)))))
+            self.logger.info("Couldn't find %i of %i srpms." % (
+                len(failed), len(self.src_by_bin)))
+            raise RuntimeError("Could not find all srpms.")
 
     def add_srpms(self, po_list=None):
         """Cycle through the list of package objects and
