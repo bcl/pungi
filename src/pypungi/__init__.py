@@ -23,6 +23,7 @@ import sys
 import gzip
 import pypungi.util
 import pprint
+import lockfile
 import logging
 import urlgrabber.progress
 import subprocess
@@ -33,6 +34,40 @@ from fnmatch import fnmatch
 
 import arch as arch_module
 import multilib
+
+
+class ReentrantYumLock(object):
+    """ A lock that can be acquired multiple times by the same process. """
+
+    def __init__(self, lock, log):
+        self.lock = lock
+        self.log = log
+        self.count = 0
+
+    def __enter__(self):
+        if not self.count:
+            self.log.info("Waiting on %r" % self.lock.lock_file)
+            self.lock.acquire()
+            self.log.info("Got %r" % self.lock.lock_file)
+        self.count = self.count + 1
+        self.log.info("Lock count upped to %i" % self.count)
+
+    def __exit__(self, type, value, tb):
+        self.count = self.count - 1
+        self.log.info("Lock count downed to %i" % self.count)
+        self.log.info("%r %r %r" % (type, value, tb))
+        if not self.count:
+            self.lock.release()
+            self.log.info("Released %r" % self.lock.lock_file)
+
+
+def yumlocked(method):
+    """ A locking decorator. """
+    def wrapper(self, *args, **kwargs):
+        with self.yumlock:
+            return method(self, *args, **kwargs)
+    # TODO - replace argspec, signature, etc..
+    return wrapper
 
 
 def is_debug(po):
@@ -163,9 +198,14 @@ class PungiYum(yum.YumBase):
 class Pungi(pypungi.PungiBase):
     def __init__(self, config, ksparser):
         pypungi.PungiBase.__init__(self, config)
- 
+
         # Set our own logging name space
         self.logger = logging.getLogger('Pungi')
+
+        # Create a lock object for later use.
+        filename = self.config.get('pungi', 'cachedir') + "/yumlock"
+        lock = lockfile.LockFile(filename)
+        self.yumlock = ReentrantYumLock(lock, self.logger)
 
         # Create the stdout/err streams and only send INFO+ stuff there
         formatter = logging.Formatter('%(name)s:%(levelname)s: %(message)s')
@@ -294,6 +334,7 @@ class Pungi(pypungi.PungiBase):
         if os.path.exists(os.path.join(thisrepo.cachedir, 'repomd.xml')):
             os.remove(os.path.join(thisrepo.cachedir, 'repomd.xml'))
 
+    @yumlocked
     def _inityum(self):
         """Initialize the yum object.  Only needed for certain actions."""
 
@@ -1070,6 +1111,7 @@ class Pungi(pypungi.PungiBase):
 
         self.logger.info('Finished downloading packages.')
 
+    @yumlocked
     def downloadPackages(self):
         """Download the package objects obtained in getPackageObjects()."""
 
@@ -1118,6 +1160,7 @@ class Pungi(pypungi.PungiBase):
 
         #pypungi.util._doRunCommand(compsfilter, self.logger)
 
+    @yumlocked
     def downloadSRPMs(self):
         """Cycle through the list of srpms and
            find the package objects for them, Then download them."""
@@ -1125,6 +1168,7 @@ class Pungi(pypungi.PungiBase):
         # do the downloads
         self._downloadPackageList(self.srpm_po_list, os.path.join('source', 'SRPMS'))
 
+    @yumlocked
     def downloadDebuginfo(self):
         """Cycle through the list of debuginfo rpms and
            download them."""

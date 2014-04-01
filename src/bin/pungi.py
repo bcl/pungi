@@ -103,49 +103,52 @@ def main():
     # Actually do work.
     mypungi = pypungi.Pungi(config, ksparser)
 
+    with mypungi.yumlock:
+        if not opts.sourceisos:
+            if opts.do_all or opts.do_gather or opts.do_buildinstall:
+                mypungi._inityum() # initialize the yum object for things that need it
+            if opts.do_all or opts.do_gather:
+                mypungi.gather()
+                if opts.nodownload:
+                    for line in mypungi.list_packages():
+                        flags_str = ",".join(line["flags"])
+                        if flags_str:
+                            flags_str = "(%s)" % flags_str
+                        sys.stdout.write("RPM%s: %s\n" % (flags_str, line["path"]))
+                    sys.stdout.flush()
+                else:
+                    mypungi.downloadPackages()
+                mypungi.makeCompsFile()
+                if not opts.nodebuginfo:
+                    mypungi.getDebuginfoList()
+                    if opts.nodownload:
+                        for line in mypungi.list_debuginfo():
+                            flags_str = ",".join(line["flags"])
+                            if flags_str:
+                                flags_str = "(%s)" % flags_str
+                            sys.stdout.write("DEBUGINFO%s: %s\n" % (flags_str, line["path"]))
+                        sys.stdout.flush()
+                    else:
+                        mypungi.downloadDebuginfo()
+                if not opts.nosource:
+                    if opts.nodownload:
+                        for line in mypungi.list_srpms():
+                            flags_str = ",".join(line["flags"])
+                            if flags_str:
+                                flags_str = "(%s)" % flags_str
+                            sys.stdout.write("SRPM%s: %s\n" % (flags_str, line["path"]))
+                        sys.stdout.flush()
+                    else:
+                        mypungi.downloadSRPMs()
+
+                print "RPM size:       %s MiB" % (mypungi.size_packages() / 1024 ** 2)
+                if not opts.nodebuginfo:
+                    print "DEBUGINFO size: %s MiB" % (mypungi.size_debuginfo() / 1024 ** 2)
+                if not opts.nosource:
+                    print "SRPM size:      %s MiB" % (mypungi.size_srpms() / 1024 ** 2)
+
+    # Furthermore (but without the yumlock...)
     if not opts.sourceisos:
-        if opts.do_all or opts.do_gather or opts.do_buildinstall:
-            mypungi._inityum() # initialize the yum object for things that need it
-        if opts.do_all or opts.do_gather:
-            mypungi.gather()
-            if opts.nodownload:
-                for line in mypungi.list_packages():
-                    flags_str = ",".join(line["flags"])
-                    if flags_str:
-                        flags_str = "(%s)" % flags_str
-                    sys.stdout.write("RPM%s: %s\n" % (flags_str, line["path"]))
-                sys.stdout.flush()
-            else:
-                mypungi.downloadPackages()
-            mypungi.makeCompsFile()
-            if not opts.nodebuginfo:
-                mypungi.getDebuginfoList()
-                if opts.nodownload:
-                    for line in mypungi.list_debuginfo():
-                        flags_str = ",".join(line["flags"])
-                        if flags_str:
-                            flags_str = "(%s)" % flags_str
-                        sys.stdout.write("DEBUGINFO%s: %s\n" % (flags_str, line["path"]))
-                    sys.stdout.flush()
-                else:
-                    mypungi.downloadDebuginfo()
-            if not opts.nosource:
-                if opts.nodownload:
-                    for line in mypungi.list_srpms():
-                        flags_str = ",".join(line["flags"])
-                        if flags_str:
-                            flags_str = "(%s)" % flags_str
-                        sys.stdout.write("SRPM%s: %s\n" % (flags_str, line["path"]))
-                    sys.stdout.flush()
-                else:
-                    mypungi.downloadSRPMs()
-
-            print "RPM size:       %s MiB" % (mypungi.size_packages() / 1024 ** 2)
-            if not opts.nodebuginfo:
-                print "DEBUGINFO size: %s MiB" % (mypungi.size_debuginfo() / 1024 ** 2)
-            if not opts.nosource:
-                print "SRPM size:      %s MiB" % (mypungi.size_srpms() / 1024 ** 2)
-
         if opts.do_all or opts.do_createrepo:
             mypungi.doCreaterepo()
 
