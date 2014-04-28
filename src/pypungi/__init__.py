@@ -1202,7 +1202,8 @@ class Pungi(pypungi.PungiBase):
             return subfile.replace(basedir + os.path.sep, '')
         
     def _makeMetadata(self, path, cachedir, comps=False, repoview=False, repoviewtitle=False,
-                      baseurl=False, output=False, basedir=False, update=True):
+                      baseurl=False, output=False, basedir=False, update=True,
+                      compress_type=None):
         """Create repodata and repoview."""
         
         conf = createrepo.MetaDataConfig()
@@ -1221,6 +1222,8 @@ class Pungi(pypungi.PungiBase):
             conf.basedir = basedir
         if baseurl:
             conf.baseurl = baseurl
+        if compress_type:
+            conf.compress_type = compress_type
         repomatic = createrepo.MetaDataGenerator(conf)
         self.logger.info('Making repodata')
         repomatic.doPkgMetadata()
@@ -1264,9 +1267,12 @@ class Pungi(pypungi.PungiBase):
                                         self.tree_arch)
 
         cachedir = self.config.get('pungi', 'cachedir')
+        compress_type = self.config.get('pungi', 'compress_type')
 
         # setup the createrepo call
-        self._makeMetadata(self.topdir, cachedir, compsfile, repoview=True, repoviewtitle=repoviewtitle)
+        self._makeMetadata(self.topdir, cachedir, compsfile,
+                           repoview=True, repoviewtitle=repoviewtitle,
+                           compress_type=compress_type)
 
         # create repodata for debuginfo
         if self.config.getboolean('pungi', 'debuginfo'):
@@ -1274,7 +1280,8 @@ class Pungi(pypungi.PungiBase):
             if not os.path.isdir(path):
                 self.logger.debug("No debuginfo for %s" % self.tree_arch)
                 return
-            self._makeMetadata(path, cachedir, repoview=False)
+            self._makeMetadata(path, cachedir, repoview=False,
+                               compress_type=compress_type)
 
     def doBuildinstall(self):
         """Run lorax on the tree."""
