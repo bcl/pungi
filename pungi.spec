@@ -1,7 +1,7 @@
 %{!?python_sitelib: %define python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")}
 
 Name:           pungi
-Version:        3.03
+Version:        3.04
 Release:        1%{?dist}
 Summary:        Distribution compose tool
 
@@ -56,6 +56,13 @@ rm -rf $RPM_BUILD_ROOT
 /var/cache/pungi
 
 %changelog
+* Tue Apr 29 2014 Dennis Gilmore <dennis@ausil.us - 3.04-1
+- Use a lockfile around things that modify the cachedir. (rbean)
+- Improve logging for missing srpms. (rbean)
+- honour the --nosource option (dennis)
+- support ppc64le in pungi (hamzy)
+- Add configurable compression type to pungi (default to xz) (rbean)
+
 * Thu Oct 31 2013 Dennis Gilmore <dennis@ausil.us> - 3.03-1
 - revert to the old way of doing versioning as the change in 3.01 did not work
 
