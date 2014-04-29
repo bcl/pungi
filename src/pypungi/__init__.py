@@ -774,7 +774,8 @@ class Pungi(pypungi.PungiBase):
 
         # get package objects according to the input list
         self.getPackageObjects()
-        self.createSourceHashes()
+        if self.is_sources:
+            self.createSourceHashes()
 
         pass_num = 0
         added = set()
@@ -799,8 +800,10 @@ class Pungi(pypungi.PungiBase):
                 for po in sorted(self.po_list):
                     added.update(self.get_package_deps(po))
 
-            added_srpms = self.add_srpms()
-            added.update(added_srpms)
+            if self.is_sources:
+                added_srpms = self.add_srpms()
+                added.update(added_srpms)
+
             if self.is_selfhosting:
                 for srpm_po in sorted(added_srpms):
                     added.update(self.get_package_deps(srpm_po))
@@ -816,7 +819,8 @@ class Pungi(pypungi.PungiBase):
             # add langpacks
             new = self.add_langpacks(self.po_list)
             self.langpack_packages.update(new)
-            self.langpack_packages.update([ self.sourcerpm_srpmpo_map[i.sourcerpm] for i in new ])
+            if self.is_sources:
+                self.langpack_packages.update([ self.sourcerpm_srpmpo_map[i.sourcerpm] for i in new ])
             added.update(new)
             if added:
                 continue
