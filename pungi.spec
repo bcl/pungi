@@ -1,7 +1,7 @@
 %{!?python_sitelib: %define python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")}
 
 Name:           pungi
-Version:        3.04
+Version:        3.05
 Release:        1%{?dist}
 Summary:        Distribution compose tool
 
@@ -56,6 +56,9 @@ rm -rf $RPM_BUILD_ROOT
 /var/cache/pungi
 
 %changelog
+* Tue Jul 08 2014 Dennis Gilmore <dennis@ausil.us> - 3.05-1
+- Don't emit media labels with spaces in them. (pjones)
+
 * Tue Apr 29 2014 Dennis Gilmore <dennis@ausil.us - 3.04-1
 - Use a lockfile around things that modify the cachedir. (rbean)
 - Improve logging for missing srpms. (rbean)
