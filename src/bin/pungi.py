@@ -62,6 +62,15 @@ def main():
     else:
         print >> sys.stdout, "Warning: Reusing existing destination directory."
 
+    if not os.path.exists(config.get('pungi', 'workdirbase')):
+        try:
+            os.makedirs(config.get('pungi', 'workdirbase'))
+        except OSError, e:
+            print >> sys.stderr, "Error: Cannot create working base dir %s" % config.get('pungi', 'workdirbase')
+            sys.exit(1)
+    else:
+        print >> sys.stdout, "Warning: Reusing existing working base directory."
+
     cachedir = config.get('pungi', 'cachedir')
 
     if not os.path.exists(cachedir):
@@ -242,6 +251,9 @@ if __name__ == '__main__':
           help='Multilib method; can be specified multiple times; recommended: devel, runtime')
         parser.add_option("--lookaside-repo", action="append", dest="lookaside_repos", metavar="NAME",
           help='Specify lookaside repo name(s) (packages will used for depsolving but not be included in the output)')
+        parser.add_option("--workdirbase", dest="workdirbase", type="string",
+          action="callback", callback=set_config, callback_args=(config, ),
+          help='base working directory (defaults to destdir + /work)')
 
         parser.add_option("-c", "--config", dest="config",
           help='Path to kickstart config file')

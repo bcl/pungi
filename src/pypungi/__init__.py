@@ -124,8 +124,7 @@ class PungiBase(object):
             self.compatible_arches[i] = arch_module.get_compatible_arches(i)
 
         self.doLoggerSetup()
-        self.workdir = os.path.join(self.config.get('pungi', 'destdir'),
-                                    'work',
+        self.workdir = os.path.join(self.config.get('pungi', 'workdirbase'),
                                     self.config.get('pungi', 'flavor'),
                                     self.tree_arch)
 
