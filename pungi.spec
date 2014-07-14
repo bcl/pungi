@@ -1,7 +1,7 @@
 %{!?python_sitelib: %define python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")}
 
 Name:           pungi
-Version:        3.05
+Version:        3.06
 Release:        1%{?dist}
 Summary:        Distribution compose tool
 
@@ -56,6 +56,9 @@ rm -rf $RPM_BUILD_ROOT
 /var/cache/pungi
 
 %changelog
+* Mon Jul 14 2014 Dennis Gilmore <dennis@ausil.us> - 3.06-1
+- allow the base work directory to be configurable
+
 * Tue Jul 08 2014 Dennis Gilmore <dennis@ausil.us> - 3.05-1
 - Don't emit media labels with spaces in them. (pjones)
 
