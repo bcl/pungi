@@ -254,6 +254,8 @@ if __name__ == '__main__':
         parser.add_option("--workdirbase", dest="workdirbase", type="string",
           action="callback", callback=set_config, callback_args=(config, ),
           help='base working directory (defaults to destdir + /work)')
+        parser.add_option("--no-dvd", default=False, action="store_true", dest="no_dvd",
+          help='Do not make a install DVD/CD only the netinstall image and the tree')
 
         parser.add_option("-c", "--config", dest="config",
           help='Path to kickstart config file')

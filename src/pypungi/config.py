@@ -51,3 +51,4 @@ class Config(SafeConfigParser):
         self.set('pungi', 'multilib', '')
         self.set('pungi', 'lookaside_repos', '')
         self.set('pungi', 'resolve_deps', "True")
+        self.set('pungi', 'no_dvd', "False")

@@ -1619,8 +1619,9 @@ class Pungi(pypungi.PungiBase):
         else:
             extraargs.append(os.path.join(self.archdir, 'SRPMS'))
 
-        # run the command
-        pypungi.util._doRunCommand(mkisofs + extraargs, self.logger)
+        if not self.config.get('pungi', 'no_dvd'):
+            # run the command
+            pypungi.util._doRunCommand(mkisofs + extraargs, self.logger)
 
         # Run isohybrid on the iso as long as its not the source iso
         if os.path.exists("/usr/bin/isohybrid") and not self.tree_arch == 'source':
@@ -1640,10 +1641,11 @@ class Pungi(pypungi.PungiBase):
         file = open(csumfile, 'w')
         file.write('# The image checksum(s) are generated with sha256sum.\n')
         file.close()
-        self._doIsoChecksum(isofile, csumfile)
+        if not self.config.get('pungi', 'no_dvd'):
+            self._doIsoChecksum(isofile, csumfile)
 
-        # Write out a line describing the media
-        self.writeinfo('media: %s' % self.mkrelative(isofile))
+            # Write out a line describing the media
+            self.writeinfo('media: %s' % self.mkrelative(isofile))
 
         # Now link the boot iso
         if not self.tree_arch == 'source' and \
