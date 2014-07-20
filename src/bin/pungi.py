@@ -190,7 +190,7 @@ if __name__ == '__main__':
     today = time.strftime('%Y%m%d', time.localtime())
 
     def get_arguments(config):
-        parser = OptionParser("%prog [--help] [options]", version="%prog 3.06")
+        parser = OptionParser("%prog [--help] [options]", version="%prog 3.07")
 
         def set_config(option, opt_str, value, parser, config):
             config.set('pungi', option.dest, value)
