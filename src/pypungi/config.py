@@ -40,7 +40,7 @@ class Config(SafeConfigParser):
         self.set('pungi', 'version', time.strftime('%Y%m%d', time.localtime()))
         self.set('pungi', 'flavor', '')
         self.set('pungi', 'destdir', os.getcwd())
-        self.set('pungi', 'workdirbase', "%s/work" % self.get('pungi', 'destdir'))
+        self.set('pungi', 'workdirbase', "/work")
         self.set('pungi', 'bugurl', 'https://bugzilla.redhat.com')
         self.set('pungi', 'cdsize', '695.0')
         self.set('pungi', 'debuginfo', "True")

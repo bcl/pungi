@@ -52,6 +52,8 @@ def main():
             
     config.set('pungi', 'force', str(opts.force))
 
+    if config.get('pungi', 'workdirbase') == '/work':
+        config.set('pungi', 'workdirbase', "%s/work" % config.get('pungi', 'destdir'))
     # Set up our directories
     if not os.path.exists(config.get('pungi', 'destdir')):
         try:
@@ -104,6 +106,8 @@ def main():
         config.set('pungi', 'multilib', " ".join(opts.multilib))
     if opts.lookaside_repos:
         config.set('pungi', 'lookaside_repos', " ".join(opts.lookaside_repos))
+    if opts.no_dvd:
+        config.set('pungi', 'no_dvd', "True")
     config.set("pungi", "fulltree", str(bool(opts.fulltree)))
     config.set("pungi", "selfhosting", str(bool(opts.selfhosting)))
     config.set("pungi", "nosource", str(bool(opts.nosource)))

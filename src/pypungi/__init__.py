@@ -1619,17 +1619,17 @@ class Pungi(pypungi.PungiBase):
         else:
             extraargs.append(os.path.join(self.archdir, 'SRPMS'))
 
-        if not self.config.get('pungi', 'no_dvd'):
+        if self.config.get('pungi', 'no_dvd') == "False":
             # run the command
             pypungi.util._doRunCommand(mkisofs + extraargs, self.logger)
 
-        # Run isohybrid on the iso as long as its not the source iso
-        if os.path.exists("/usr/bin/isohybrid") and not self.tree_arch == 'source':
-            pypungi.util._doRunCommand(isohybrid, self.logger)
+            # Run isohybrid on the iso as long as its not the source iso
+            if os.path.exists("/usr/bin/isohybrid") and not self.tree_arch == 'source':
+                pypungi.util._doRunCommand(isohybrid, self.logger)
 
-        # implant md5 for mediacheck on all but source arches
-        if not self.tree_arch == 'source':
-            pypungi.util._doRunCommand(['/usr/bin/implantisomd5', isofile], self.logger)
+            # implant md5 for mediacheck on all but source arches
+            if not self.tree_arch == 'source':
+                pypungi.util._doRunCommand(['/usr/bin/implantisomd5', isofile], self.logger)
 
         # shove the checksum into a file
         csumfile = os.path.join(self.isodir, '%s-%s-%s-CHECKSUM' % (
@@ -1641,7 +1641,7 @@ class Pungi(pypungi.PungiBase):
         file = open(csumfile, 'w')
         file.write('# The image checksum(s) are generated with sha256sum.\n')
         file.close()
-        if not self.config.get('pungi', 'no_dvd'):
+        if self.config.get('pungi', 'no_dvd') == "False":
             self._doIsoChecksum(isofile, csumfile)
 
             # Write out a line describing the media
