@@ -1,7 +1,7 @@
 %{!?python_sitelib: %define python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")}
 
 Name:           pungi
-Version:        3.07
+Version:        3.08
 Release:        1%{?dist}
 Summary:        Distribution compose tool
 
@@ -56,6 +56,9 @@ rm -rf $RPM_BUILD_ROOT
 /var/cache/pungi
 
 %changelog
+* Wed Jul 23 2014 Dennis Gilmore <dennis@ausil.us> - 3.08-1
+- fix up some issues with --no-dvd and --workbasedir (dennis)
+
 * Sun Jul 20 2014 Dennis Gilmore <dennis@ausil.us> - 3.07-1
 - add option to not make a dvd
 
