@@ -1604,11 +1604,11 @@ class Pungi(pypungi.PungiBase):
         treesize = treesize * 2048 / 1024 / 1024
 
         if treesize > 700: # we're larger than a 700meg CD
-            isoname = '%s-%s-%s-DVD.iso' % (self.config.get('pungi', 'iso_basename'), self.config.get('pungi', 'version'), 
-                self.tree_arch)
+            isoname = '%s-DVD-%s-%s.iso' % (self.config.get('pungi', 'iso_basename'), self.tree_arch,
+                self.config.get('pungi', 'version'))
         else:
-            isoname = '%s-%s-%s.iso' % (self.config.get('pungi', 'iso_basename'), self.config.get('pungi', 'version'), 
-                self.tree_arch)
+            isoname = '%s-%s-%s.iso' % (self.config.get('pungi', 'iso_basename'), self.tree_arch,
+                self.config.get('pungi', 'version'))
 
         isofile = os.path.join(self.isodir, isoname)
 
@@ -1675,8 +1675,8 @@ class Pungi(pypungi.PungiBase):
         # Now link the boot iso
         if not self.tree_arch == 'source' and \
         os.path.exists(os.path.join(self.topdir, 'images', 'boot.iso')):
-            isoname = '%s-%s-%s-netinst.iso' % (self.config.get('pungi', 'iso_basename'),
-                self.config.get('pungi', 'version'), self.tree_arch)
+            isoname = '%s-netinst-%s-%s.iso' % (self.config.get('pungi', 'iso_basename'),
+                self.tree_arch, self.config.get('pungi', 'version'))
             isofile = os.path.join(self.isodir, isoname)
 
             # link the boot iso to the iso dir
