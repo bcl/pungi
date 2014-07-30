@@ -1344,6 +1344,30 @@ class Pungi(pypungi.PungiBase):
             self._makeMetadata(path, cachedir, repoview=False,
                                compress_type=compress_type)
 
+    def _shortenVolID(self):
+        """shorten the volume id to make sure its under 32 characters"""
+
+        subsitutions = {'Workstation': 'WS',
+                        'Server': 'S',
+                        'Cloud': 'C',
+                        'Alpha': 'A',
+                        'Beta': 'B',
+                        'TC': 'T'}
+        name = self.config.get('pungi', 'name')
+        version = self.config.get('pungi', 'version')
+        arch = self.tree_arch
+
+        for k, v in subsitutions.iteritems():
+            if name.contains(k):
+                name.replace(k, v)
+            if version.contains(k):
+                version.replace(k, v)
+        volid = "%s-%s-%s" % (name, version, arch)
+        if len(volid) > 32:
+            raise RuntimeError("Volume ID %s is longer than 32 characters")
+        else:
+            return volid
+
     def doBuildinstall(self):
         """Run lorax on the tree."""
 
@@ -1363,6 +1387,7 @@ class Pungi(pypungi.PungiBase):
         bugurl = self.config.get('pungi', 'bugurl')
         isfinal = self.config.get('pungi', 'isfinal')
 
+        volid = self._shortenVolID()
         workdir = self.workdir
         outputdir = self.topdir
 
@@ -1386,7 +1411,7 @@ class Pungi(pypungi.PungiBase):
 
         lorax.run(self.ayum, product=product, version=version, release=release,
                   variant=variant, bugurl=bugurl, isfinal=isfinal, domacboot=domacboot,
-                  workdir=workdir, outputdir=outputdir)
+                  workdir=workdir, outputdir=outputdir, volid=volid)
 
         # write out the tree data for snake
         self.writeinfo('tree: %s' % self.mkrelative(self.topdir))
