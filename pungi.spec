@@ -1,7 +1,7 @@
 %{!?python_sitelib: %define python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")}
 
 Name:           pungi
-Version:        3.08
+Version:        3.09
 Release:        1%{?dist}
 Summary:        Distribution compose tool
 
@@ -56,6 +56,12 @@ rm -rf $RPM_BUILD_ROOT
 /var/cache/pungi
 
 %changelog
+* Wed Jul 30 2014 Dennis Gilmore <dennis@ausil.us> - 3.09-1
+- implement nameing scheme from
+  https://fedoraproject.org/wiki/User:Adamwill/Draft_fedora_image_naming_policy
+  (dennis)
+- implement shortening of the volumeid which has a 32 character limit (dennis)
+
 * Wed Jul 23 2014 Dennis Gilmore <dennis@ausil.us> - 3.08-1
 - fix up some issues with --no-dvd and --workbasedir (dennis)
 
