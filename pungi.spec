@@ -1,7 +1,7 @@
 %{!?python_sitelib: %define python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")}
 
 Name:           pungi
-Version:        3.09
+Version:        3.10
 Release:        1%{?dist}
 Summary:        Distribution compose tool
 
@@ -56,6 +56,9 @@ rm -rf $RPM_BUILD_ROOT
 /var/cache/pungi
 
 %changelog
+* Thu Jul 31 2014 Dennis Gilmore <dennis@ausil.us> - 3.10-1
+- fix up volume shortening substituions to actually work (dennis)
+
 * Wed Jul 30 2014 Dennis Gilmore <dennis@ausil.us> - 3.09-1
 - implement nameing scheme from
   https://fedoraproject.org/wiki/User:Adamwill/Draft_fedora_image_naming_policy
