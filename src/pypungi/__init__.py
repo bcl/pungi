@@ -1358,13 +1358,13 @@ class Pungi(pypungi.PungiBase):
         arch = self.tree_arch
 
         for k, v in subsitutions.iteritems():
-            if name.contains(k):
-                name.replace(k, v)
-            if version.contains(k):
-                version.replace(k, v)
+            if k in name:
+                name = name.replace(k, v)
+            if k in version:
+                version = version.replace(k, v)
         volid = "%s-%s-%s" % (name, version, arch)
         if len(volid) > 32:
-            raise RuntimeError("Volume ID %s is longer than 32 characters")
+            raise RuntimeError("Volume ID %s is longer than 32 characters" % volid)
         else:
             return volid
 
