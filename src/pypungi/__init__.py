@@ -1632,8 +1632,7 @@ class Pungi(pypungi.PungiBase):
         # NOTE: if this doesn't match what's in the bootloader config, the
         # image won't be bootable!
         extraargs.append('-V')
-        extraargs.append('%s-%s-%s' % (self.config.get('pungi', 'name'),
-            self.config.get('pungi', 'version'), self.tree_arch))
+        extraargs.append(self._shortenVolID())
 
         extraargs.extend(['-o', isofile])
 
