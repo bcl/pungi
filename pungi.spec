@@ -1,7 +1,7 @@
 %{!?python_sitelib: %define python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")}
 
 Name:           pungi
-Version:        3.10
+Version:        3.11
 Release:        1%{?dist}
 Summary:        Distribution compose tool
 
@@ -56,6 +56,9 @@ rm -rf $RPM_BUILD_ROOT
 /var/cache/pungi
 
 %changelog
+* Thu Jul 31 2014 Dennis Gilmore <dennis@ausil.us> - 3.11-1
+- make sure that the dvd/cd is using the shortened volumeid (dennis)
+
 * Thu Jul 31 2014 Dennis Gilmore <dennis@ausil.us> - 3.10-1
 - fix up volume shortening substituions to actually work (dennis)
 
