@@ -1584,9 +1584,6 @@ class Pungi(pypungi.PungiBase):
         ppcbootargs.append('-map')
         ppcbootargs.append(os.path.join(ppcbootinfo, 'mapping'))
 
-        ppcbootargs.append('-magic')
-        ppcbootargs.append(os.path.join(ppcbootinfo, 'magic'))
-
         ppcbootargs.append('-hfs-bless') # must be last
 
         isohybrid = ['/usr/bin/isohybrid']
