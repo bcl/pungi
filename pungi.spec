@@ -1,7 +1,7 @@
 %{!?python_sitelib: %define python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")}
 
 Name:           pungi
-Version:        3.11
+Version:        3.12
 Release:        1%{?dist}
 Summary:        Distribution compose tool
 
@@ -56,6 +56,10 @@ rm -rf $RPM_BUILD_ROOT
 /var/cache/pungi
 
 %changelog
+* Thu Sep 11 2014 Dennis Gilmore <dennis@ausil.us> - 3.12-1
+- Remove magic parameter to mkisofs (hamzy)
+- Added option for setting release note files (riehecky)
+
 * Thu Jul 31 2014 Dennis Gilmore <dennis@ausil.us> - 3.11-1
 - make sure that the dvd/cd is using the shortened volumeid (dennis)
 
