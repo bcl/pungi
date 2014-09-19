@@ -273,10 +273,10 @@ if __name__ == '__main__':
           help="Flag to enable processing the BuildInstall stage")
         parser.add_option("-I", action="store_true", default=False, dest="do_createiso",
           help="Flag to enable processing the CreateISO stage")
-	parser.add_option("--relnotepkgs", dest="relnotepkgs", type="string",
+        parser.add_option("--relnotepkgs", dest="relnotepkgs", type="string",
           action="callback", callback=set_config, callback_args=(config, ),
           help='Rpms which contain the release notes')
-	parser.add_option("--relnotefilere", dest="relnotefilere", type="string",
+        parser.add_option("--relnotefilere", dest="relnotefilere", type="string",
           action="callback", callback=set_config, callback_args=(config, ),
           help='Which files are the release notes -- GPL EULA')
 
