@@ -33,7 +33,6 @@ import pylorax
 from fnmatch import fnmatch
 
 import arch as arch_module
-import multilib
 
 
 class ReentrantYumLock(object):
