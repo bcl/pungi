@@ -1407,7 +1407,11 @@ class Pungi(pypungi.PungiBase):
 
         # run the command
         lorax = pylorax.Lorax()
-        lorax.configure()
+        try:
+            conf_file = self.config.get('lorax', 'conf_file')
+            lorax.configure(conf_file=conf_file)
+        except (ConfigParser.NoSectionError, ConfigParser.NoOptionError):
+            lorax.configure()
 
         lorax.run(self.ayum, product=product, version=version, release=release,
                   variant=variant, bugurl=bugurl, isfinal=isfinal, domacboot=domacboot,

@@ -23,6 +23,7 @@ class Config(SafeConfigParser):
         SafeConfigParser.__init__(self)
 
         self.add_section('pungi')
+        self.add_section('lorax')
 
         self.set('pungi', 'osdir', 'os')
         self.set('pungi', 'sourcedir', 'source')
