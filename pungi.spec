@@ -11,7 +11,7 @@ URL:            https://fedorahosted.org/pungi
 Source0:        https://fedorahosted.org/pungi/attachment/wiki/%{version}/%{name}-%{version}.tar.bz2
 Requires:       createrepo >= 0.4.11
 Requires:       yum => 3.4.3-28
-Requires:       lorax
+Requires:       lorax >= 22.1
 Requires:       repoview
 Requires:       python-lockfile
 

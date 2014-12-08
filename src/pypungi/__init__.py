@@ -1413,9 +1413,14 @@ class Pungi(pypungi.PungiBase):
         except (ConfigParser.NoSectionError, ConfigParser.NoOptionError):
             lorax.configure()
 
+        try:
+            installpkgs = self.config.get('lorax', 'installpkgs').split(" ")
+        except (ConfigParser.NoSectionError, ConfigParser.NoOptionError):
+            installpkgs = None
+
         lorax.run(self.ayum, product=product, version=version, release=release,
                   variant=variant, bugurl=bugurl, isfinal=isfinal, domacboot=domacboot,
-                  workdir=workdir, outputdir=outputdir, volid=volid)
+                  workdir=workdir, outputdir=outputdir, volid=volid, installpkgs=installpkgs)
 
         # write out the tree data for snake
         self.writeinfo('tree: %s' % self.mkrelative(self.topdir))

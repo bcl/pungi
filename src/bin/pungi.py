@@ -115,6 +115,8 @@ def main():
 
     if opts.lorax_conf:
         config.set("lorax", "conf_file", opts.lorax_conf)
+    if opts.installpkgs:
+        config.set("lorax", "installpkgs", " ".join(opts.installpkgs))
 
     # Actually do work.
     mypungi = pypungi.Pungi(config, ksparser)
@@ -265,6 +267,9 @@ if __name__ == '__main__':
           help='Do not make a install DVD/CD only the netinstall image and the tree')
         parser.add_option("--lorax-conf", type="string",
           help='Path to lorax.conf file (optional)')
+        parser.add_option("-i", "--installpkgs", default=[],
+            action="append", metavar="STRING",
+            help="Package glob for lorax to install before runtime-install.tmpl runs. (may be listed multiple times)")
 
         parser.add_option("-c", "--config", dest="config",
           help='Path to kickstart config file')
