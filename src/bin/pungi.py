@@ -113,6 +113,9 @@ def main():
     config.set("pungi", "nosource", str(bool(opts.nosource)))
     config.set("pungi", "nodebuginfo", str(bool(opts.nodebuginfo)))
 
+    if opts.lorax_conf:
+        config.set("lorax", "conf_file", opts.lorax_conf)
+
     # Actually do work.
     mypungi = pypungi.Pungi(config, ksparser)
 
@@ -260,6 +263,8 @@ if __name__ == '__main__':
           help='base working directory (defaults to destdir + /work)')
         parser.add_option("--no-dvd", default=False, action="store_true", dest="no_dvd",
           help='Do not make a install DVD/CD only the netinstall image and the tree')
+        parser.add_option("--lorax-conf", type="string",
+          help='Path to lorax.conf file (optional)')
 
         parser.add_option("-c", "--config", dest="config",
           help='Path to kickstart config file')
