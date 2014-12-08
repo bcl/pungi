@@ -13,8 +13,8 @@ Requires:       createrepo >= 0.4.11
 Requires:       yum => 3.4.3-28
 Requires:       lorax
 Requires:       repoview
+Requires:       python-lockfile
 
-BuildRequires:  python-devel
 BuildArch:      noarch
 
 %description
