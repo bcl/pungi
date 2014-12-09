@@ -1625,6 +1625,8 @@ class Pungi(pypungi.PungiBase):
         elif self.tree_arch.startswith('ppc'):
             extraargs.extend(ppcbootargs)
             extraargs.append(os.path.join(self.topdir, "ppc/mac"))
+        elif self.tree_arch.startswith('aarch64'):
+            extraargs.extend(efibootargs)
 
         # NOTE: if this doesn't match what's in the bootloader config, the
         # image won't be bootable!
