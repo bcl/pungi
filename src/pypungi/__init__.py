@@ -1347,7 +1347,7 @@ class Pungi(pypungi.PungiBase):
     def _shortenVolID(self):
         """shorten the volume id to make sure its under 32 characters"""
 
-        subsitutions = {'Workstation': 'WS',
+        substitutions = {'Workstation': 'WS',
                         'Server': 'S',
                         'Cloud': 'C',
                         'Alpha': 'A',
@@ -1357,7 +1357,7 @@ class Pungi(pypungi.PungiBase):
         version = self.config.get('pungi', 'version')
         arch = self.tree_arch
 
-        for k, v in subsitutions.iteritems():
+        for k, v in substitutions.iteritems():
             if k in name:
                 name = name.replace(k, v)
             if k in version:
