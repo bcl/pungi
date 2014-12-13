@@ -1,7 +1,7 @@
 %{!?python_sitelib: %define python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")}
 
 Name:           pungi
-Version:        3.12
+Version:        3.13
 Release:        1%{?dist}
 Summary:        Distribution compose tool
 
@@ -56,6 +56,14 @@ rm -rf $RPM_BUILD_ROOT
 /var/cache/pungi
 
 %changelog
+* Fri Dec 12 2014 Dennis Gilmore <dennis@ausil.us> - 3.13-1
+- Add support for --installpkgs (bcl)
+- Add a cmdline option to set the lorax config file (bcl)
+- Add python-lockfile requires and drop python-devel (bcl)
+- Make our OS iso bootable on aarch64. (pjones)
+- fix up typo (dennis)
+- replace tabs with spaces (dennis)
+
 * Thu Sep 11 2014 Dennis Gilmore <dennis@ausil.us> - 3.12-1
 - Remove magic parameter to mkisofs (hamzy)
 - Added option for setting release note files (riehecky)
