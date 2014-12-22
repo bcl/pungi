@@ -1401,7 +1401,10 @@ class Pungi(pypungi.PungiBase):
 
         # Only supported mac hardware is x86 make sure we only enable mac support on arches that need it
         if self.tree_arch in ['x86_64']:
-            domacboot = True
+            if self.config.getboolean('pungi','nomacboot'):
+                   domacboot = False
+            else:
+                   domacboot = True
         else:
             domacboot = False
 

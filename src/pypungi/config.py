@@ -53,3 +53,4 @@ class Config(SafeConfigParser):
         self.set('pungi', 'lookaside_repos', '')
         self.set('pungi', 'resolve_deps', "True")
         self.set('pungi', 'no_dvd', "False")
+        self.set('pungi', 'nomacboot', "False")

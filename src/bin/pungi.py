@@ -108,6 +108,8 @@ def main():
         config.set('pungi', 'lookaside_repos', " ".join(opts.lookaside_repos))
     if opts.no_dvd:
         config.set('pungi', 'no_dvd', "True")
+    if opts.nomacboot:
+        config.set('pungi', 'nomacboot', "True")
     config.set("pungi", "fulltree", str(bool(opts.fulltree)))
     config.set("pungi", "selfhosting", str(bool(opts.selfhosting)))
     config.set("pungi", "nosource", str(bool(opts.nosource)))
@@ -289,6 +291,7 @@ if __name__ == '__main__':
         parser.add_option("--relnotefilere", dest="relnotefilere", type="string",
           action="callback", callback=set_config, callback_args=(config, ),
           help='Which files are the release notes -- GPL EULA')
+        parser.add_option("--nomacboot", action="store_true", dest="nomacboot",           help='disable setting up macboot as no hfs support ')
 
 
         (opts, args) = parser.parse_args()
