@@ -272,6 +272,9 @@ if __name__ == '__main__':
         parser.add_option("-i", "--installpkgs", default=[],
             action="append", metavar="STRING",
             help="Package glob for lorax to install before runtime-install.tmpl runs. (may be listed multiple times)")
+        parser.add_option("--multilibconf", default=None, type="string",
+                          action="callback", callback=set_config, callback_args=(config, ),
+                          help="Path to multilib conf files. Default is /usr/share/pungi/multilib/")
 
         parser.add_option("-c", "--config", dest="config",
           help='Path to kickstart config file')

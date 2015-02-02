@@ -92,6 +92,9 @@ class MultilibMethodBase(object):
     """a base class for multilib methods"""
     name = "base"
 
+    def __init__(self, config_path):
+        self.config_path = config_path
+
     def select(self, po):
         raise NotImplementedError
 
@@ -141,10 +144,11 @@ class RuntimeMultilibMethod(MultilibMethodBase):
     """pre-defined paths to libs"""
     name = "runtime"
 
-    def __init__(self, **kwargs):
-        self.blacklist = read_lines_from_file("/usr/share/pungi/multilib/runtime-blacklist.conf")
-        self.whitelist = read_lines_from_file("/usr/share/pungi/multilib/runtime-whitelist.conf")
-        self.patterns = expand_runtime_patterns(read_runtime_patterns_from_file("/usr/share/pungi/multilib/runtime-patterns.conf"))
+    def __init__(self, *args, **kwargs):
+        super(RuntimeMultilibMethod, self).__init__(*args, **kwargs)
+        self.blacklist = read_lines_from_file(self.config_path+"runtime-blacklist.conf")
+        self.whitelist = read_lines_from_file(self.config_path+"runtime-whitelist.conf")
+        self.patterns = expand_runtime_patterns(read_runtime_patterns_from_file(self.config_path+"runtime-patterns.conf"))
 
     def select(self, po):
         if self.skip(po):
@@ -186,8 +190,10 @@ class RuntimeMultilibMethod(MultilibMethodBase):
 
 class FileMultilibMethod(MultilibMethodBase):
     """explicitely defined whitelist and blacklist"""
-    def __init__(self, **kwargs):
-        self.name = "file"
+    name = "file"
+
+    def __init__(self, *args, **kwargs):
+        super(FileMultilibMethod, self).__init__(*args, **kwargs)
         whitelist = kwargs.pop("whitelist", None)
         blacklist = kwargs.pop("blacklist", None)
         self.whitelist = self.read_file(whitelist)
@@ -212,8 +218,10 @@ class FileMultilibMethod(MultilibMethodBase):
 
 class KernelMultilibMethod(MultilibMethodBase):
     """kernel and kernel-devel"""
-    def __init__(self, **kwargs):
-        self.name = "kernel"
+    name = "kernel"
+
+    def __init__(self, *args, **kwargs):
+        super(KernelMultilibMethod, self).__init__(*args, **kwargs)
 
     def select(self, po):
         if self.is_kernel_or_kernel_devel(po):
@@ -223,8 +231,10 @@ class KernelMultilibMethod(MultilibMethodBase):
 
 class YabootMultilibMethod(MultilibMethodBase):
     """yaboot on ppc"""
-    def __init__(self, **kwargs):
-        self.name = "yaboot"
+    name = "yaboot"
+
+    def __init__(self, *args, **kwargs):
+        super(YabootMultilibMethod, self).__init__(*args, **kwargs)
 
     def select(self, po):
         if po.arch in ["ppc"]:
@@ -237,9 +247,10 @@ class DevelMultilibMethod(MultilibMethodBase):
     """all -devel and -static packages"""
     name = "devel"
 
-    def __init__(self, **kwargs):
-        self.blacklist = read_lines_from_file("/usr/share/pungi/multilib/devel-blacklist.conf")
-        self.whitelist = read_lines_from_file("/usr/share/pungi/multilib/devel-whitelist.conf")
+    def __init__(self, *args, **kwargs):
+        super(DevelMultilibMethod, self).__init__(*args, **kwargs)
+        self.blacklist = read_lines_from_file(self.config_path+"devel-blacklist.conf")
+        self.whitelist = read_lines_from_file(self.config_path+"devel-whitelist.conf")
 
     def select(self, po):
         if self.skip(po):
@@ -267,9 +278,17 @@ class DevelMultilibMethod(MultilibMethodBase):
 
 DEFAULT_METHODS = ["devel", "runtime"]
 METHOD_MAP = {}
-for cls in (AllMultilibMethod, DevelMultilibMethod, FileMultilibMethod, KernelMultilibMethod, NoneMultilibMethod, RuntimeMultilibMethod, YabootMultilibMethod):
-    method = cls()
-    METHOD_MAP[method.name] = method
+
+def init(config_path="/usr/share/pungi/multilib/"):
+    global METHOD_MAP
+
+    if not config_path.endswith("/"):
+        config_path += "/"
+
+    for cls in (AllMultilibMethod, DevelMultilibMethod, FileMultilibMethod, KernelMultilibMethod,
+                NoneMultilibMethod, RuntimeMultilibMethod, YabootMultilibMethod):
+        method = cls(config_path)
+        METHOD_MAP[method.name] = method
 
 
 def po_is_multilib(po, methods):
@@ -384,6 +403,7 @@ def main():
     if not opts.tmpdir:
         tmpdir = tempfile.mkdtemp(prefix="multilib_")
 
+    init()
     nvra_list = do_multilib(opts.arch, opts.method, opts.repos, tmpdir, opts.logfile)
     for nvra, method in nvra_list:
         print "MULTILIB(%s): %s" % (method, nvra)

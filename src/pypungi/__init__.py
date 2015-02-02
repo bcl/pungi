@@ -106,6 +106,7 @@ class PungiBase(object):
 
     def __init__(self, config):
         self.config = config
+        multilib.init(self.config.get('pungi', 'multilibconf'))
 
         # ARCH setup
         self.tree_arch = self.config.get('pungi', 'arch')

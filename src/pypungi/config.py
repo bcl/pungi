@@ -29,6 +29,7 @@ class Config(SafeConfigParser):
         self.set('pungi', 'sourcedir', 'source')
         self.set('pungi', 'debugdir', 'debug')
         self.set('pungi', 'isodir', 'iso')
+        self.set('pungi', 'multilibconf', '/usr/share/pungi/multilib/')
         self.set('pungi', 'relnotefilere', 'GPL README-BURNING-ISOS-en_US.txt ^RPM-GPG')
         self.set('pungi', 'relnotedirre', '')
         self.set('pungi', 'relnotepkgs', 'fedora-release fedora-release-notes')
