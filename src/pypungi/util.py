@@ -24,7 +24,8 @@ def _doRunCommand(command, logger, rundir='/tmp', output=subprocess.PIPE, error=
 
     logger.info("Running %s" % subprocess.list2cmdline(command))
 
-    p1 = subprocess.Popen(command, cwd=rundir, stdout=output, stderr=error, universal_newlines=True, env=env)
+    p1 = subprocess.Popen(command, cwd=rundir, stdout=output, stderr=error, universal_newlines=True, env=env,
+                          close_fds=True)
     (out, err) = p1.communicate()
 
     if out:
