@@ -20,7 +20,6 @@ import os
 import re
 import shutil
 import sys
-import gzip
 import pypungi.util
 import pprint
 import lockfile
@@ -29,7 +28,6 @@ import urlgrabber.progress
 import subprocess
 import createrepo
 import ConfigParser
-import pylorax
 from fnmatch import fnmatch
 
 import arch as arch_module
@@ -1371,59 +1369,67 @@ class Pungi(pypungi.PungiBase):
     def doBuildinstall(self):
         """Run lorax on the tree."""
 
-        # the old ayum object has transaction data that confuse lorax, reinit.
-        self._inityum()
+        cmd = ["lorax"]
+        cmd.extend(["--workdir", self.workdir])
+        cmd.extend(["--logfile", os.path.join(self.config.get('pungi', 'destdir'), 'logs/lorax.log')])
+
+        try:
+            # Convert url method to a repo
+            self.ksparser.handler.repo.methodToRepo()
+        except:
+            pass
+
+        for repo in self.ksparser.handler.repo.repoList:
+            if repo.mirrorlist:
+                # The not bool() thing is because pykickstart is yes/no on
+                # whether to ignore groups, but yum is a yes/no on whether to
+                # include groups.  Awkward.
+                cmd.extend(["--mirrorlist", repo.mirrorlist])
+            else:
+                cmd.extend(["--source", repo.baseurl])
 
         # Add the repo in the destdir to our yum object
-        self._add_yum_repo('ourtree',
-                           'file://%s' % self.topdir,
-                           cost=10)
-
-        product = self.config.get('pungi', 'name')
-        version = self.config.get('pungi', 'version')
-        release = '%s %s' % (self.config.get('pungi', 'name'), self.config.get('pungi', 'version'))
-
-        variant = self.config.get('pungi', 'flavor')
-        bugurl = self.config.get('pungi', 'bugurl')
-        isfinal = self.config.get('pungi', 'isfinal')
-
-        volid = self._shortenVolID()
-        workdir = self.workdir
-        outputdir = self.topdir
+        cmd.extend(["--source", "file://%s" % self.topdir])
+        cmd.extend(["--product", self.config.get('pungi', 'name')])
+        cmd.extend(["--version", self.config.get('pungi', 'version')])
+        cmd.extend(["--release", "%s %s" % (self.config.get('pungi', 'name'), self.config.get('pungi', 'version'))])
+        if self.config.get('pungi', 'flavor'):
+            cmd.extend(["--variant", self.config.get('pungi', 'flavor')])
+        cmd.extend(["--bugurl", self.config.get('pungi', 'bugurl')])
+        if self.config.get('pungi', 'isfinal'):
+            cmd.append("--isfinal")
+        cmd.extend(["--volid", self._shortenVolID()])
 
         # on ppc64 we need to tell lorax to only use ppc64 packages so that the media will run on all 64 bit ppc boxes
         if self.tree_arch == 'ppc64':
-            self.ayum.arch.setup_arch('ppc64')
-            self.ayum.compatarch = 'ppc64'
+            cmd.extend(["--buildarch", "ppc64"])
         elif self.tree_arch == 'ppc64le':
-            self.ayum.arch.setup_arch('ppc64le')
-            self.ayum.compatarch = 'ppc64le'
+            cmd.extend(["--buildarch", "ppc64le"])
 
         # Only supported mac hardware is x86 make sure we only enable mac support on arches that need it
-        if self.tree_arch in ['x86_64']:
-            if self.config.getboolean('pungi','nomacboot'):
-                   domacboot = False
-            else:
-                   domacboot = True
+        if self.tree_arch in ['x86_64'] and not self.config.getboolean('pungi','nomacboot'):
+            cmd.append("--macboot")
         else:
-            domacboot = False
-
-        # run the command
-        lorax = pylorax.Lorax()
-        try:
-            conf_file = self.config.get('lorax', 'conf_file')
-            lorax.configure(conf_file=conf_file)
-        except (ConfigParser.NoSectionError, ConfigParser.NoOptionError):
-            lorax.configure()
+            cmd.append("--nomacboot")
 
         try:
-            installpkgs = self.config.get('lorax', 'installpkgs').split(" ")
+            cmd.extend(["--conf", self.config.get('lorax', 'conf_file')])
         except (ConfigParser.NoSectionError, ConfigParser.NoOptionError):
-            installpkgs = None
+            pass
 
-        lorax.run(self.ayum, product=product, version=version, release=release,
-                  variant=variant, bugurl=bugurl, isfinal=isfinal, domacboot=domacboot,
-                  workdir=workdir, outputdir=outputdir, volid=volid, installpkgs=installpkgs)
+        try:
+            cmd.extend(["--installpkgs", self.config.get('lorax', 'installpkgs')])
+        except (ConfigParser.NoSectionError, ConfigParser.NoOptionError):
+            pass
+
+        # Allow the output directory to exist.
+        cmd.append("--force")
+
+        # MUST be last in the list
+        cmd.append(self.topdir)
+
+        self.logger.info(" ".join(cmd))
+        pypungi.util._doRunCommand(cmd, self.logger)
 
         # write out the tree data for snake
         self.writeinfo('tree: %s' % self.mkrelative(self.topdir))

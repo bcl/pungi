@@ -34,7 +34,7 @@ def _doRunCommand(command, logger, rundir='/tmp', output=subprocess.PIPE, error=
     if p1.returncode != 0:
         logger.error("Got an error from %s" % command[0])
         logger.error(err)
-        raise OSError, "Got an error from %s: %s" % (command[0], err)
+        raise OSError, "Got an error (%d) from %s: %s" % (p1.returncode, command[0], err)
 
 def _link(local, target, logger, force=False):
     """Simple function to link or copy a package, removing target optionally."""
